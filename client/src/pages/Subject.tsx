@@ -10,10 +10,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ProgressRing } from "@/components/ProgressRing";
 import {
   Task,
-  Note,
   subjects,
   SubjectId,
   getCurrentWeek,
+  getTermLabel,
 } from "@shared/schema";
 import {
   getTasks,
@@ -59,7 +59,6 @@ export default function Subject() {
   }, [subjectId, currentWeek]);
 
   const handleToggleTask = (taskId: string) => {
-    const allTasks = getTasks();
     const updated = toggleTaskCompletion(taskId);
     setTasks(updated.filter((t) => t.subjectId === subjectId));
   };
@@ -95,15 +94,11 @@ export default function Subject() {
 
   const progress = calculateSubjectProgress(tasks.length ? tasks : [], subjectId);
   
-  // Group tasks by fortnight then week
-  const tasksByFortnight: Record<number, Record<number, Task[]>> = {};
-  for (let f = 1; f <= 8; f++) {
-    tasksByFortnight[f] = {};
-    const week1 = (f - 1) * 2 + 1;
-    const week2 = week1 + 1;
-    tasksByFortnight[f][week1] = tasks.filter((t) => t.week === week1);
-    tasksByFortnight[f][week2] = tasks.filter((t) => t.week === week2);
-  }
+  // Group tasks by term then week
+  const tasksByTerm: Record<number, Task[]> = {
+    1: tasks.filter((t) => t.term === 1),
+    2: tasks.filter((t) => t.term === 2),
+  };
 
   return (
     <div className="p-4 md:p-6 space-y-6" data-testid={`subject-page-${subjectId}`}>
@@ -151,40 +146,46 @@ export default function Subject() {
         </TabsList>
 
         <TabsContent value="tasks" className="space-y-4">
-          {/* Fortnight Sections */}
-          {Object.entries(tasksByFortnight).map(([fortnightStr, weeks]) => {
-            const fortnight = parseInt(fortnightStr);
-            const fortnightTasks = Object.values(weeks).flat();
-            const fortnightCompleted = fortnightTasks.filter((t) => t.completed).length;
-            const fortnightPercentage =
-              fortnightTasks.length > 0
-                ? Math.round((fortnightCompleted / fortnightTasks.length) * 100)
+          {/* Term 1 Section */}
+          {[1, 2].map((term) => {
+            const termTasks = tasksByTerm[term];
+            const termCompleted = termTasks.filter((t) => t.completed).length;
+            const termPercentage =
+              termTasks.length > 0
+                ? Math.round((termCompleted / termTasks.length) * 100)
                 : 0;
 
+            // Get unique weeks for this term
+            const weeks = Array.from(new Set(termTasks.map((t) => t.week))).sort((a, b) => a - b);
+
             return (
-              <Card key={fortnight} data-testid={`fortnight-${fortnight}`}>
+              <Card key={term} data-testid={`term-${term}`}>
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <CardTitle className="text-lg">Fortnight {fortnight}</CardTitle>
+                      <CardTitle className="text-lg">Term {term}</CardTitle>
                       <Badge variant="outline">
-                        {fortnightCompleted}/{fortnightTasks.length} done
+                        {termCompleted}/{termTasks.length} done
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        {term === 1 ? "9 weeks" : "8 weeks"}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground">
-                        {fortnightPercentage}%
+                        {termPercentage}%
                       </span>
-                      <Progress value={fortnightPercentage} className="w-24 h-2" />
+                      <Progress value={termPercentage} className="w-24 h-2" />
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {Object.entries(weeks).map(([weekStr, weekTasks]) => {
-                    const week = parseInt(weekStr);
+                <CardContent className="space-y-3">
+                  {weeks.map((week) => {
+                    const weekTasks = termTasks.filter((t) => t.week === week);
                     const isExpanded = expandedWeeks.has(week);
                     const isCurrentWeek = week === currentWeek;
                     const weekCompleted = weekTasks.filter((t) => t.completed).length;
+                    const weekLabel = getTermLabel(week);
 
                     return (
                       <div
@@ -200,7 +201,7 @@ export default function Subject() {
                           data-testid={`button-toggle-week-${week}`}
                         >
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">Week {week}</span>
+                            <span className="font-medium">{weekLabel}</span>
                             {isCurrentWeek && (
                               <Badge variant="secondary" className="text-xs">
                                 Current

@@ -12,8 +12,10 @@ import {
   Exam,
   subjects,
   getCurrentWeek,
-  getCurrentFortnight,
+  getCurrentTerm,
   getWeekDates,
+  getTermLabel,
+  TOTAL_WEEKS,
 } from "@shared/schema";
 import {
   getTasks,
@@ -22,8 +24,9 @@ import {
   getExamMode,
   setExamMode,
   calculateProgress,
+  calculateWeekProgress,
 } from "@/lib/storage";
-import { format, parseISO, differenceInDays, isSameDay } from "date-fns";
+import { format, parseISO, differenceInDays } from "date-fns";
 import { Calendar, TrendingUp, BookOpen, RefreshCw, Clock, AlertTriangle, Target } from "lucide-react";
 
 export default function Dashboard() {
@@ -32,8 +35,9 @@ export default function Dashboard() {
   const [examMode, setExamModeState] = useState(false);
 
   const currentWeek = getCurrentWeek();
-  const currentFortnight = getCurrentFortnight();
+  const currentTerm = getCurrentTerm();
   const { start: weekStart, end: weekEnd } = getWeekDates(currentWeek);
+  const termLabel = getTermLabel(currentWeek);
   const today = new Date();
 
   useEffect(() => {
@@ -55,8 +59,11 @@ export default function Dashboard() {
   // This week's tasks - tasks for current week
   const thisWeeksTasks = tasks.filter((t) => t.week === currentWeek);
   
-  // Fortnight progress
-  const fortnightProgress = calculateProgress(tasks, currentFortnight);
+  // Weekly progress
+  const weekProgress = calculateWeekProgress(tasks, currentWeek);
+  
+  // Term progress
+  const termProgress = calculateProgress(tasks, currentTerm);
   
   // Total progress
   const totalProgress = calculateProgress(tasks);
@@ -111,10 +118,10 @@ export default function Dashboard() {
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="secondary" className="text-sm px-3 py-1">
             <Calendar className="h-4 w-4 mr-1" />
-            Week {currentWeek} of 16
+            {termLabel}
           </Badge>
           <Badge variant="outline" className="text-sm px-3 py-1">
-            Fortnight {currentFortnight}
+            Week {currentWeek} of {TOTAL_WEEKS}
           </Badge>
           <Badge variant="outline" className="text-sm px-3 py-1">
             {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d")}
@@ -252,21 +259,44 @@ export default function Dashboard() {
 
       {/* Progress Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card data-testid="card-fortnight-progress">
+        <Card data-testid="card-weekly-progress">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Fortnight {currentFortnight} Progress
+              Week {currentWeek} Progress
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold">{fortnightProgress.percentage}%</p>
+                <p className="text-2xl font-bold">{weekProgress.percentage}%</p>
                 <p className="text-sm text-muted-foreground">
-                  {fortnightProgress.completed} of {fortnightProgress.total} tasks
+                  {weekProgress.completed} of {weekProgress.total} tasks
                 </p>
               </div>
-              <ProgressRing percentage={fortnightProgress.percentage} size={70} />
+              <ProgressRing percentage={weekProgress.percentage} size={70} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card data-testid="card-term-progress">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Term {currentTerm} Progress
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-2xl font-bold">{termProgress.percentage}%</p>
+                <p className="text-sm text-muted-foreground">
+                  {termProgress.completed} of {termProgress.total} tasks
+                </p>
+              </div>
+              <ProgressRing 
+                percentage={termProgress.percentage} 
+                size={70} 
+                color="hsl(var(--chart-2))" 
+              />
             </div>
           </CardContent>
         </Card>
@@ -283,29 +313,6 @@ export default function Dashboard() {
                 <p className="text-2xl font-bold">{totalProgress.percentage}%</p>
                 <p className="text-sm text-muted-foreground">
                   {totalProgress.completed} of {totalProgress.total} tasks
-                </p>
-              </div>
-              <ProgressRing 
-                percentage={totalProgress.percentage} 
-                size={70} 
-                color="hsl(var(--chart-2))" 
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card data-testid="card-weekly-focus">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              This Week's Focus
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">{thisWeeksTasks.length}</p>
-                <p className="text-sm text-muted-foreground">
-                  Tasks across {subjects.length} subjects
                 </p>
               </div>
               <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">

@@ -12,7 +12,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { subjects, getCurrentWeek, getCurrentFortnight } from "@shared/schema";
+import { subjects, getCurrentWeek, getCurrentTerm, getTermLabel } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
 
 const subjectIcons: Record<string, React.ReactNode> = {
@@ -32,7 +32,8 @@ const subjectColors: Record<string, string> = {
 export function AppSidebar() {
   const [location] = useLocation();
   const currentWeek = getCurrentWeek();
-  const currentFortnight = getCurrentFortnight();
+  const currentTerm = getCurrentTerm();
+  const termLabel = getTermLabel(currentWeek);
 
   return (
     <Sidebar>
@@ -43,10 +44,10 @@ export function AppSidebar() {
         </div>
         <div className="mt-2 flex gap-2">
           <Badge variant="secondary" className="text-xs">
-            Week {currentWeek}
+            {termLabel}
           </Badge>
           <Badge variant="outline" className="text-xs">
-            Fortnight {currentFortnight}
+            Term {currentTerm}
           </Badge>
         </div>
       </SidebarHeader>
@@ -107,7 +108,9 @@ export function AppSidebar() {
         <div className="text-xs text-muted-foreground text-center">
           Semester 1, 2025
           <br />
-          Feb 3 - May 23
+          Term 1: Jan 25 - Mar 28
+          <br />
+          Term 2: Apr 12 - Jun 6
         </div>
       </SidebarFooter>
     </Sidebar>

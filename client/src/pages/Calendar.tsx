@@ -8,10 +8,12 @@ import {
   Task,
   Exam,
   subjects,
-  SEMESTER_START,
-  SEMESTER_END,
+  TERM1_START,
+  TERM2_END,
   getWeekDates,
   getCurrentWeek,
+  getTermLabel,
+  TOTAL_WEEKS,
 } from "@shared/schema";
 import { getTasks, toggleTaskCompletion, getExams } from "@/lib/storage";
 import {
@@ -51,10 +53,10 @@ export default function CalendarPage() {
   };
 
   // Generate all weeks of the semester
-  const semesterWeeks: { week: number; start: Date; end: Date }[] = [];
-  for (let w = 1; w <= 16; w++) {
-    const { start, end } = getWeekDates(w);
-    semesterWeeks.push({ week: w, start, end });
+  const semesterWeeks: { week: number; start: Date; end: Date; term: number }[] = [];
+  for (let w = 1; w <= TOTAL_WEEKS; w++) {
+    const { start, end, term } = getWeekDates(w);
+    semesterWeeks.push({ week: w, start, end, term });
   }
 
   // Get tasks for a specific date - returns tasks for the week that contains this date
@@ -84,8 +86,8 @@ export default function CalendarPage() {
   // Generate calendar grid
   const generateCalendarGrid = () => {
     const weeks: Date[][] = [];
-    let current = startOfWeek(SEMESTER_START, { weekStartsOn: 1 });
-    const end = endOfWeek(SEMESTER_END, { weekStartsOn: 1 });
+    let current = startOfWeek(TERM1_START, { weekStartsOn: 1 });
+    const end = endOfWeek(TERM2_END, { weekStartsOn: 1 });
 
     while (current <= end) {
       const weekEnd = endOfWeek(current, { weekStartsOn: 1 });
@@ -116,7 +118,7 @@ export default function CalendarPage() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">Semester Calendar</h1>
           <p className="text-muted-foreground">
-            16-week overview - February - May 2025
+            {TOTAL_WEEKS}-week overview - Term 1 (9 weeks) + Term 2 (8 weeks)
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -172,17 +174,16 @@ export default function CalendarPage() {
                     const dayTasks = getTasksForDate(day);
                     const dayExams = getExamsForDate(day);
                     const isToday = isSameDay(day, new Date());
-                    const isInSemester = isWithinInterval(day, {
-                      start: SEMESTER_START,
-                      end: SEMESTER_END,
-                    });
+                    const isInSemester = semesterWeeks.some(
+                      (sw) => isWithinInterval(day, { start: sw.start, end: sw.end })
+                    );
                     const isCurrentSemesterWeek =
                       semesterWeekInfo?.week === currentWeek;
 
                     // Get unique subjects for this day (week's tasks)
-                    const uniqueSubjects = [
-                      ...new Set(dayTasks.map((t) => t.subjectId)),
-                    ];
+                    const uniqueSubjects = Array.from(
+                      new Set(dayTasks.map((t) => t.subjectId))
+                    );
 
                     return (
                       <button

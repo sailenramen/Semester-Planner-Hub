@@ -1,4 +1,4 @@
-import { Task, Note, generateSampleTasks, generateSampleExams, Exam, SEMESTER_START } from "@shared/schema";
+import { Task, Note, generateSampleTasks, generateSampleExams, Exam, TERM1_START } from "@shared/schema";
 
 const STORAGE_KEYS = {
   TASKS: "study-planner-tasks",
@@ -12,7 +12,8 @@ const STORAGE_KEYS = {
 // Check if data needs to be regenerated for a new semester
 function checkSemesterVersion(): boolean {
   const storedVersion = localStorage.getItem(STORAGE_KEYS.SEMESTER_VERSION);
-  const currentVersion = SEMESTER_START.toISOString().split('T')[0];
+  // Use v2 prefix to force regeneration for new curriculum structure
+  const currentVersion = "v2-" + TERM1_START.toISOString().split('T')[0];
   
   if (storedVersion !== currentVersion) {
     // Clear old data for new semester
@@ -133,10 +134,18 @@ export function initializeTheme(): void {
 }
 
 // Progress calculations
-export function calculateProgress(tasks: Task[], fortnight?: number): { completed: number; total: number; percentage: number } {
-  const filtered = fortnight
-    ? tasks.filter((t) => t.fortnight === fortnight)
+export function calculateProgress(tasks: Task[], term?: number): { completed: number; total: number; percentage: number } {
+  const filtered = term
+    ? tasks.filter((t) => t.term === term)
     : tasks;
+  const completed = filtered.filter((t) => t.completed).length;
+  const total = filtered.length;
+  const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+  return { completed, total, percentage };
+}
+
+export function calculateWeekProgress(tasks: Task[], week: number): { completed: number; total: number; percentage: number } {
+  const filtered = tasks.filter((t) => t.week === week);
   const completed = filtered.filter((t) => t.completed).length;
   const total = filtered.length;
   const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;

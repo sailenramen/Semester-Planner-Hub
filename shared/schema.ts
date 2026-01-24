@@ -59,7 +59,7 @@ export const progressSchema = z.object({
 export type Progress = z.infer<typeof progressSchema>;
 
 // Semester structure:
-// Term 1: 9 weeks (Jan 25 - Mar 28)
+// Term 1: 9 weeks (Jan 26 - Mar 28)
 // 2 week break
 // Term 2: 8 weeks (Apr 12 - Jun 6), last week is exams
 // Total: 17 weeks of content
@@ -68,8 +68,8 @@ function getSemesterDates() {
   const now = new Date();
   const year = now.getFullYear();
   
-  // Term 1 starts Jan 25
-  const term1Start = new Date(year, 0, 25); // January 25
+  // Term 1 starts Jan 26
+  const term1Start = new Date(year, 0, 26); // January 26
   const term1End = new Date(year, 2, 28); // March 28 (end of week 9)
   
   // Term 2 starts Apr 12

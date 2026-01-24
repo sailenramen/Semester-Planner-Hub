@@ -1,4 +1,4 @@
-import { Task, Note, generateSampleTasks, generateSampleExams, Exam } from "@shared/schema";
+import { Task, Note, generateSampleTasks, generateSampleExams, Exam, SEMESTER_START } from "@shared/schema";
 
 const STORAGE_KEYS = {
   TASKS: "study-planner-tasks",
@@ -6,7 +6,26 @@ const STORAGE_KEYS = {
   EXAMS: "study-planner-exams",
   EXAM_MODE: "study-planner-exam-mode",
   THEME: "study-planner-theme",
+  SEMESTER_VERSION: "study-planner-semester-version",
 };
+
+// Check if data needs to be regenerated for a new semester
+function checkSemesterVersion(): boolean {
+  const storedVersion = localStorage.getItem(STORAGE_KEYS.SEMESTER_VERSION);
+  const currentVersion = SEMESTER_START.toISOString().split('T')[0];
+  
+  if (storedVersion !== currentVersion) {
+    // Clear old data for new semester
+    localStorage.removeItem(STORAGE_KEYS.TASKS);
+    localStorage.removeItem(STORAGE_KEYS.EXAMS);
+    localStorage.setItem(STORAGE_KEYS.SEMESTER_VERSION, currentVersion);
+    return true;
+  }
+  return false;
+}
+
+// Initialize semester version check
+checkSemesterVersion();
 
 // Task storage
 export function getTasks(): Task[] {

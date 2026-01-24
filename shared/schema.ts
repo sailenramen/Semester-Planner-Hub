@@ -57,9 +57,39 @@ export const progressSchema = z.object({
 
 export type Progress = z.infer<typeof progressSchema>;
 
-// Semester dates (Feb - May 2025, 16 weeks)
-export const SEMESTER_START = new Date("2025-02-03");
-export const SEMESTER_END = new Date("2025-05-23");
+// Calculate semester dates dynamically (16 weeks starting from current/recent semester start)
+function getSemesterDates() {
+  const now = new Date();
+  // If we're past the hardcoded semester, use a relative semester starting from a recent past date
+  // This ensures the app always has a "current" semester to work with
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-indexed
+  
+  // Determine semester start: Spring (Feb-May) or Fall (Aug-Nov)
+  let semesterStart: Date;
+  if (month >= 1 && month <= 5) {
+    // Spring semester (Feb-May of current year)
+    semesterStart = new Date(year, 1, 3); // February 3
+  } else if (month >= 7 && month <= 11) {
+    // Fall semester (Aug-Nov of current year)
+    semesterStart = new Date(year, 7, 5); // August 5
+  } else if (month === 0) {
+    // January - use Spring semester starting soon
+    semesterStart = new Date(year, 1, 3); // February 3
+  } else {
+    // December - use next year's Spring semester
+    semesterStart = new Date(year + 1, 1, 3);
+  }
+  
+  const semesterEnd = new Date(semesterStart);
+  semesterEnd.setDate(semesterEnd.getDate() + 16 * 7 - 1); // 16 weeks
+  
+  return { start: semesterStart, end: semesterEnd };
+}
+
+const { start: SEMESTER_START_DATE, end: SEMESTER_END_DATE } = getSemesterDates();
+export const SEMESTER_START = SEMESTER_START_DATE;
+export const SEMESTER_END = SEMESTER_END_DATE;
 
 // Helper to get current week/fortnight
 export function getCurrentWeek(): number {
@@ -222,15 +252,22 @@ export function generateSampleTasks(): Task[] {
 }
 
 export function generateSampleExams(): Exam[] {
+  // Generate exam dates relative to the dynamic semester dates
+  const getExamDate = (week: number, dayOffset: number = 0): string => {
+    const { start } = getWeekDates(week);
+    start.setDate(start.getDate() + dayOffset);
+    return start.toISOString().split('T')[0];
+  };
+
   return [
-    { id: "exam-math-1", subjectId: "math", title: "Math Mid-Semester Test", date: "2025-03-21", week: 7, description: "Covers weeks 1-6: Linear and quadratic equations" },
-    { id: "exam-math-2", subjectId: "math", title: "Math Final Exam", date: "2025-05-16", week: 15, description: "Comprehensive exam covering all semester topics" },
-    { id: "exam-science-1", subjectId: "science", title: "Science Mid-Semester Test", date: "2025-03-19", week: 7, description: "Covers cells, genetics, and evolution" },
-    { id: "exam-science-2", subjectId: "science", title: "Science Final Exam", date: "2025-05-14", week: 15, description: "Comprehensive exam covering all semester topics" },
-    { id: "exam-history-1", subjectId: "history", title: "History Essay Assessment", date: "2025-03-26", week: 8, description: "Extended response on WWI and its aftermath" },
-    { id: "exam-history-2", subjectId: "history", title: "History Final Exam", date: "2025-05-19", week: 16, description: "Comprehensive exam covering all semester topics" },
-    { id: "exam-english-1", subjectId: "english", title: "English Oral Presentation", date: "2025-04-02", week: 9, description: "5-minute presentation on novel themes" },
-    { id: "exam-english-2", subjectId: "english", title: "English Final Exam", date: "2025-05-21", week: 16, description: "Essay and textual analysis exam" },
+    { id: "exam-math-1", subjectId: "math", title: "Math Mid-Semester Test", date: getExamDate(7, 4), week: 7, description: "Covers weeks 1-6: Linear and quadratic equations" },
+    { id: "exam-math-2", subjectId: "math", title: "Math Final Exam", date: getExamDate(15, 4), week: 15, description: "Comprehensive exam covering all semester topics" },
+    { id: "exam-science-1", subjectId: "science", title: "Science Mid-Semester Test", date: getExamDate(7, 2), week: 7, description: "Covers cells, genetics, and evolution" },
+    { id: "exam-science-2", subjectId: "science", title: "Science Final Exam", date: getExamDate(15, 2), week: 15, description: "Comprehensive exam covering all semester topics" },
+    { id: "exam-history-1", subjectId: "history", title: "History Essay Assessment", date: getExamDate(8, 3), week: 8, description: "Extended response on WWI and its aftermath" },
+    { id: "exam-history-2", subjectId: "history", title: "History Final Exam", date: getExamDate(16, 1), week: 16, description: "Comprehensive exam covering all semester topics" },
+    { id: "exam-english-1", subjectId: "english", title: "English Oral Presentation", date: getExamDate(9, 2), week: 9, description: "5-minute presentation on novel themes" },
+    { id: "exam-english-2", subjectId: "english", title: "English Final Exam", date: getExamDate(16, 3), week: 16, description: "Essay and textual analysis exam" },
   ];
 }
 

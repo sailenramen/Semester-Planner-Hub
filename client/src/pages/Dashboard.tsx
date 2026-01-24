@@ -205,6 +205,46 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
+
+        {/* Exam Schedule Panel - shows when exam mode is on but no upcoming exams in 2 weeks */}
+        {examMode && !hasUpcomingExams && exams.length > 0 && (
+          <Card className="border-orange-200 dark:border-orange-800" data-testid="exam-schedule-panel">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2 text-orange-700 dark:text-orange-400">
+                <Calendar className="h-4 w-4" />
+                Upcoming Exam Schedule
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                No exams within the next 2 weeks. Here's your exam schedule:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {exams
+                  .filter((exam) => differenceInDays(parseISO(exam.date), today) > 0)
+                  .sort((a, b) => parseISO(a.date).getTime() - parseISO(b.date).getTime())
+                  .slice(0, 4)
+                  .map((exam) => {
+                    const subject = subjects.find((s) => s.id === exam.subjectId);
+                    const examDays = differenceInDays(parseISO(exam.date), today);
+                    return (
+                      <div
+                        key={exam.id}
+                        className={`p-2 rounded-lg ${subject?.bgColor} border ${subject?.borderColor}`}
+                      >
+                        <p className={`font-medium text-sm ${subject?.color}`}>
+                          {exam.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(parseISO(exam.date), "MMM d, yyyy")} ({examDays} days away)
+                        </p>
+                      </div>
+                    );
+                  })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Exam Alerts */}

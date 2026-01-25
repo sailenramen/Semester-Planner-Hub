@@ -108,7 +108,7 @@ export function AppSidebar() {
         <div className="text-xs text-muted-foreground text-center">
           Semester 1, 2025
           <br />
-          Term 1: Jan 26 - Mar 28
+          Term 1: Jan 25 - Mar 28
           <br />
           Term 2: Apr 12 - Jun 6
         </div>

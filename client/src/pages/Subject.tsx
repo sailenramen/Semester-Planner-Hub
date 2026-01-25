@@ -231,7 +231,7 @@ export default function Subject() {
                                 data-testid={`task-${task.id}`}
                                 onClick={(e) => {
                                   const target = e.target as HTMLElement;
-                                  if (!target.closest('input[type="checkbox"]')) {
+                                  if (!target.closest('[role="checkbox"], button[data-state]')) {
                                     setStudyTask(task);
                                   }
                                 }}

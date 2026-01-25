@@ -11,6 +11,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Subject from "@/pages/Subject";
 import CalendarPage from "@/pages/Calendar";
+import GradesPage from "@/pages/Grades";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/" component={Dashboard} />
       <Route path="/subject/:id" component={Subject} />
       <Route path="/calendar" component={CalendarPage} />
+      <Route path="/grades" component={GradesPage} />
       <Route component={NotFound} />
     </Switch>
   );

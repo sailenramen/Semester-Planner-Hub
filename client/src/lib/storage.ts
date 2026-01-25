@@ -1,4 +1,4 @@
-import { Task, Note, generateSampleTasks, generateSampleExams, Exam, TERM1_START } from "@shared/schema";
+import { Task, Note, generateSampleTasks, generateSampleExams, Exam, TERM1_START, Grade } from "@shared/schema";
 
 const STORAGE_KEYS = {
   TASKS: "study-planner-tasks",
@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   EXAM_MODE: "study-planner-exam-mode",
   THEME: "study-planner-theme",
   SEMESTER_VERSION: "study-planner-semester-version",
+  GRADES: "study-planner-grades",
 };
 
 // Check if data needs to be regenerated for a new semester
@@ -158,4 +159,46 @@ export function calculateSubjectProgress(tasks: Task[], subjectId: string): { co
   const total = filtered.length;
   const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
   return { completed, total, percentage };
+}
+
+// Grades storage
+export function getGrades(): Grade[] {
+  const stored = localStorage.getItem(STORAGE_KEYS.GRADES);
+  if (!stored) {
+    return [];
+  }
+  return JSON.parse(stored);
+}
+
+export function saveGrade(grade: Grade): Grade[] {
+  const grades = getGrades();
+  const existingIndex = grades.findIndex(
+    (g) => g.subjectId === grade.subjectId && g.assessmentId === grade.assessmentId
+  );
+  if (existingIndex >= 0) {
+    grades[existingIndex] = grade;
+  } else {
+    grades.push(grade);
+  }
+  localStorage.setItem(STORAGE_KEYS.GRADES, JSON.stringify(grades));
+  return grades;
+}
+
+export function getSubjectGrades(subjectId: string): Grade[] {
+  const grades = getGrades();
+  return grades.filter((g) => g.subjectId === subjectId);
+}
+
+export function calculateSubjectAverage(subjectId: string): { average: number | null; entered: number; total: number } {
+  const grades = getSubjectGrades(subjectId);
+  const enteredGrades = grades.filter((g) => g.score !== null);
+  
+  if (enteredGrades.length === 0) {
+    return { average: null, entered: 0, total: 0 };
+  }
+  
+  const sum = enteredGrades.reduce((acc, g) => acc + (g.score || 0), 0);
+  const average = Math.round(sum / enteredGrades.length);
+  
+  return { average, entered: enteredGrades.length, total: grades.length };
 }

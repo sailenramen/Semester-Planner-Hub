@@ -1,4 +1,4 @@
-import { Calendar, LayoutDashboard, BookOpen, Calculator, Leaf, Clock, GraduationCap } from "lucide-react";
+import { Calendar, LayoutDashboard, BookOpen, Calculator, Leaf, Clock, GraduationCap, BarChart3 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
   Sidebar,
@@ -62,6 +62,14 @@ export function AppSidebar() {
                   <Link href="/" data-testid="link-dashboard">
                     <LayoutDashboard className="h-4 w-4" />
                     <span>Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild data-active={location === "/grades"}>
+                  <Link href="/grades" data-testid="link-grades">
+                    <BarChart3 className="h-4 w-4" />
+                    <span>Grades</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

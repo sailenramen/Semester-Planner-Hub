@@ -58,6 +58,58 @@ export const progressSchema = z.object({
 
 export type Progress = z.infer<typeof progressSchema>;
 
+// Grade schema for assessments
+export const gradeSchema = z.object({
+  subjectId: z.enum(["math", "science", "history", "english"]),
+  assessmentId: z.string(),
+  score: z.number().min(0).max(100).nullable(),
+});
+
+export type Grade = z.infer<typeof gradeSchema>;
+
+// Assessment definitions by subject
+export interface Assessment {
+  id: string;
+  name: string;
+  term: number;
+  category?: string; // e.g., "Chemistry", "Biology"
+}
+
+export const assessmentsBySubject: Record<string, Assessment[]> = {
+  science: [
+    { id: "sci-t1-atomic", name: "Atomic Model Project", term: 1, category: "Chemistry" },
+    { id: "sci-t1-reactions", name: "Chemical Reactions Practical Report", term: 1, category: "Chemistry" },
+    { id: "sci-t1-exam", name: "Semester Exam", term: 1, category: "Chemistry" },
+    { id: "sci-t2-homeostasis", name: "Homeostasis Project", term: 2, category: "Biology" },
+    { id: "sci-t2-exam", name: "Semester Exam", term: 2, category: "Biology" },
+  ],
+  math: [
+    { id: "math-t1-investigation", name: "Investigation", term: 1 },
+    { id: "math-t1-test", name: "Topic Test", term: 1 },
+    { id: "math-t1-exam", name: "Semester Exam", term: 1 },
+    { id: "math-t2-test", name: "Topic Test", term: 2 },
+    { id: "math-t2-project", name: "Project", term: 2 },
+  ],
+  history: [
+    { id: "hist-t1-inquiry", name: "Historical Inquiry Project", term: 1, category: "History" },
+    { id: "hist-t1-source", name: "Source Analysis", term: 1, category: "History" },
+    { id: "hist-t1-exam", name: "Semester Exam", term: 1, category: "History" },
+    { id: "hist-t2-citizenship", name: "Global Citizenship Project", term: 2, category: "Politics" },
+    { id: "hist-t2-test", name: "Politics Topic Test", term: 2, category: "Politics" },
+    { id: "hist-t2-exam", name: "SAP Semester Exam", term: 2, category: "Politics" },
+  ],
+  english: [
+    { id: "eng-t1-news", name: "News Article Analysis", term: 1 },
+    { id: "eng-t1-content", name: "Content Test", term: 1 },
+    { id: "eng-t1-campaign", name: "Campaign Presentation", term: 1 },
+    { id: "eng-t1-exam-a", name: "Exam Section A", term: 1 },
+    { id: "eng-t1-exam-b", name: "Exam Section B", term: 1 },
+    { id: "eng-t2-animal", name: "Animal Farm Response", term: 2 },
+    { id: "eng-t2-conventions", name: "Conventions Test", term: 2 },
+    { id: "eng-t2-exam", name: "Semester Exam", term: 2 },
+  ],
+};
+
 // Semester structure:
 // Term 1: 9 weeks (Jan 25 - Mar 28)
 // 2 week break

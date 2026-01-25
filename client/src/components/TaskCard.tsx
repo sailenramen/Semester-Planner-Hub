@@ -1,21 +1,33 @@
 import { Task, subjects } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Clock } from "lucide-react";
+import { Clock, BookOpen } from "lucide-react";
 
 interface TaskCardProps {
   task: Task;
   onToggle: (taskId: string) => void;
+  onStudy?: (task: Task) => void;
   showSubject?: boolean;
 }
 
-export function TaskCard({ task, onToggle, showSubject = false }: TaskCardProps) {
+export function TaskCard({ task, onToggle, onStudy, showSubject = false }: TaskCardProps) {
   const subject = subjects.find((s) => s.id === task.subjectId);
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('input[type="checkbox"]') || target.closest('label')) {
+      return;
+    }
+    if (onStudy) {
+      onStudy(task);
+    }
+  };
 
   return (
     <Card 
-      className={`transition-all ${task.completed ? "opacity-60" : ""}`}
+      className={`transition-all ${task.completed ? "opacity-60" : ""} ${onStudy ? "cursor-pointer hover-elevate" : ""}`}
       data-testid={`task-card-${task.id}`}
+      onClick={handleCardClick}
     >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
@@ -28,19 +40,24 @@ export function TaskCard({ task, onToggle, showSubject = false }: TaskCardProps)
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <label
-                htmlFor={task.id}
-                className={`font-medium cursor-pointer ${
+              <span
+                className={`font-medium ${onStudy ? "hover:text-primary" : ""} ${
                   task.completed ? "line-through text-muted-foreground" : ""
                 }`}
               >
                 {task.title}
-              </label>
+              </span>
               {showSubject && subject && (
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full ${subject.bgColor} ${subject.color}`}
                 >
                   {subject.name}
+                </span>
+              )}
+              {onStudy && (
+                <span className="text-xs text-primary flex items-center gap-1 ml-auto">
+                  <BookOpen className="h-3 w-3" />
+                  Study
                 </span>
               )}
             </div>

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProgressRing } from "@/components/ProgressRing";
+import { StudyModal } from "@/components/StudyModal";
 import {
   Task,
   subjects,
@@ -39,6 +40,7 @@ export default function Subject() {
   const [note, setNote] = useState<string>("");
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
   const [noteSaved, setNoteSaved] = useState(false);
+  const [studyTask, setStudyTask] = useState<Task | null>(null);
 
   const subject = subjects.find((s) => s.id === subjectId);
   const currentWeek = getCurrentWeek();
@@ -223,10 +225,16 @@ export default function Subject() {
                             {weekTasks.map((task) => (
                               <div
                                 key={task.id}
-                                className={`p-3 rounded-lg bg-muted/50 ${
+                                className={`p-3 rounded-lg bg-muted/50 cursor-pointer hover-elevate ${
                                   task.completed ? "opacity-60" : ""
                                 }`}
                                 data-testid={`task-${task.id}`}
+                                onClick={(e) => {
+                                  const target = e.target as HTMLElement;
+                                  if (!target.closest('input[type="checkbox"]')) {
+                                    setStudyTask(task);
+                                  }
+                                }}
                               >
                                 <div className="flex items-start gap-3">
                                   <Checkbox
@@ -237,16 +245,21 @@ export default function Subject() {
                                     data-testid={`checkbox-${task.id}`}
                                   />
                                   <div className="flex-1">
-                                    <label
-                                      htmlFor={task.id}
-                                      className={`font-medium cursor-pointer block ${
-                                        task.completed
-                                          ? "line-through text-muted-foreground"
-                                          : ""
-                                      }`}
-                                    >
-                                      {task.title}
-                                    </label>
+                                    <div className="flex items-center justify-between">
+                                      <span
+                                        className={`font-medium hover:text-primary ${
+                                          task.completed
+                                            ? "line-through text-muted-foreground"
+                                            : ""
+                                        }`}
+                                      >
+                                        {task.title}
+                                      </span>
+                                      <span className="text-xs text-primary flex items-center gap-1">
+                                        <BookOpen className="h-3 w-3" />
+                                        Study
+                                      </span>
+                                    </div>
                                     <p className="text-sm text-muted-foreground mt-1">
                                       {task.description}
                                     </p>
@@ -297,6 +310,13 @@ export default function Subject() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Study Modal */}
+      <StudyModal
+        task={studyTask}
+        open={!!studyTask}
+        onOpenChange={(open) => !open && setStudyTask(null)}
+      />
     </div>
   );
 }

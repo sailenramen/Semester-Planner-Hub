@@ -1,0 +1,80 @@
+Add an interactive study feature to the study planner app:
+
+When user clicks on any study task, open a modal/popup with:
+
+1. TASK-SPECIFIC CONTENT based on Victorian Curriculum Year 9/10:
+
+For READING tasks (e.g., "Read Chapter 1-2"):
+- 3-5 comprehension questions about the topic
+- Key vocabulary terms with definitions
+- Summary points to note down
+- Space for user notes
+
+For PRACTICE tasks (e.g., "Math problem set"):
+- 5-10 practice questions appropriate to the topic
+- Show/hide answers button
+- Step-by-step solutions
+- Progress tracker (questions completed)
+
+For WRITING tasks (e.g., "Essay outline"):
+- Writing prompts
+- Structure template
+- Checklist of requirements
+- Text editor for drafting
+
+For REVIEW tasks:
+- Flashcard-style quiz questions
+- Mix of multiple choice and short answer
+- Instant feedback on answers
+
+2. BUILT-IN TIMER:
+- Pomodoro timer (25 min work, 5 min break)
+- Custom timer option
+- Pause/resume functionality
+- Alert when time is up
+- Track total study time per subject
+
+3. EXAMPLES BY SUBJECT:
+
+SCIENCE (Chemistry/Biology):
+- Periodic table questions, balancing equations
+- Cell structure diagrams to label
+- Homeostasis scenarios to analyze
+
+MATH:
+- Algebra equations, geometry problems
+- Graphing exercises, word problems
+- Based on Vic Curriculum: Number, Algebra, Measurement, Statistics
+
+HUMANITIES (History/Politics):
+- Source analysis practice
+- Timeline ordering questions
+- Cause and effect scenarios
+- DBQ-style questions
+
+ENGLISH:
+Term 1: Questions and analysis for novel being studied in Term 1
+Term 2: Questions and analysis for "Animal Farm" by George Orwell
+- Character analysis questions
+- Theme identification
+- Quote analysis and significance
+- Literary device practice
+- News article analysis (Term 1)
+- Persuasive/creative writing prompts
+
+4. FEATURES:
+- Mark task complete after finishing activity
+- Save notes/answers to localStorage
+- Show completion checkmark
+- Track time spent on each task
+- Export notes as PDF
+
+5. UI:
+- Clean modal overlay
+- Timer visible at top
+- Question counter (1/5, 2/5, etc.)
+- Submit/Next buttons
+- Close to return to planner
+- Mobile responsive
+
+Generate age-appropriate, curriculum-aligned content for each task type using Victorian Curriculum standards for Year 9/10.

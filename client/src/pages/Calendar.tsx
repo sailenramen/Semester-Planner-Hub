@@ -83,14 +83,14 @@ export default function CalendarPage() {
     return exams.filter((e) => isSameDay(parseISO(e.date), date));
   };
 
-  // Generate calendar grid
+  // Generate calendar grid (Sunday to Saturday)
   const generateCalendarGrid = () => {
     const weeks: Date[][] = [];
-    let current = startOfWeek(TERM1_START, { weekStartsOn: 1 });
-    const end = endOfWeek(TERM2_END, { weekStartsOn: 1 });
+    let current = startOfWeek(TERM1_START, { weekStartsOn: 0 });
+    const end = endOfWeek(TERM2_END, { weekStartsOn: 0 });
 
     while (current <= end) {
-      const weekEnd = endOfWeek(current, { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(current, { weekStartsOn: 0 });
       const days = eachDayOfInterval({ start: current, end: weekEnd });
       weeks.push(days);
       current = addWeeks(current, 1);
@@ -149,7 +149,7 @@ export default function CalendarPage() {
         <CardContent className="p-4">
           {/* Day Headers */}
           <div className="grid grid-cols-7 gap-1 mb-2">
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
                 className="text-center text-sm font-medium text-muted-foreground py-2"

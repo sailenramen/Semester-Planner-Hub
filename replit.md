@@ -2,7 +2,14 @@
 
 ## Overview
 
-A semester study planning application that helps students track their progress across four subjects: Math, Science/Biology, History/Humanities, and English. The app features weekly task management, exam alerts, progress visualization with charts, subject-specific notes, and a calendar view. Data is persisted using browser localStorage, making it a client-heavy application with a minimal Express backend.
+A semester study planning application that helps students track their progress across four subjects: Math, Science/Biology, History/Humanities, and English. The app features weekly task management, exam alerts, progress visualization with charts, subject-specific notes, calendar view, and interactive study sessions with built-in timers. Data is persisted using browser localStorage, making it a client-heavy application with a minimal Express backend.
+
+### Interactive Study Features
+- **StudyModal**: Click any task to open an interactive study session with Victorian Curriculum-aligned content
+- **Built-in Timer**: Pomodoro (25/5 min) and custom duration options with audio completion alerts
+- **Study Modes**: Reading comprehension, Practice problems, Writing exercises, and Review flashcards
+- **Subject-Specific Content**: Each subject has tailored educational material (Math formulas, Science equations, History sources, English analysis)
+- **Content Library**: Located in `client/src/lib/studyContent.ts` with term-appropriate Victorian Curriculum Year 9/10 content
 
 ## User Preferences
 

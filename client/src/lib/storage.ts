@@ -20,8 +20,8 @@ const STORAGE_KEYS = {
 // Check if data needs to be regenerated for a new semester
 function checkSemesterVersion(): boolean {
   const storedVersion = localStorage.getItem(STORAGE_KEYS.SEMESTER_VERSION);
-  // Use v2 prefix to force regeneration for new curriculum structure
-  const currentVersion = "v2-" + TERM1_START.toISOString().split('T')[0];
+  // Use v3 prefix to force regeneration - updated curriculum to match reading content
+  const currentVersion = "v3-" + TERM1_START.toISOString().split('T')[0];
   
   if (storedVersion !== currentVersion) {
     // Clear old data for new semester

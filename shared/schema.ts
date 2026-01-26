@@ -224,102 +224,110 @@ export function generateSampleTasks(): Task[] {
   const subjectIds: SubjectId[] = ["math", "science", "history", "english"];
   
   // Math curriculum - Term 1 (weeks 1-9)
+  // Matches reading: Problem solving, exponents, units, surds, absolute value, patterns, coordinate geometry, linear equations
   const mathTerm1 = [
-    { title: "Number & Algebra Review", desc: "Review of algebraic expressions and number operations" },
-    { title: "Linear Equations", desc: "Solving linear equations with variables on both sides" },
-    { title: "Linear Graphs", desc: "Plotting and interpreting linear graphs, gradient and y-intercept" },
-    { title: "Simultaneous Equations", desc: "Solving pairs of linear equations algebraically and graphically" },
-    { title: "Indices & Scientific Notation", desc: "Index laws and expressing numbers in scientific notation" },
-    { title: "Pythagoras Theorem", desc: "Applying Pythagoras theorem to find unknown sides" },
-    { title: "Trigonometry Basics", desc: "Introduction to sine, cosine and tangent ratios" },
-    { title: "Term 1 Revision", desc: "Review of all Term 1 topics and practice problems" },
-    { title: "Term 1 Test Preparation", desc: "Practice tests and exam technique" },
+    { title: "Problem Solving & Real Numbers", desc: "Polya's problem solving steps and the real number system" },
+    { title: "Laws of Exponents", desc: "Index laws for multiplying, dividing, and raising powers" },
+    { title: "Units & Measurements", desc: "Metric conversions and compound measures" },
+    { title: "Surds & Radicals", desc: "Simplifying surds and rationalising denominators" },
+    { title: "Absolute Value", desc: "Solving absolute value equations and inequalities" },
+    { title: "Patterns & Generalisations", desc: "Finding patterns and writing algebraic rules" },
+    { title: "NAPLAN Preparation", desc: "Review of number, algebra, measurement, and statistics" },
+    { title: "Coordinate Geometry", desc: "Distance, midpoint, and gradient formulas" },
+    { title: "Linear Equations & Systems", desc: "Solving linear equations and simultaneous equations" },
   ];
   
   // Math curriculum - Term 2 (weeks 10-17)
+  // Matches reading: Algebra review, relations/functions, quadratics, sequences, formulas, proportion
   const mathTerm2 = [
-    { title: "Quadratic Expressions", desc: "Expanding and factorising quadratic expressions" },
-    { title: "Quadratic Equations", desc: "Solving quadratic equations using factorisation" },
-    { title: "Quadratic Formula", desc: "Using the quadratic formula and discriminant" },
-    { title: "Parabolas", desc: "Graphing parabolas and identifying key features" },
-    { title: "Statistics & Probability", desc: "Data analysis, mean, median, mode, and probability" },
-    { title: "Measurement & Geometry", desc: "Area, volume, and geometric reasoning" },
-    { title: "Term 2 Revision", desc: "Review of all Term 2 topics" },
+    { title: "Algebra Review", desc: "Consolidating algebraic skills and techniques" },
+    { title: "Relations & Functions", desc: "Understanding domain, range, and function notation" },
+    { title: "Quadratic Expressions", desc: "Expanding, factorising, and completing the square" },
+    { title: "Quadratic Graphs", desc: "Graphing parabolas and key features in different forms" },
+    { title: "Quadratic Equations", desc: "Solving using factorisation and the quadratic formula" },
+    { title: "Sequences", desc: "Arithmetic and geometric sequences" },
+    { title: "Formulas & Proportion", desc: "Rearranging formulas and direct/inverse proportion" },
     { title: "Semester Exam Preparation", desc: "Comprehensive revision for semester exams" },
   ];
   
-  // Science curriculum - Term 1
+  // Science curriculum - Term 1 (Chemistry focus)
+  // Matches reading: Atomic structure, isotopes, radioactivity, chemical reactions
   const scienceTerm1 = [
-    { title: "Cells & Microscopy", desc: "Cell structure, organelles, and microscope use" },
-    { title: "Cell Division", desc: "Mitosis, meiosis, and cell cycle" },
-    { title: "DNA & Genetics", desc: "DNA structure, genes, and chromosomes" },
-    { title: "Heredity", desc: "Mendelian genetics and Punnett squares" },
-    { title: "Evolution", desc: "Darwin's theory and evidence for evolution" },
-    { title: "Natural Selection", desc: "Mechanisms of natural selection and adaptation" },
-    { title: "Classification", desc: "Taxonomy and classifying living things" },
-    { title: "Term 1 Revision", desc: "Review of biology topics" },
-    { title: "Term 1 Test Preparation", desc: "Practice tests and exam technique" },
+    { title: "Atomic Structure", desc: "History of atomic theory and parts of the atom" },
+    { title: "Isotopes & Radioactivity", desc: "Isotopes, radioactive decay, and types of radiation" },
+    { title: "Half-Life & Applications", desc: "Calculating half-life and uses of radioisotopes" },
+    { title: "Atomic Model Project", desc: "Consolidating atomic structure understanding" },
+    { title: "Chemical Reactions", desc: "Signs of reactions and balancing equations" },
+    { title: "Types of Reactions", desc: "Synthesis, decomposition, combustion, neutralisation" },
+    { title: "Electrolysis", desc: "Using electricity to decompose compounds" },
+    { title: "Green Chemistry", desc: "Environmental impact and sustainable chemistry" },
+    { title: "Chemistry Review", desc: "Review of all chemistry topics" },
   ];
   
-  // Science curriculum - Term 2
+  // Science curriculum - Term 2 (Biology focus)
+  // Matches reading: Homeostasis, endocrine system, diseases, immune system
   const scienceTerm2 = [
-    { title: "Ecosystems", desc: "Biotic and abiotic factors, food webs" },
-    { title: "Human Body Systems", desc: "Overview of major organ systems" },
-    { title: "Digestion & Nutrition", desc: "Digestive system and nutrient absorption" },
-    { title: "Circulation & Respiration", desc: "Heart, blood, lungs, and gas exchange" },
-    { title: "Chemical Reactions", desc: "Types of reactions and balancing equations" },
-    { title: "Acids & Bases", desc: "pH scale, neutralisation, and indicators" },
-    { title: "Term 2 Revision", desc: "Review of all Term 2 topics" },
+    { title: "Endocrine System", desc: "Hormones, glands, and chemical regulation" },
+    { title: "Homeostasis", desc: "Maintaining stable internal environment" },
+    { title: "Blood Glucose Regulation", desc: "Insulin, glucagon, and diabetes" },
+    { title: "Infectious Diseases", desc: "Pathogens and how diseases spread" },
+    { title: "The Immune System", desc: "Defence mechanisms and immune response" },
+    { title: "Vaccines & Immunity", desc: "How vaccines work and herd immunity" },
+    { title: "Term 2 Revision", desc: "Review of all biology topics" },
     { title: "Semester Exam Preparation", desc: "Comprehensive revision for semester exams" },
   ];
   
-  // History curriculum - Term 1
+  // History curriculum - Term 1 (Australians at War)
+  // Matches reading: WWI causes, Gallipoli, Western Front, interwar period, WWII
   const historyTerm1 = [
-    { title: "World War I Causes", desc: "Alliances, imperialism, nationalism, and assassination" },
-    { title: "WWI Warfare", desc: "Trench warfare, technology, and key battles" },
-    { title: "Gallipoli Campaign", desc: "Australian involvement and ANZAC legacy" },
-    { title: "WWI Aftermath", desc: "Treaty of Versailles and post-war Europe" },
-    { title: "Interwar Period", desc: "Rise of fascism and the Great Depression" },
-    { title: "World War II Origins", desc: "Hitler's rise and causes of WWII" },
-    { title: "WWII Key Events", desc: "Major battles and turning points" },
-    { title: "Term 1 Revision", desc: "Review of WWI and WWII topics" },
-    { title: "Term 1 Test Preparation", desc: "Essay practice and source analysis" },
+    { title: "WWI Causes & Outbreak", desc: "MAIN causes and the assassination of Franz Ferdinand" },
+    { title: "Gallipoli & ANZAC Legend", desc: "The campaign and birth of Australian national identity" },
+    { title: "Western Front", desc: "Trench warfare and Australian battles in France" },
+    { title: "Interwar Period", desc: "Treaty of Versailles, Great Depression, rise of fascism" },
+    { title: "WWII Outbreak", desc: "Hitler's aggression and Australia's early involvement" },
+    { title: "Australian Home Front", desc: "Rationing, women's roles, and Indigenous service" },
+    { title: "The Holocaust", desc: "Persecution, genocide, and human rights" },
+    { title: "Source Analysis Skills", desc: "OPCL method and evaluating historical sources" },
+    { title: "Legacy & Remembrance", desc: "ANZAC Day, Remembrance Day, and reflection" },
   ];
   
-  // History curriculum - Term 2
+  // History curriculum - Term 2 (Politics/Civics)
+  // Matches reading: Australian democracy, Constitution, Parliament, parties, citizenship, global
   const historyTerm2 = [
-    { title: "The Holocaust", desc: "Persecution, genocide, and remembrance" },
-    { title: "Pacific War", desc: "War in the Pacific and atomic bombs" },
-    { title: "Cold War Beginnings", desc: "USA vs USSR and the Iron Curtain" },
-    { title: "Decolonisation", desc: "End of empires and independence movements" },
-    { title: "Civil Rights", desc: "Key figures and movements for equality" },
-    { title: "Modern Australia", desc: "Post-war migration and multicultural Australia" },
-    { title: "Term 2 Revision", desc: "Review of all Term 2 topics" },
-    { title: "Semester Exam Preparation", desc: "Essay planning and source analysis practice" },
+    { title: "Australian Democracy", desc: "Federation, Constitution, and division of powers" },
+    { title: "Parliament & Law-Making", desc: "How Parliament works and laws are made" },
+    { title: "Political Parties & Media", desc: "Parties, interest groups, and media influence" },
+    { title: "Citizenship & Rights", desc: "Citizen rights, responsibilities, and values" },
+    { title: "Influencing Decisions", desc: "Citizen action and global citizenship" },
+    { title: "International Relationships", desc: "Australia's alliances and global engagement" },
+    { title: "Contemporary Issues", desc: "Analysing current political issues" },
+    { title: "Semester Exam Preparation", desc: "Review and exam preparation" },
   ];
   
-  // English curriculum - Term 1
+  // English curriculum - Term 1 (News Article Analysis)
+  // Matches reading: News analysis, rationale, message, persuasive techniques
   const englishTerm1 = [
-    { title: "Novel Study Introduction", desc: "Begin reading set text and note-taking" },
-    { title: "Character Analysis", desc: "Analysing main and supporting characters" },
-    { title: "Theme Exploration", desc: "Identifying and exploring key themes" },
-    { title: "Literary Techniques", desc: "Metaphor, simile, symbolism, and imagery" },
-    { title: "Essay Writing", desc: "Structure, paragraphs, and thesis statements" },
-    { title: "Persuasive Writing", desc: "Techniques and writing persuasive texts" },
-    { title: "Creative Writing", desc: "Narrative techniques and creative responses" },
-    { title: "Term 1 Revision", desc: "Review of novel and writing skills" },
-    { title: "Term 1 Test Preparation", desc: "Practice essays and text responses" },
+    { title: "Introduction to News Analysis", desc: "Understanding news articles and their structure" },
+    { title: "Rationale & Message", desc: "Identifying purpose and main argument in news" },
+    { title: "Persuasive Techniques", desc: "Ethos, pathos, logos in news writing" },
+    { title: "Visual Elements in News", desc: "Analysing headlines, images, and layout" },
+    { title: "Comparing News Coverage", desc: "How different sources cover the same story" },
+    { title: "News Analysis Assessment", desc: "Preparing for the news article analysis task" },
+    { title: "Political Campaign Presentation", desc: "Creating and delivering persuasive presentations" },
+    { title: "Presentation & Feedback", desc: "Delivering presentations and peer feedback" },
+    { title: "Term 1 Review", desc: "Consolidating news analysis skills" },
   ];
   
-  // English curriculum - Term 2
+  // English curriculum - Term 2 (1984 Novel Study)
+  // Matches reading: 1984 by George Orwell - dystopia, power, control
   const englishTerm2 = [
-    { title: "Poetry Analysis", desc: "Reading and analysing poems for meaning" },
-    { title: "Film Study", desc: "Film techniques and visual literacy" },
-    { title: "Comparative Analysis", desc: "Comparing texts and finding connections" },
-    { title: "Media Literacy", desc: "Analysing media texts critically" },
-    { title: "Oral Presentation", desc: "Preparing and delivering presentations" },
-    { title: "Research Skills", desc: "Research methods and referencing" },
-    { title: "Term 2 Revision", desc: "Review of all Term 2 content" },
+    { title: "1984: Dystopia & Context", desc: "Introduction to Orwell and dystopian genre" },
+    { title: "1984: Oceania & the Party", desc: "The setting, Party structure, and Winston" },
+    { title: "1984: Propaganda & Rebellion", desc: "Two Minutes Hate, Newspeak, and Winston's rebellion" },
+    { title: "1984: Love & Betrayal", desc: "Winston and Julia, O'Brien, and the Brotherhood" },
+    { title: "1984: Room 101 & Ending", desc: "Winston's defeat and the novel's conclusion" },
+    { title: "Themes & Techniques", desc: "Analysing Orwell's major themes and literary techniques" },
+    { title: "Term 2 Revision", desc: "Review of 1984 and essay writing skills" },
     { title: "Semester Exam Preparation", desc: "Practice essays and revision strategies" },
   ];
   

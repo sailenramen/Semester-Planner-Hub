@@ -22,6 +22,20 @@ A semester study planning application that helps students track their progress a
 - **Visual Rewards**: Confetti animations for badge unlocks and level ups
 - **Badge Components**: Located in `client/src/components/` (StreakTracker, BadgeDisplay, PointsDisplay, BadgeIcon, Confetti, BadgeUnlockModal)
 
+### Avatar System
+- **LevelAvatar Component**: Customizable avatar displayed on Profile page at `client/src/components/LevelAvatar.tsx`
+- **8 Color Themes**: blue, purple, green, orange, pink, teal, red, yellow (each with matching gradient colors)
+- **3 Avatar Styles**: default (sharp corners), rounded (soft corners), hexagon (clipped hexagon shape)
+- **7 Accessories**: Unlock at specific levels - crown (5), halo (10), flame (15), sparkle (20), lightning (25), rainbow (30)
+- **Visual Evolution**: Glow effects increase at levels 10+, 20+, 30+, 40+ with special ring effects
+- **Avatar Settings Storage**: Persisted in localStorage under `study-planner-avatar` key
+
+### Badge Showcase
+- **BadgeShowcase Component**: Featured badges display at `client/src/components/BadgeShowcase.tsx`
+- **Featured Badges**: Users can select up to 4 earned badges to showcase prominently on their profile
+- **Edit Modal**: Opens badge selection dialog with all earned badges
+- **Persistence**: Selected showcase badges saved in UserStats.showcasedBadges field
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

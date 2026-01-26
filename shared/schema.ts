@@ -462,7 +462,40 @@ export const userStatsSchema = z.object({
   subjectStudyMinutes: z.record(z.string(), z.number()).default({}),
   level: z.number().default(1),
   lastActiveDate: z.string().nullable().default(null),
+  showcasedBadges: z.array(z.string()).default([]),
 });
+
+export const avatarSettingsSchema = z.object({
+  baseColor: z.string().default("blue"),
+  accentColor: z.string().default("purple"),
+  style: z.enum(["default", "rounded", "hexagon"]).default("default"),
+  accessory: z.string().nullable().default(null),
+});
+
+export type AvatarSettings = z.infer<typeof avatarSettingsSchema>;
+
+export const AVATAR_COLORS = [
+  { id: "blue", primary: "#3B82F6", secondary: "#1D4ED8" },
+  { id: "purple", primary: "#8B5CF6", secondary: "#6D28D9" },
+  { id: "green", primary: "#10B981", secondary: "#059669" },
+  { id: "orange", primary: "#F97316", secondary: "#EA580C" },
+  { id: "pink", primary: "#EC4899", secondary: "#DB2777" },
+  { id: "teal", primary: "#14B8A6", secondary: "#0D9488" },
+  { id: "red", primary: "#EF4444", secondary: "#DC2626" },
+  { id: "yellow", primary: "#EAB308", secondary: "#CA8A04" },
+] as const;
+
+export const AVATAR_STYLES = ["default", "rounded", "hexagon"] as const;
+
+export const AVATAR_ACCESSORIES: { id: string; name: string; minLevel: number }[] = [
+  { id: "none", name: "None", minLevel: 1 },
+  { id: "crown", name: "Crown", minLevel: 5 },
+  { id: "halo", name: "Halo", minLevel: 10 },
+  { id: "flame", name: "Flame Aura", minLevel: 15 },
+  { id: "stars", name: "Stars", minLevel: 20 },
+  { id: "lightning", name: "Lightning", minLevel: 25 },
+  { id: "diamond", name: "Diamond", minLevel: 30 },
+];
 
 export type UserStats = z.infer<typeof userStatsSchema>;
 

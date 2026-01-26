@@ -4,26 +4,31 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { StreakTracker } from "@/components/StreakTracker";
 import { BadgeDisplay } from "@/components/BadgeDisplay";
+import { BadgeShowcase } from "@/components/BadgeShowcase";
 import { PointsDisplay } from "@/components/PointsDisplay";
+import { LevelAvatar } from "@/components/LevelAvatar";
 import { 
-  Streak, UserStats, subjects, getPointsForNextLevel 
+  Streak, UserStats, subjects, getPointsForNextLevel, AvatarSettings 
 } from "@shared/schema";
 import { 
-  getStreak, getUserStats, getTasks, getMostProductiveDay, getOverallAverage 
+  getStreak, getUserStats, getTasks, getMostProductiveDay, getOverallAverage,
+  getAvatarSettings, saveAvatarSettings, updateShowcasedBadges
 } from "@/lib/storage";
 import { 
-  User, Clock, CheckCircle2, Target, Calendar, BookOpen, 
+  Clock, CheckCircle2, Target, Calendar, BookOpen, 
   TrendingUp, Award, Flame 
 } from "lucide-react";
 
 export default function Profile() {
   const [streak, setStreak] = useState<Streak | null>(null);
   const [stats, setStats] = useState<UserStats | null>(null);
+  const [avatarSettings, setAvatarSettings] = useState<AvatarSettings | null>(null);
   const [taskStats, setTaskStats] = useState<{ completed: number; total: number }>({ completed: 0, total: 0 });
 
   useEffect(() => {
     setStreak(getStreak());
     setStats(getUserStats());
+    setAvatarSettings(getAvatarSettings());
     const tasks = getTasks();
     setTaskStats({
       completed: tasks.filter(t => t.completed).length,
@@ -31,7 +36,7 @@ export default function Profile() {
     });
   }, []);
 
-  if (!streak || !stats) {
+  if (!streak || !stats || !avatarSettings) {
     return <div className="p-6">Loading...</div>;
   }
 
@@ -40,17 +45,45 @@ export default function Profile() {
   const mostProductiveDay = getMostProductiveDay();
   const overallAverage = getOverallAverage();
 
+  const handleAvatarChange = (newSettings: AvatarSettings) => {
+    saveAvatarSettings(newSettings);
+    setAvatarSettings(newSettings);
+  };
+
+  const handleShowcaseChange = (badges: string[]) => {
+    const updatedStats = updateShowcasedBadges(badges);
+    setStats(updatedStats);
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
-          <User className="h-8 w-8 text-primary-foreground" />
-        </div>
+      <div className="flex items-center gap-6">
+        <LevelAvatar 
+          level={stats.level} 
+          settings={avatarSettings}
+          onSettingsChange={handleAvatarChange}
+          size="lg"
+          editable
+        />
         <div>
           <h1 className="text-2xl font-bold">My Profile</h1>
           <p className="text-muted-foreground">Track your study progress and achievements</p>
+          <div className="flex items-center gap-2 mt-2">
+            <Badge variant="secondary" className="text-sm">
+              Level {stats.level}
+            </Badge>
+            <Badge variant="outline" className="text-sm">
+              {stats.totalPoints} points
+            </Badge>
+          </div>
         </div>
       </div>
+
+      <BadgeShowcase 
+        earnedBadges={stats.badgesEarned}
+        showcasedBadges={stats.showcasedBadges}
+        onShowcaseChange={handleShowcaseChange}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StreakTracker streak={streak} />

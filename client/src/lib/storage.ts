@@ -1,6 +1,7 @@
 import { 
   Task, Note, generateSampleTasks, generateSampleExams, Exam, TERM1_START, Grade,
-  Streak, UserStats, BadgeId, badges, POINTS_CONFIG, getLevelFromPoints, subjects
+  Streak, UserStats, BadgeId, badges, POINTS_CONFIG, getLevelFromPoints, subjects,
+  AvatarSettings
 } from "@shared/schema";
 
 const STORAGE_KEYS = {
@@ -13,6 +14,7 @@ const STORAGE_KEYS = {
   GRADES: "study-planner-grades",
   STREAK: "study-planner-streak",
   USER_STATS: "study-planner-user-stats",
+  AVATAR: "study-planner-avatar",
 };
 
 // Check if data needs to be regenerated for a new semester
@@ -332,6 +334,7 @@ export function getUserStats(): UserStats {
       subjectStudyMinutes: {},
       level: 1,
       lastActiveDate: null,
+      showcasedBadges: [],
     };
     saveUserStats(defaultStats);
     return defaultStats;
@@ -341,6 +344,32 @@ export function getUserStats(): UserStats {
 
 export function saveUserStats(stats: UserStats): void {
   localStorage.setItem(STORAGE_KEYS.USER_STATS, JSON.stringify(stats));
+}
+
+export function updateShowcasedBadges(badges: string[]): UserStats {
+  const stats = getUserStats();
+  stats.showcasedBadges = badges.slice(0, 4);
+  saveUserStats(stats);
+  return stats;
+}
+
+export function getAvatarSettings(): AvatarSettings {
+  const stored = localStorage.getItem(STORAGE_KEYS.AVATAR);
+  if (!stored) {
+    const defaultAvatar: AvatarSettings = {
+      baseColor: "blue",
+      accentColor: "purple",
+      style: "default",
+      accessory: null,
+    };
+    saveAvatarSettings(defaultAvatar);
+    return defaultAvatar;
+  }
+  return JSON.parse(stored);
+}
+
+export function saveAvatarSettings(settings: AvatarSettings): void {
+  localStorage.setItem(STORAGE_KEYS.AVATAR, JSON.stringify(settings));
 }
 
 export function addPoints(points: number): UserStats {

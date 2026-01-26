@@ -1,3 +1,4 @@
+import { useLocation } from "wouter";
 import { Task, subjects } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,26 +7,24 @@ import { Clock, BookOpen } from "lucide-react";
 interface TaskCardProps {
   task: Task;
   onToggle: (taskId: string) => void;
-  onStudy?: (task: Task) => void;
   showSubject?: boolean;
 }
 
-export function TaskCard({ task, onToggle, onStudy, showSubject = false }: TaskCardProps) {
+export function TaskCard({ task, onToggle, showSubject = false }: TaskCardProps) {
+  const [, setLocation] = useLocation();
   const subject = subjects.find((s) => s.id === task.subjectId);
 
   const handleCardClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest('input[type="checkbox"]') || target.closest('label')) {
+    if (target.closest('[role="checkbox"]') || target.closest('button[data-state]') || target.closest('label')) {
       return;
     }
-    if (onStudy) {
-      onStudy(task);
-    }
+    setLocation(`/study/${task.id}`);
   };
 
   return (
     <Card 
-      className={`transition-all ${task.completed ? "opacity-60" : ""} ${onStudy ? "cursor-pointer hover-elevate" : ""}`}
+      className={`transition-all cursor-pointer hover-elevate ${task.completed ? "opacity-60" : ""}`}
       data-testid={`task-card-${task.id}`}
       onClick={handleCardClick}
     >
@@ -41,7 +40,7 @@ export function TaskCard({ task, onToggle, onStudy, showSubject = false }: TaskC
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span
-                className={`font-medium ${onStudy ? "hover:text-primary" : ""} ${
+                className={`font-medium hover:text-primary ${
                   task.completed ? "line-through text-muted-foreground" : ""
                 }`}
               >
@@ -54,12 +53,10 @@ export function TaskCard({ task, onToggle, onStudy, showSubject = false }: TaskC
                   {subject.name}
                 </span>
               )}
-              {onStudy && (
-                <span className="text-xs text-primary flex items-center gap-1 ml-auto">
-                  <BookOpen className="h-3 w-3" />
-                  Study
-                </span>
-              )}
+              <span className="text-xs text-primary flex items-center gap-1 ml-auto">
+                <BookOpen className="h-3 w-3" />
+                Study
+              </span>
             </div>
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
               {task.description}

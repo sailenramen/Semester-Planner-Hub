@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProgressRing } from "@/components/ProgressRing";
-import { StudyModal } from "@/components/StudyModal";
 import {
   Task,
   subjects,
@@ -36,11 +35,11 @@ export default function Subject() {
   const params = useParams<{ id: string }>();
   const subjectId = params.id as SubjectId;
   
+  const [, setLocation] = useLocation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [note, setNote] = useState<string>("");
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
   const [noteSaved, setNoteSaved] = useState(false);
-  const [studyTask, setStudyTask] = useState<Task | null>(null);
 
   const subject = subjects.find((s) => s.id === subjectId);
   const currentWeek = getCurrentWeek();
@@ -232,7 +231,7 @@ export default function Subject() {
                                 onClick={(e) => {
                                   const target = e.target as HTMLElement;
                                   if (!target.closest('[role="checkbox"], button[data-state]')) {
-                                    setStudyTask(task);
+                                    setLocation(`/study/${task.id}`);
                                   }
                                 }}
                               >
@@ -310,13 +309,6 @@ export default function Subject() {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Study Modal */}
-      <StudyModal
-        task={studyTask}
-        open={!!studyTask}
-        onOpenChange={(open) => !open && setStudyTask(null)}
-      />
     </div>
   );
 }

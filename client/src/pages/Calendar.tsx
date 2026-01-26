@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { TaskCard } from "@/components/TaskCard";
-import { StudyModal } from "@/components/StudyModal";
 import {
   Task,
   Exam,
@@ -40,7 +39,6 @@ export default function CalendarPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [studyTask, setStudyTask] = useState<Task | null>(null);
   
   const currentWeek = getCurrentWeek();
 
@@ -305,10 +303,6 @@ export default function CalendarPage() {
                       key={task.id}
                       task={task}
                       onToggle={handleToggleTask}
-                      onStudy={(t) => {
-                        setSelectedDate(null);
-                        setStudyTask(t);
-                      }}
                       showSubject
                     />
                   ))}
@@ -324,13 +318,6 @@ export default function CalendarPage() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Study Modal */}
-      <StudyModal
-        task={studyTask}
-        open={!!studyTask}
-        onOpenChange={(open) => !open && setStudyTask(null)}
-      />
     </div>
   );
 }

@@ -7,7 +7,6 @@ import { ProgressRing } from "@/components/ProgressRing";
 import { ExamAlert } from "@/components/ExamAlert";
 import { ExamModeToggle } from "@/components/ExamModeToggle";
 import { SubjectProgressChart } from "@/components/SubjectProgressChart";
-import { StudyModal } from "@/components/StudyModal";
 import {
   Task,
   Exam,
@@ -34,7 +33,6 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [examMode, setExamModeState] = useState(false);
-  const [studyTask, setStudyTask] = useState<Task | null>(null);
 
   const currentWeek = getCurrentWeek();
   const currentTerm = getCurrentTerm();
@@ -369,7 +367,6 @@ export default function Dashboard() {
                     key={task.id}
                     task={task}
                     onToggle={handleToggleTask}
-                    onStudy={setStudyTask}
                   />
                 ))}
               </div>
@@ -393,13 +390,6 @@ export default function Dashboard() {
           <SubjectProgressChart tasks={tasks} />
         </div>
       </div>
-
-      {/* Study Modal */}
-      <StudyModal
-        task={studyTask}
-        open={!!studyTask}
-        onOpenChange={(open) => !open && setStudyTask(null)}
-      />
     </div>
   );
 }

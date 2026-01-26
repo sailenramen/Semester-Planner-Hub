@@ -66,1623 +66,1804 @@ export function getTaskType(taskTitle: string): TaskType {
 }
 
 const mathQuestions: PracticeQuestion[] = [
-  { id: "m1", question: "Solve for x: 2x + 5 = 15", answer: "x = 5", solution: "2x + 5 = 15 → 2x = 10 → x = 5", type: "short" },
-  { id: "m2", question: "Solve for x: 3(x - 2) = 12", answer: "x = 6", solution: "3x - 6 = 12 → 3x = 18 → x = 6", type: "short" },
-  { id: "m3", question: "Simplify: 4x + 3y - 2x + 5y", answer: "2x + 8y", solution: "Combine like terms: (4x - 2x) + (3y + 5y) = 2x + 8y", type: "short" },
-  { id: "m4", question: "What is the gradient of y = 3x - 7?", answer: "3", options: ["3", "-7", "7", "-3"], type: "multiple-choice" },
-  { id: "m5", question: "Solve: x² = 49", answer: "x = 7 or x = -7", solution: "Take square root of both sides: x = ±√49 = ±7", type: "short" },
-  { id: "m6", question: "Expand: (x + 3)(x + 2)", answer: "x² + 5x + 6", solution: "FOIL: x² + 2x + 3x + 6 = x² + 5x + 6", type: "short" },
-  { id: "m7", question: "Factorize: x² + 7x + 12", answer: "(x + 3)(x + 4)", solution: "Find two numbers that multiply to 12 and add to 7: 3 and 4", type: "short" },
-  { id: "m8", question: "Find y when x = 2 in: y = 4x - 3", answer: "y = 5", solution: "y = 4(2) - 3 = 8 - 3 = 5", type: "short" },
-  { id: "m9", question: "Solve the simultaneous equations: x + y = 10, x - y = 4", answer: "x = 7, y = 3", solution: "Add equations: 2x = 14, so x = 7. Substitute: 7 + y = 10, so y = 3", type: "short" },
-  { id: "m10", question: "Simplify: 2³ × 2⁴", answer: "2⁷ = 128", solution: "When multiplying same base, add indices: 2³⁺⁴ = 2⁷ = 128", type: "short" },
-  { id: "m11", question: "Express 0.00045 in scientific notation", answer: "4.5 × 10⁻⁴", solution: "Move decimal 4 places right: 4.5 × 10⁻⁴", type: "short" },
-  { id: "m12", question: "Find the hypotenuse of a right triangle with sides 6cm and 8cm", answer: "10 cm", solution: "c² = 6² + 8² = 36 + 64 = 100, c = 10", type: "short" },
-  { id: "m13", question: "In a right triangle, if the opposite side is 5 and hypotenuse is 13, find sin(θ)", answer: "5/13", solution: "sin(θ) = opposite/hypotenuse = 5/13", type: "short" },
-  { id: "m14", question: "Expand: (x - 4)²", answer: "x² - 8x + 16", solution: "(x-4)(x-4) = x² - 4x - 4x + 16 = x² - 8x + 16", type: "short" },
-  { id: "m15", question: "Solve using quadratic formula: x² - 5x + 6 = 0", answer: "x = 2 or x = 3", solution: "Factorizes to (x-2)(x-3) = 0, so x = 2 or x = 3", type: "short" },
-  { id: "m16", question: "What is the discriminant of x² + 4x + 5?", answer: "-4", solution: "b² - 4ac = 16 - 20 = -4 (no real solutions)", type: "short" },
-  { id: "m17", question: "Find the vertex of y = x² - 6x + 8", answer: "(3, -1)", solution: "x = -b/2a = 6/2 = 3, y = 9 - 18 + 8 = -1", type: "short" },
-  { id: "m18", question: "Find the mean of: 12, 15, 18, 21, 24", answer: "18", solution: "(12+15+18+21+24)/5 = 90/5 = 18", type: "short" },
-  { id: "m19", question: "Find the median of: 3, 7, 2, 9, 5, 8, 1", answer: "5", solution: "Ordered: 1,2,3,5,7,8,9. Middle value = 5", type: "short" },
-  { id: "m20", question: "Calculate the area of a circle with radius 5cm (use π = 3.14)", answer: "78.5 cm²", solution: "A = πr² = 3.14 × 25 = 78.5 cm²", type: "short" },
-  { id: "m21", question: "Find the volume of a cylinder with radius 3cm and height 10cm (use π = 3.14)", answer: "282.6 cm³", solution: "V = πr²h = 3.14 × 9 × 10 = 282.6 cm³", type: "short" },
-  { id: "m22", question: "What is cos(60°)?", answer: "0.5", options: ["0.5", "0.866", "1", "0"], type: "multiple-choice" },
-  { id: "m23", question: "Solve: 5(2x - 3) = 3(x + 4)", answer: "x = 27/7", solution: "10x - 15 = 3x + 12 → 7x = 27 → x = 27/7", type: "short" },
-  { id: "m24", question: "Find the y-intercept of 2x + 3y = 12", answer: "(0, 4)", solution: "When x = 0: 3y = 12, y = 4", type: "short" },
-  { id: "m25", question: "What is the probability of rolling an even number on a standard die?", answer: "1/2 or 0.5", solution: "Even numbers: 2, 4, 6 (3 outcomes) out of 6 total = 3/6 = 1/2", type: "short" },
+  { id: "m1", question: "Simplify: 2³ × 2⁴", answer: "2⁷ = 128", solution: "When multiplying same base, add indices: 2³⁺⁴ = 2⁷ = 128", type: "short" },
+  { id: "m2", question: "Simplify: (3²)⁴", answer: "3⁸ = 6561", solution: "When raising a power to a power, multiply indices: 3²×⁴ = 3⁸", type: "short" },
+  { id: "m3", question: "Evaluate: 5⁰", answer: "1", solution: "Any non-zero number raised to the power of 0 equals 1", type: "short" },
+  { id: "m4", question: "Simplify: 4⁻²", answer: "1/16", solution: "Negative exponent means reciprocal: 4⁻² = 1/4² = 1/16", type: "short" },
+  { id: "m5", question: "Convert 2.5 km to metres", answer: "2500 m", solution: "1 km = 1000 m, so 2.5 × 1000 = 2500 m", type: "short" },
+  { id: "m6", question: "Simplify: √72", answer: "6√2", solution: "√72 = √(36 × 2) = √36 × √2 = 6√2", type: "short" },
+  { id: "m7", question: "Simplify: √50 + √18", answer: "8√2", solution: "√50 = 5√2, √18 = 3√2, so 5√2 + 3√2 = 8√2", type: "short" },
+  { id: "m8", question: "Evaluate: |−7|", answer: "7", solution: "Absolute value gives the distance from zero, always positive", type: "short" },
+  { id: "m9", question: "Solve: |x| = 5", answer: "x = 5 or x = −5", solution: "If |x| = 5, then x is 5 units from zero, so x = 5 or x = −5", type: "short" },
+  { id: "m10", question: "Find the distance between points (2, 3) and (5, 7)", answer: "5", solution: "d = √[(5-2)² + (7-3)²] = √[9 + 16] = √25 = 5", type: "short" },
+  { id: "m11", question: "Find the midpoint of (1, 4) and (5, 8)", answer: "(3, 6)", solution: "Midpoint = ((1+5)/2, (4+8)/2) = (3, 6)", type: "short" },
+  { id: "m12", question: "Find the gradient between (2, 1) and (6, 9)", answer: "2", solution: "Gradient = (9-1)/(6-2) = 8/4 = 2", type: "short" },
+  { id: "m13", question: "What is the equation of a line with gradient 3 passing through (0, 2)?", answer: "y = 3x + 2", solution: "Using y = mx + c, m = 3 and c = 2", type: "short" },
+  { id: "m14", question: "Solve: 3x + 7 = 16", answer: "x = 3", solution: "3x = 16 - 7 = 9, so x = 9/3 = 3", type: "short" },
+  { id: "m15", question: "Solve the system: x + y = 10, x - y = 4", answer: "x = 7, y = 3", solution: "Add equations: 2x = 14, x = 7. Substitute: 7 + y = 10, y = 3", type: "short" },
+  { id: "m16", question: "Expand: (x + 3)(x + 5)", answer: "x² + 8x + 15", solution: "FOIL: x² + 5x + 3x + 15 = x² + 8x + 15", type: "short" },
+  { id: "m17", question: "Factorise: x² + 7x + 12", answer: "(x + 3)(x + 4)", solution: "Find two numbers that multiply to 12 and add to 7: 3 and 4", type: "short" },
+  { id: "m18", question: "Find the axis of symmetry of y = x² - 6x + 8", answer: "x = 3", solution: "Axis of symmetry = -b/2a = -(-6)/2(1) = 6/2 = 3", type: "short" },
+  { id: "m19", question: "Solve: x² - 5x + 6 = 0", answer: "x = 2 or x = 3", solution: "Factorise: (x-2)(x-3) = 0, so x = 2 or x = 3", type: "short" },
+  { id: "m20", question: "Find the next term: 2, 5, 8, 11, ...", answer: "14", solution: "Arithmetic sequence with common difference 3: 11 + 3 = 14", type: "short" },
+  { id: "m21", question: "Write the explicit formula for: 3, 7, 11, 15, ...", answer: "aₙ = 4n - 1", solution: "First term a₁ = 3, common difference d = 4, so aₙ = 3 + (n-1)×4 = 4n - 1", type: "short" },
+  { id: "m22", question: "If y is directly proportional to x and y = 12 when x = 4, find y when x = 7", answer: "21", solution: "y = kx, so 12 = k(4), k = 3. When x = 7, y = 3(7) = 21", type: "short" },
+  { id: "m23", question: "Rearrange v = u + at to make t the subject", answer: "t = (v - u)/a", solution: "Subtract u: v - u = at. Divide by a: t = (v - u)/a", type: "short" },
+  { id: "m24", question: "Express the quadratic y = x² - 4x + 3 in vertex form", answer: "y = (x - 2)² - 1", solution: "Complete the square: (x² - 4x + 4) - 4 + 3 = (x - 2)² - 1", type: "short" },
+  { id: "m25", question: "What is the discriminant of x² + 4x + 5?", answer: "-4", solution: "b² - 4ac = 16 - 20 = -4 (no real solutions)", type: "short" },
 ];
 
 const scienceQuestions: PracticeQuestion[] = [
-  { id: "s1", question: "What organelle is responsible for cellular respiration?", answer: "Mitochondria", options: ["Nucleus", "Mitochondria", "Ribosome", "Chloroplast"], type: "multiple-choice" },
-  { id: "s2", question: "Name the process by which plants make glucose using sunlight.", answer: "Photosynthesis", type: "short" },
-  { id: "s3", question: "What is the function of the cell membrane?", answer: "Controls what enters and exits the cell", type: "short" },
-  { id: "s4", question: "In which direction does water move during osmosis?", answer: "From high water concentration to low water concentration", options: ["High to low concentration", "Low to high concentration", "Random movement", "Only when heated"], type: "multiple-choice" },
-  { id: "s5", question: "What is the basic unit of heredity?", answer: "Gene", type: "short" },
-  { id: "s6", question: "What type of cell division produces gametes?", answer: "Meiosis", options: ["Mitosis", "Meiosis", "Binary fission", "Budding"], type: "multiple-choice" },
-  { id: "s7", question: "What is the shape of the DNA molecule?", answer: "Double helix", type: "short" },
-  { id: "s8", question: "If a parent is Bb and the other is bb, what percentage of offspring will be Bb?", answer: "50%", solution: "Punnett square: Bb × bb → Bb, Bb, bb, bb = 50% Bb", type: "short" },
-  { id: "s9", question: "Name the scientist who proposed natural selection.", answer: "Charles Darwin", type: "short" },
-  { id: "s10", question: "What type of evidence for evolution compares similar bone structures?", answer: "Comparative anatomy / Homologous structures", type: "short" },
-  { id: "s11", question: "What kingdom do bacteria belong to?", answer: "Monera / Prokaryota", type: "short" },
-  { id: "s12", question: "What is an ecosystem?", answer: "A community of living organisms interacting with their physical environment", type: "short" },
-  { id: "s13", question: "Name one biotic and one abiotic factor.", answer: "Biotic: plants, animals, bacteria. Abiotic: water, temperature, sunlight", type: "short" },
-  { id: "s14", question: "What is the role of decomposers in an ecosystem?", answer: "Break down dead organisms and recycle nutrients", type: "short" },
-  { id: "s15", question: "Where does gas exchange occur in the lungs?", answer: "Alveoli", type: "short" },
-  { id: "s16", question: "What carries oxygen in the blood?", answer: "Red blood cells / Haemoglobin", type: "short" },
-  { id: "s17", question: "What enzyme breaks down starch in the mouth?", answer: "Amylase", type: "short" },
-  { id: "s18", question: "Where does most nutrient absorption occur?", answer: "Small intestine", options: ["Stomach", "Small intestine", "Large intestine", "Oesophagus"], type: "multiple-choice" },
-  { id: "s19", question: "Balance this equation: H₂ + O₂ → H₂O", answer: "2H₂ + O₂ → 2H₂O", solution: "Need 4 H on each side and 2 O on each side", type: "short" },
-  { id: "s20", question: "What type of reaction is: HCl + NaOH → NaCl + H₂O?", answer: "Neutralisation reaction", type: "short" },
-  { id: "s21", question: "What pH indicates an acid?", answer: "Less than 7", options: ["Less than 7", "Equal to 7", "Greater than 7", "Equal to 14"], type: "multiple-choice" },
-  { id: "s22", question: "What indicator turns red in acid and blue in base?", answer: "Litmus paper", type: "short" },
-  { id: "s23", question: "What subatomic particle determines the element?", answer: "Proton", options: ["Electron", "Proton", "Neutron", "Photon"], type: "multiple-choice" },
-  { id: "s24", question: "What is the electron configuration of Oxygen (atomic number 8)?", answer: "2, 6", type: "short" },
-  { id: "s25", question: "What type of bond forms when electrons are shared?", answer: "Covalent bond", type: "short" },
+  { id: "s1", question: "What subatomic particle determines the element?", answer: "Proton", options: ["Electron", "Proton", "Neutron", "Photon"], type: "multiple-choice" },
+  { id: "s2", question: "What is an isotope?", answer: "Atoms of the same element with different numbers of neutrons", type: "short" },
+  { id: "s3", question: "What is half-life?", answer: "The time it takes for half of a radioactive sample to decay", type: "short" },
+  { id: "s4", question: "What type of radiation can be stopped by paper?", answer: "Alpha particles", options: ["Alpha", "Beta", "Gamma", "X-rays"], type: "multiple-choice" },
+  { id: "s5", question: "Balance this equation: H₂ + O₂ → H₂O", answer: "2H₂ + O₂ → 2H₂O", solution: "Need 4 H on each side and 2 O on each side", type: "short" },
+  { id: "s6", question: "What type of reaction is: HCl + NaOH → NaCl + H₂O?", answer: "Neutralisation reaction", type: "short" },
+  { id: "s7", question: "What is electrolysis?", answer: "Using electricity to break down a compound into its elements", type: "short" },
+  { id: "s8", question: "What is produced at the cathode during electrolysis of water?", answer: "Hydrogen gas", type: "short" },
+  { id: "s9", question: "What is the law of conservation of mass?", answer: "Mass cannot be created or destroyed in a chemical reaction", type: "short" },
+  { id: "s10", question: "What type of reaction releases energy?", answer: "Exothermic", options: ["Endothermic", "Exothermic", "Synthesis", "Decomposition"], type: "multiple-choice" },
+  { id: "s11", question: "What is homeostasis?", answer: "The maintenance of a stable internal environment", type: "short" },
+  { id: "s12", question: "Which system controls long-lasting effects through hormones?", answer: "Endocrine system", type: "short" },
+  { id: "s13", question: "What hormone regulates blood glucose levels?", answer: "Insulin", type: "short" },
+  { id: "s14", question: "What type of feedback loop maintains homeostasis?", answer: "Negative feedback loop", type: "short" },
+  { id: "s15", question: "Name the 'fight or flight' hormones", answer: "Adrenaline and noradrenaline", type: "short" },
+  { id: "s16", question: "What is a pathogen?", answer: "A microorganism that causes disease", type: "short" },
+  { id: "s17", question: "Name the four types of pathogens", answer: "Bacteria, viruses, fungi, parasites", type: "short" },
+  { id: "s18", question: "What is the first line of defence against pathogens?", answer: "Physical barriers (skin, mucous membranes)", type: "short" },
+  { id: "s19", question: "What cells produce antibodies?", answer: "B lymphocytes (B cells)", type: "short" },
+  { id: "s20", question: "What is immunological memory?", answer: "The immune system's ability to remember and respond faster to previously encountered pathogens", type: "short" },
+  { id: "s21", question: "What is an autoimmune disease?", answer: "When the immune system attacks the body's own cells", type: "short" },
+  { id: "s22", question: "How do vaccines work?", answer: "They expose the body to weakened/inactive pathogens to build immunity", type: "short" },
+  { id: "s23", question: "What is the difference between infectious and non-infectious diseases?", answer: "Infectious diseases are caused by pathogens and can spread; non-infectious cannot spread between people", type: "short" },
+  { id: "s24", question: "What gland is known as the 'master gland'?", answer: "Pituitary gland", type: "short" },
+  { id: "s25", question: "What is Type 1 diabetes caused by?", answer: "The body's inability to produce insulin", type: "short" },
 ];
 
 const historyQuestions: PracticeQuestion[] = [
   { id: "h1", question: "What event triggered the start of World War I?", answer: "Assassination of Archduke Franz Ferdinand", type: "short" },
   { id: "h2", question: "Name the four main causes of WWI (MAIN)", answer: "Militarism, Alliances, Imperialism, Nationalism", type: "short" },
-  { id: "h3", question: "What was trench warfare?", answer: "A type of fighting where soldiers fought from ditches dug into the ground", type: "short" },
-  { id: "h4", question: "What new weapon was first used extensively in WWI?", answer: "Poison gas / Machine guns / Tanks", type: "short" },
-  { id: "h5", question: "When did the Gallipoli campaign take place?", answer: "1915", options: ["1914", "1915", "1916", "1918"], type: "multiple-choice" },
-  { id: "h6", question: "What is ANZAC Day commemorating?", answer: "Australian and New Zealand soldiers who served at Gallipoli and all wars", type: "short" },
-  { id: "h7", question: "What treaty ended WWI?", answer: "Treaty of Versailles", type: "short" },
-  { id: "h8", question: "Which country was blamed and punished most severely for WWI?", answer: "Germany", type: "short" },
-  { id: "h9", question: "What was the Great Depression?", answer: "A severe worldwide economic downturn in the 1930s", type: "short" },
-  { id: "h10", question: "Who became dictator of Germany in 1933?", answer: "Adolf Hitler", type: "short" },
-  { id: "h11", question: "What ideology did Hitler's Nazi Party promote?", answer: "Fascism / National Socialism", type: "short" },
-  { id: "h12", question: "What event started WWII in Europe?", answer: "Germany's invasion of Poland in 1939", type: "short" },
-  { id: "h13", question: "What was the Holocaust?", answer: "The systematic genocide of six million Jews by Nazi Germany", type: "short" },
-  { id: "h14", question: "What was D-Day?", answer: "The Allied invasion of Normandy, France on June 6, 1944", type: "short" },
-  { id: "h15", question: "What ended the war in the Pacific?", answer: "Atomic bombs dropped on Hiroshima and Nagasaki", type: "short" },
-  { id: "h16", question: "What was the Cold War?", answer: "A period of tension between USA and USSR without direct military conflict", type: "short" },
-  { id: "h17", question: "What was the Iron Curtain?", answer: "The ideological boundary dividing Europe into Western and Soviet spheres", type: "short" },
-  { id: "h18", question: "What is decolonisation?", answer: "The process of colonies gaining independence from imperial powers", type: "short" },
-  { id: "h19", question: "Who was Martin Luther King Jr.?", answer: "American civil rights leader who advocated for equality through peaceful protest", type: "short" },
-  { id: "h20", question: "What does a primary source provide?", answer: "First-hand evidence from the time being studied", options: ["Analysis of events", "First-hand evidence", "Modern interpretation", "Expert opinion"], type: "multiple-choice" },
-  { id: "h21", question: "What is OPCL in source analysis?", answer: "Origin, Purpose, Content, Limitation", type: "short" },
+  { id: "h3", question: "When did the Gallipoli campaign take place?", answer: "1915", options: ["1914", "1915", "1916", "1918"], type: "multiple-choice" },
+  { id: "h4", question: "What is ANZAC Day commemorating?", answer: "Australian and New Zealand soldiers who served at Gallipoli and all wars", type: "short" },
+  { id: "h5", question: "Name three battles on the Western Front involving Australians", answer: "Somme, Fromelles, Passchendaele", type: "short" },
+  { id: "h6", question: "What treaty ended WWI?", answer: "Treaty of Versailles", type: "short" },
+  { id: "h7", question: "Which country was blamed for WWI in the Treaty of Versailles?", answer: "Germany", type: "short" },
+  { id: "h8", question: "What was the Great Depression?", answer: "A severe worldwide economic downturn in the 1930s", type: "short" },
+  { id: "h9", question: "What event started WWII in Europe?", answer: "Germany's invasion of Poland in 1939", type: "short" },
+  { id: "h10", question: "What was the Holocaust?", answer: "The systematic genocide of six million Jews by Nazi Germany", type: "short" },
+  { id: "h11", question: "What was the significance of the Fall of Singapore?", answer: "Britain's worst military defeat; 15,000 Australians captured", type: "short" },
+  { id: "h12", question: "Why was the Kokoda Track campaign significant?", answer: "First time Australians defended their homeland; stopped Japanese advance", type: "short" },
+  { id: "h13", question: "What is a primary source?", answer: "An original document or object created at the time being studied", type: "short" },
+  { id: "h14", question: "What is the Australian Constitution?", answer: "The set of rules establishing Australia's federal system of government", type: "short" },
+  { id: "h15", question: "What is the role of the House of Representatives?", answer: "The lower house where government is formed and laws are debated", type: "short" },
+  { id: "h16", question: "What is a referendum?", answer: "A vote by citizens to change the Constitution", type: "short" },
+  { id: "h17", question: "What is the role of the Governor-General?", answer: "The Queen's representative who gives royal assent to laws", type: "short" },
+  { id: "h18", question: "What is the difference between federal and state powers?", answer: "Federal powers apply nationally; state powers apply within each state", type: "short" },
+  { id: "h19", question: "What is civic participation?", answer: "Ways citizens engage in their community and government (voting, volunteering, activism)", type: "short" },
+  { id: "h20", question: "Name three international organisations Australia belongs to", answer: "United Nations, ASEAN, Pacific Islands Forum", type: "short" },
+  { id: "h21", question: "What does OPCL stand for in source analysis?", answer: "Origin, Purpose, Content, Limitation", type: "short" },
   { id: "h22", question: "What is historical bias?", answer: "A one-sided or prejudiced perspective in historical sources", type: "short" },
-  { id: "h23", question: "What major immigration policy changed in Australia in 1973?", answer: "The White Australia Policy was abolished", type: "short" },
-  { id: "h24", question: "What does 'multicultural' mean in Australian context?", answer: "A society made up of people from many different cultural backgrounds", type: "short" },
-  { id: "h25", question: "Why is it important to use multiple sources when studying history?", answer: "To get a balanced view and verify information through corroboration", type: "short" },
+  { id: "h23", question: "Why is it important to use multiple sources?", answer: "To get a balanced view and verify information through corroboration", type: "short" },
+  { id: "h24", question: "What does 'Lest We Forget' mean?", answer: "A phrase of remembrance for those who died in war", type: "short" },
+  { id: "h25", question: "What is the ANZAC legend?", answer: "The idea that Australian soldiers showed courage, mateship, and endurance at Gallipoli", type: "short" },
 ];
 
 const englishQuestions: PracticeQuestion[] = [
-  { id: "e1", question: "What is an allegory?", answer: "A story with a hidden political or moral meaning", type: "short" },
-  { id: "e2", question: "What is satire?", answer: "Using humor or irony to criticize or expose foolishness", type: "short" },
-  { id: "e3", question: "In Animal Farm, who does Napoleon represent?", answer: "Joseph Stalin", type: "short" },
-  { id: "e4", question: "What does the windmill in Animal Farm symbolize?", answer: "Soviet industrialization and propaganda promises", type: "short" },
-  { id: "e5", question: "What is the final commandment in Animal Farm?", answer: "All animals are equal, but some are more equal than others", type: "short" },
-  { id: "e6", question: "What is ethos in persuasive writing?", answer: "Appeal to credibility or character", options: ["Appeal to emotion", "Appeal to credibility", "Appeal to logic", "Appeal to fear"], type: "multiple-choice" },
-  { id: "e7", question: "What is pathos?", answer: "Appeal to emotion", type: "short" },
-  { id: "e8", question: "What is logos?", answer: "Appeal to logic and reason", type: "short" },
-  { id: "e9", question: "What is a rhetorical question?", answer: "A question asked for effect, not requiring an answer", type: "short" },
-  { id: "e10", question: "What is an anecdote?", answer: "A short personal story used to make a point", type: "short" },
-  { id: "e11", question: "What does TEEL stand for in essay writing?", answer: "Topic, Explain, Evidence, Link", type: "short" },
-  { id: "e12", question: "What is a thesis statement?", answer: "A sentence stating the main argument of an essay", type: "short" },
-  { id: "e13", question: "What is a metaphor?", answer: "A comparison saying one thing IS another (without like/as)", type: "short" },
-  { id: "e14", question: "What is a simile?", answer: "A comparison using 'like' or 'as'", type: "short" },
-  { id: "e15", question: "What is symbolism?", answer: "Using objects or images to represent abstract ideas", type: "short" },
-  { id: "e16", question: "What is imagery?", answer: "Descriptive language that appeals to the senses", type: "short" },
-  { id: "e17", question: "Who wrote Animal Farm and when?", answer: "George Orwell, 1945", type: "short" },
-  { id: "e18", question: "What historical event does Animal Farm represent?", answer: "The Russian Revolution and rise of Soviet communism", type: "short" },
-  { id: "e19", question: "Who does Boxer represent in Animal Farm?", answer: "The loyal working class who are exploited", type: "short" },
-  { id: "e20", question: "What happens to Boxer at the end of Animal Farm?", answer: "He is sold to a glue factory when he can no longer work", type: "short" },
-  { id: "e21", question: "What is the purpose of a contention?", answer: "To state your main argument or position on an issue", type: "short" },
-  { id: "e22", question: "What makes writing 'persuasive'?", answer: "It aims to convince the reader to accept a viewpoint or take action", type: "short" },
-  { id: "e23", question: "What is tone in writing?", answer: "The author's attitude toward the subject matter", type: "short" },
-  { id: "e24", question: "What is the difference between connotation and denotation?", answer: "Denotation is literal meaning; connotation is emotional associations", type: "short" },
-  { id: "e25", question: "What are the key features of a text response essay?", answer: "Thesis, topic sentences, evidence/quotes, analysis, conclusion", type: "short" },
+  { id: "e1", question: "What is ethos in persuasive writing?", answer: "Appeal to credibility or character", options: ["Appeal to emotion", "Appeal to credibility", "Appeal to logic", "Appeal to fear"], type: "multiple-choice" },
+  { id: "e2", question: "What is pathos?", answer: "Appeal to emotion", type: "short" },
+  { id: "e3", question: "What is logos?", answer: "Appeal to logic and reason", type: "short" },
+  { id: "e4", question: "What is a rhetorical question?", answer: "A question asked for effect, not requiring an answer", type: "short" },
+  { id: "e5", question: "What is an anecdote?", answer: "A short personal story used to make a point", type: "short" },
+  { id: "e6", question: "What is emotive language?", answer: "Words chosen to trigger an emotional response", type: "short" },
+  { id: "e7", question: "What is the purpose of a news article?", answer: "To inform readers about current events", type: "short" },
+  { id: "e8", question: "What makes writing 'persuasive'?", answer: "It aims to convince the reader to accept a viewpoint or take action", type: "short" },
+  { id: "e9", question: "What is tone in writing?", answer: "The author's attitude toward the subject matter", type: "short" },
+  { id: "e10", question: "What is a contention?", answer: "The main argument or position in persuasive writing", type: "short" },
+  { id: "e11", question: "What is a dystopia?", answer: "An imagined society with great suffering and injustice", type: "short" },
+  { id: "e12", question: "Who wrote 1984?", answer: "George Orwell", type: "short" },
+  { id: "e13", question: "What is the Party's slogan in 1984?", answer: "War is Peace. Freedom is Slavery. Ignorance is Strength.", type: "short" },
+  { id: "e14", question: "What is Newspeak?", answer: "The Party's simplified language designed to limit free thought", type: "short" },
+  { id: "e15", question: "What does Big Brother represent?", answer: "Total surveillance and authoritarian control", type: "short" },
+  { id: "e16", question: "What is Room 101?", answer: "A torture room containing each person's worst fear", type: "short" },
+  { id: "e17", question: "What does '2+2=5' symbolise in 1984?", answer: "Total submission to the Party's control over truth", type: "short" },
+  { id: "e18", question: "Who is the protagonist of 1984?", answer: "Winston Smith", type: "short" },
+  { id: "e19", question: "What is the Ministry of Truth's real purpose?", answer: "To rewrite history and spread propaganda", type: "short" },
+  { id: "e20", question: "What is doublethink?", answer: "Holding two contradictory beliefs simultaneously", type: "short" },
+  { id: "e21", question: "What is symbolism?", answer: "Using objects or images to represent abstract ideas", type: "short" },
+  { id: "e22", question: "What is irony?", answer: "Expressing meaning by using language that signifies the opposite", type: "short" },
+  { id: "e23", question: "What does TEEL stand for?", answer: "Topic, Explain, Evidence, Link", type: "short" },
+  { id: "e24", question: "What is a thesis statement?", answer: "A sentence stating the main argument of an essay", type: "short" },
+  { id: "e25", question: "What is an allegory?", answer: "A story with a hidden political or moral meaning", type: "short" },
 ];
 
-// Week-specific reading content for each subject
+// Week-specific reading content for Mathematics
+// Term 1: Problem solving, exponents, units, surds, absolute value, patterns, coordinate geometry, linear equations
+// Term 2: Algebra review, relations/functions, quadratics, sequences, formulas, proportion
 const mathReadingByWeek: Record<number, ReadingContent> = {
   1: {
-    title: "Introduction to Algebra and Variables",
-    content: `Algebra is a branch of mathematics that uses letters and symbols to represent numbers and quantities in formulas and equations. These letters are called variables because their values can vary or change.
+    title: "Problem Solving and the Real Number System",
+    content: `Mathematics is fundamentally about problem solving. George Polya developed a famous four-step approach that helps tackle any mathematical problem systematically.
 
-A variable like 'x' is simply a placeholder for a number we don't know yet. For example, if you have 5 apples and someone gives you more, you could write: 5 + x = total apples, where x represents how many you received.
+Polya's Four Steps:
+1. Understand the Problem: What are you asked to find? What information is given? What are the conditions?
+2. Devise a Plan: How can you connect the given information to what you need to find? Consider strategies like drawing a diagram, looking for patterns, working backwards, or breaking the problem into smaller parts.
+3. Carry Out the Plan: Execute your strategy step by step, checking each step as you go.
+4. Look Back: Check your answer. Does it make sense? Could you solve it differently?
 
-Terms are parts of an expression separated by + or - signs. In the expression 3x + 2y - 5, there are three terms: 3x, 2y, and -5. The numbers in front of variables (like 3 and 2) are called coefficients.
+The Real Number System:
+All numbers we use can be classified into the real number system:
+- Natural numbers (N): Counting numbers 1, 2, 3, ...
+- Whole numbers (W): Natural numbers plus zero
+- Integers (Z): Whole numbers and their negatives ..., -2, -1, 0, 1, 2, ...
+- Rational numbers (Q): Numbers expressible as fractions a/b where b ≠ 0
+- Irrational numbers: Numbers that cannot be expressed as fractions (like π, √2)
 
-Like terms are terms with exactly the same variables raised to the same power. You can only combine like terms: 3x + 5x = 8x, but 3x + 5y cannot be simplified because x and y are different variables.
-
-Understanding these basic concepts is essential for solving equations and working with more complex mathematical problems throughout the year.`,
+Together, rational and irrational numbers form the real numbers (R).`,
     keyPoints: [
-      "Variables are letters representing unknown numbers",
-      "Terms are separated by + or - signs",
-      "Coefficients are numbers multiplied by variables",
-      "Like terms have the same variable and can be combined"
+      "Polya's 4 steps: Understand, Plan, Execute, Check",
+      "Natural ⊂ Whole ⊂ Integers ⊂ Rational ⊂ Real",
+      "Irrational numbers cannot be written as fractions",
+      "Apply systematic problem-solving to all mathematics"
     ]
   },
   2: {
-    title: "Solving Linear Equations",
-    content: `A linear equation is an equation where the highest power of the variable is 1. Examples include 2x + 3 = 7 and 5y - 2 = 13. The goal is to find the value of the variable that makes the equation true.
+    title: "Laws of Exponents",
+    content: `Exponents (or indices) are a shorthand way of writing repeated multiplication. Understanding the laws of exponents is essential for simplifying expressions and solving equations.
 
-The Golden Rule of Equations: Whatever you do to one side, you must do to the other. This keeps the equation balanced. Think of it like a balance scale - both sides must always be equal.
+The Laws of Exponents:
 
-Step-by-step approach:
-1. Simplify each side by combining like terms
-2. Move variable terms to one side using addition/subtraction
-3. Move constant terms to the other side
-4. Divide both sides by the coefficient of the variable
+1. Product Rule: aᵐ × aⁿ = aᵐ⁺ⁿ
+When multiplying same bases, add the exponents.
+Example: 2³ × 2⁴ = 2⁷ = 128
 
-Example: Solve 3x + 7 = 16
-Step 1: Subtract 7 from both sides: 3x = 9
-Step 2: Divide both sides by 3: x = 3
-Check: 3(3) + 7 = 9 + 7 = 16 ✓
+2. Quotient Rule: aᵐ ÷ aⁿ = aᵐ⁻ⁿ
+When dividing same bases, subtract the exponents.
+Example: 5⁶ ÷ 5² = 5⁴ = 625
 
-Always check your answer by substituting it back into the original equation.`,
+3. Power Rule: (aᵐ)ⁿ = aᵐˣⁿ
+When raising a power to a power, multiply the exponents.
+Example: (3²)⁴ = 3⁸ = 6561
+
+4. Zero Exponent: a⁰ = 1 (where a ≠ 0)
+Any non-zero number raised to the power of zero equals 1.
+
+5. Negative Exponent: a⁻ⁿ = 1/aⁿ
+A negative exponent means the reciprocal.
+Example: 2⁻³ = 1/2³ = 1/8
+
+6. Power of a Product: (ab)ⁿ = aⁿbⁿ
+7. Power of a Quotient: (a/b)ⁿ = aⁿ/bⁿ`,
     keyPoints: [
-      "Linear equations have variables with power of 1",
-      "Keep the equation balanced - same operation on both sides",
-      "Isolate the variable step by step",
-      "Always check your answer by substitution"
+      "Multiply same base: add exponents (aᵐ × aⁿ = aᵐ⁺ⁿ)",
+      "Divide same base: subtract exponents (aᵐ ÷ aⁿ = aᵐ⁻ⁿ)",
+      "Power to power: multiply exponents ((aᵐ)ⁿ = aᵐˣⁿ)",
+      "a⁰ = 1 and a⁻ⁿ = 1/aⁿ"
     ]
   },
   3: {
-    title: "Equations with Brackets and Fractions",
-    content: `When equations contain brackets, use the distributive property to expand them first. The distributive property states: a(b + c) = ab + ac.
+    title: "Units and Measurements",
+    content: `Understanding units and being able to convert between them is essential for solving real-world problems. The metric system is based on powers of 10, making conversions straightforward.
 
-Example with brackets: 2(x + 3) = 14
-Step 1: Expand: 2x + 6 = 14
-Step 2: Subtract 6: 2x = 8
-Step 3: Divide by 2: x = 4
+Metric Prefixes:
+- kilo (k) = 1000
+- hecto (h) = 100
+- deca (da) = 10
+- base unit = 1
+- deci (d) = 0.1
+- centi (c) = 0.01
+- milli (m) = 0.001
 
-For equations with the variable on both sides, collect variables on one side and numbers on the other.
+Length Conversions:
+1 km = 1000 m, 1 m = 100 cm = 1000 mm
 
-Example: 5x - 3 = 2x + 9
-Step 1: Subtract 2x from both sides: 3x - 3 = 9
-Step 2: Add 3 to both sides: 3x = 12
-Step 3: Divide by 3: x = 4
+Area Conversions:
+Since area is length × length, we square the conversion factor.
+1 m² = 10,000 cm² (because 1 m = 100 cm, so 100² = 10,000)
+1 km² = 1,000,000 m²
 
-Equations with fractions: Multiply every term by the denominator to eliminate fractions.
+Volume Conversions:
+Since volume is length × length × length, we cube the conversion factor.
+1 m³ = 1,000,000 cm³
+1 L = 1000 mL = 1000 cm³
 
-Example: x/4 + 2 = 5
-Step 1: Multiply everything by 4: x + 8 = 20
-Step 2: Subtract 8: x = 12`,
+Compound Measures:
+Speed = distance/time (km/h or m/s)
+Density = mass/volume (g/cm³ or kg/m³)
+Pressure = force/area (Pa or N/m²)
+
+To convert km/h to m/s: multiply by 1000/3600 = 5/18`,
     keyPoints: [
-      "Use distributive property to expand brackets: a(b+c) = ab + ac",
-      "Collect variables on one side, constants on the other",
-      "Multiply by denominator to eliminate fractions",
-      "Take it step by step and check your work"
+      "Metric system is based on powers of 10",
+      "Area units: square the conversion factor",
+      "Volume units: cube the conversion factor",
+      "Compound measures combine multiple units"
     ]
   },
   4: {
-    title: "Introduction to Linear Graphs",
-    content: `Linear equations can be represented visually as straight lines on a coordinate plane. The standard form of a linear equation is y = mx + b, where m is the gradient (slope) and b is the y-intercept.
+    title: "Surds, Roots and Radicals",
+    content: `A surd (or radical) is a root that cannot be simplified to a whole number. Understanding how to work with surds is important for exact calculations.
 
-The gradient (m) tells you how steep the line is and whether it goes up or down:
-- Positive gradient: line goes up from left to right
-- Negative gradient: line goes down from left to right
-- Larger number = steeper line
+What is a Surd?
+√4 = 2 (not a surd - it's rational)
+√5 ≈ 2.236... (a surd - it's irrational)
 
-The y-intercept (b) is where the line crosses the y-axis. This happens when x = 0.
+Simplifying Surds:
+To simplify a surd, find the largest perfect square factor.
+√72 = √(36 × 2) = √36 × √2 = 6√2
+√50 = √(25 × 2) = √25 × √2 = 5√2
 
-To graph a linear equation:
-1. Find the y-intercept (set x = 0)
-2. Find another point by substituting any x value
-3. Draw a straight line through both points
+Rules for Radicals:
+1. √a × √b = √(ab)
+2. √a ÷ √b = √(a/b)
+3. √a² = |a| (absolute value)
+4. (√a)² = a
 
-Example: y = 2x + 1
-When x = 0: y = 1 (y-intercept)
-When x = 1: y = 3
-When x = 2: y = 5
-Plot these points and connect them with a straight line.`,
+Adding and Subtracting Surds:
+You can only combine like surds (same number under the root).
+3√2 + 5√2 = 8√2
+√50 + √18 = 5√2 + 3√2 = 8√2
+
+Multiplying Surds:
+√3 × √5 = √15
+2√3 × 4√5 = 8√15
+
+Rationalising the Denominator:
+To remove a surd from the denominator, multiply by a form of 1.
+1/√2 = 1/√2 × √2/√2 = √2/2`,
     keyPoints: [
-      "Linear equations graph as straight lines",
-      "y = mx + b: m is gradient, b is y-intercept",
-      "Positive gradient slopes up, negative slopes down",
-      "Find at least two points to draw the line"
+      "Surds are irrational roots like √2, √3, √5",
+      "Simplify by finding largest perfect square factor",
+      "Only combine like surds (same radical)",
+      "Rationalise denominators by multiplying by √n/√n"
     ]
   },
   5: {
-    title: "Gradient and Y-Intercept",
-    content: `The gradient of a line measures its steepness and direction. It tells you how much y changes when x increases by 1.
+    title: "Absolute Value",
+    content: `Absolute value represents the distance of a number from zero on the number line. Distance is always positive, so absolute value is always non-negative.
 
-Calculating gradient from two points:
-Gradient (m) = rise/run = (y₂ - y₁)/(x₂ - x₁)
+Definition:
+|a| = a if a ≥ 0
+|a| = -a if a < 0
 
-Example: Find the gradient between (2, 3) and (4, 7)
-m = (7 - 3)/(4 - 2) = 4/2 = 2
+In words: If the number is positive or zero, keep it. If negative, make it positive.
 
-This means for every 1 unit increase in x, y increases by 2 units.
+Examples:
+|7| = 7
+|-7| = 7
+|0| = 0
 
-Finding the equation of a line:
-1. Calculate the gradient using two points
-2. Use one point and the gradient in y = mx + b to find b
-3. Write the full equation
+Properties of Absolute Value:
+1. |a| ≥ 0 (always non-negative)
+2. |a| = |-a| (distance is the same in both directions)
+3. |ab| = |a| × |b|
+4. |a/b| = |a|/|b| (where b ≠ 0)
+5. |a + b| ≤ |a| + |b| (triangle inequality)
 
-Special cases:
-- Horizontal lines (like y = 3) have gradient 0
-- Vertical lines (like x = 2) have undefined gradient
-- Parallel lines have the same gradient
-- Perpendicular lines have gradients that multiply to -1`,
+Solving Absolute Value Equations:
+If |x| = 5, then x = 5 or x = -5
+If |x - 3| = 7, then x - 3 = 7 or x - 3 = -7
+So x = 10 or x = -4
+
+Solving Absolute Value Inequalities:
+|x| < 3 means -3 < x < 3
+|x| > 3 means x < -3 or x > 3`,
     keyPoints: [
-      "Gradient = rise/run = change in y / change in x",
-      "Positive gradient goes up, negative goes down",
-      "Horizontal lines have gradient 0",
-      "Parallel lines have equal gradients"
+      "Absolute value = distance from zero",
+      "|a| is always non-negative",
+      "|x| = k has two solutions: x = k or x = -k",
+      "|x| < k means -k < x < k"
     ]
   },
   6: {
-    title: "Simultaneous Equations",
-    content: `Simultaneous equations are two or more equations with the same variables that must be solved together. The solution is the point where both equations are true at the same time.
+    title: "Making Generalisations and Patterns",
+    content: `Finding patterns and making generalisations is at the heart of algebra. By identifying patterns in specific examples, we can write general rules that work for any case.
 
-Graphically, the solution is where two lines intersect.
+Looking for Patterns:
+Consider the sum of the first n odd numbers:
+1 = 1 = 1²
+1 + 3 = 4 = 2²
+1 + 3 + 5 = 9 = 3²
+1 + 3 + 5 + 7 = 16 = 4²
+
+Pattern: The sum of the first n odd numbers equals n².
+
+Steps to Find Patterns:
+1. List several specific examples
+2. Look for relationships between inputs and outputs
+3. Test your pattern with more examples
+4. Write a general rule using algebra
+5. Prove it works for all cases
+
+Types of Patterns:
+Linear patterns: Increase by a constant amount (2, 5, 8, 11...)
+Quadratic patterns: Second differences are constant (1, 4, 9, 16...)
+Geometric patterns: Multiply by a constant (2, 6, 18, 54...)
+
+Writing Generalisations:
+If the nth term of a sequence is aₙ:
+Linear: aₙ = dn + c (where d is common difference)
+Quadratic: aₙ = an² + bn + c
+
+Using patterns to solve problems allows us to find answers for any value of n without calculating every case.`,
+    keyPoints: [
+      "Look for patterns in specific examples",
+      "Test patterns with more examples before generalising",
+      "Linear patterns have constant first differences",
+      "Quadratic patterns have constant second differences"
+    ]
+  },
+  7: {
+    title: "NAPLAN Preparation - Review Week",
+    content: `This week focuses on consolidating skills for NAPLAN. Review the key mathematical concepts and practice applying them in various contexts.
+
+Number and Algebra Review:
+- Place value and number operations
+- Fractions, decimals, and percentages
+- Ratio and proportion
+- Order of operations (BODMAS)
+- Algebraic expressions and equations
+
+Measurement and Geometry Review:
+- Perimeter, area, and volume
+- Angles and shapes
+- Coordinate geometry
+- Time and rates
+
+Statistics and Probability Review:
+- Mean, median, mode, range
+- Reading graphs and tables
+- Probability calculations
+
+NAPLAN Tips:
+1. Read questions carefully - identify what's being asked
+2. Show your working - even for multiple choice
+3. Check units match in your answer
+4. Use estimation to check if answers are reasonable
+5. Manage your time - don't spend too long on one question
+6. If stuck, move on and come back later
+
+Practice applying Polya's problem-solving steps to unfamiliar questions. Many NAPLAN questions test understanding rather than just procedures.`,
+    keyPoints: [
+      "Review number, algebra, measurement, statistics",
+      "Read questions carefully before solving",
+      "Check that answers are reasonable",
+      "Manage time effectively during the test"
+    ]
+  },
+  8: {
+    title: "Coordinate Geometry",
+    content: `Coordinate geometry connects algebra and geometry by using coordinates to describe positions and relationships on a plane.
+
+The Coordinate Plane:
+- Horizontal axis (x-axis) and vertical axis (y-axis)
+- Origin (0, 0) is where axes meet
+- Points are written as ordered pairs (x, y)
+
+Distance Between Two Points:
+The distance between (x₁, y₁) and (x₂, y₂) is:
+d = √[(x₂ - x₁)² + (y₂ - y₁)²]
+
+This comes from Pythagoras' theorem.
+Example: Distance from (1, 2) to (4, 6)
+d = √[(4-1)² + (6-2)²] = √[9 + 16] = √25 = 5
+
+Midpoint Between Two Points:
+The midpoint of the line segment joining (x₁, y₁) and (x₂, y₂) is:
+M = ((x₁ + x₂)/2, (y₁ + y₂)/2)
+
+Example: Midpoint of (2, 3) and (8, 7)
+M = ((2+8)/2, (3+7)/2) = (5, 5)
+
+Gradient (Slope):
+The gradient measures steepness and direction.
+m = (y₂ - y₁)/(x₂ - x₁) = rise/run
+
+Positive gradient: line goes up from left to right
+Negative gradient: line goes down from left to right
+Zero gradient: horizontal line
+Undefined: vertical line`,
+    keyPoints: [
+      "Distance formula: d = √[(x₂-x₁)² + (y₂-y₁)²]",
+      "Midpoint formula: M = ((x₁+x₂)/2, (y₁+y₂)/2)",
+      "Gradient = rise/run = (y₂-y₁)/(x₂-x₁)",
+      "Positive gradient goes up, negative goes down"
+    ]
+  },
+  9: {
+    title: "Linear Equations and Systems",
+    content: `Linear equations form straight lines when graphed. Solving systems of linear equations means finding where two lines intersect.
+
+Equation of a Straight Line:
+Gradient-intercept form: y = mx + c
+- m is the gradient
+- c is the y-intercept
+
+Finding the Equation:
+Given gradient m and a point (x₁, y₁):
+y - y₁ = m(x - x₁)
+
+Solving Linear Equations:
+The goal is to isolate the variable.
+Example: 3x + 7 = 16
+3x = 16 - 7 = 9
+x = 3
+
+Systems of Linear Equations:
+Two equations with two unknowns - find values that satisfy both.
 
 Substitution Method:
 1. Solve one equation for a variable
 2. Substitute into the other equation
-3. Solve for the remaining variable
-4. Substitute back to find the other variable
-
-Example: y = 2x + 1 and x + y = 7
-Step 1: Substitute y = 2x + 1 into x + y = 7
-Step 2: x + (2x + 1) = 7
-Step 3: 3x + 1 = 7, so 3x = 6, x = 2
-Step 4: y = 2(2) + 1 = 5
-Solution: (2, 5)
+3. Solve and substitute back
 
 Elimination Method:
-1. Multiply equations so one variable has the same coefficient
-2. Add or subtract to eliminate that variable
-3. Solve and substitute back`,
+1. Multiply equations so coefficients match
+2. Add or subtract to eliminate a variable
+3. Solve and substitute back
+
+Example: x + y = 10, x - y = 4
+Adding: 2x = 14, so x = 7
+Substituting: 7 + y = 10, so y = 3
+
+Real-Life Modelling:
+Linear equations can model situations with constant rates of change, such as distance-time relationships, cost functions, or depreciation.`,
     keyPoints: [
-      "Simultaneous equations share the same variables",
-      "Solution is where both equations are true",
-      "Use substitution when one variable is already isolated",
-      "Use elimination when coefficients can be matched"
-    ]
-  },
-  7: {
-    title: "Expanding and Factorising",
-    content: `Expanding means removing brackets by multiplying. Factorising means putting brackets back in - it's the reverse of expanding.
-
-Expanding single brackets: Multiply the term outside by each term inside.
-3(x + 4) = 3x + 12
--2(y - 5) = -2y + 10
-
-Expanding double brackets using FOIL:
-(x + 2)(x + 3)
-First: x × x = x²
-Outer: x × 3 = 3x
-Inner: 2 × x = 2x
-Last: 2 × 3 = 6
-Result: x² + 3x + 2x + 6 = x² + 5x + 6
-
-Common factorising:
-Find the highest common factor (HCF) of all terms.
-6x + 9 = 3(2x + 3)
-4x² - 8x = 4x(x - 2)
-
-Factorising quadratics (x² + bx + c):
-Find two numbers that multiply to c and add to b.
-x² + 7x + 12 = (x + 3)(x + 4)
-because 3 × 4 = 12 and 3 + 4 = 7`,
-    keyPoints: [
-      "Expanding removes brackets by multiplying",
-      "FOIL: First, Outer, Inner, Last for double brackets",
-      "Factorising is the reverse of expanding",
-      "For x² + bx + c, find numbers that multiply to c, add to b"
-    ]
-  },
-  8: {
-    title: "Introduction to Quadratic Equations",
-    content: `A quadratic equation has the form ax² + bx + c = 0, where a ≠ 0. The highest power of x is 2, which creates a U-shaped curve called a parabola when graphed.
-
-Solving by Factorising:
-1. Write the equation in standard form (= 0)
-2. Factorise the quadratic expression
-3. Set each bracket equal to zero
-4. Solve for x
-
-Example: x² + 5x + 6 = 0
-Step 1: Factorise: (x + 2)(x + 3) = 0
-Step 2: Either x + 2 = 0 or x + 3 = 0
-Step 3: x = -2 or x = -3
-
-Why two answers? A quadratic can cross the x-axis at two points, one point, or no points.
-
-Special cases:
-- x² - 9 = 0 → (x + 3)(x - 3) = 0 → x = ±3 (difference of squares)
-- x² - 6x = 0 → x(x - 6) = 0 → x = 0 or x = 6 (common factor)
-- x² + 4 = 0 has no real solutions (can't square to get negative)`,
-    keyPoints: [
-      "Quadratic equations have x² as highest power",
-      "Graph as U-shaped parabola",
-      "Factorise and set each bracket to zero",
-      "Usually have two solutions"
-    ]
-  },
-  9: {
-    title: "The Quadratic Formula",
-    content: `When a quadratic equation cannot be easily factorised, use the quadratic formula:
-
-x = (-b ± √(b² - 4ac)) / 2a
-
-For the equation ax² + bx + c = 0, identify a, b, and c, then substitute into the formula.
-
-Example: 2x² + 5x - 3 = 0
-Here: a = 2, b = 5, c = -3
-
-x = (-5 ± √(25 - 4(2)(-3))) / (2 × 2)
-x = (-5 ± √(25 + 24)) / 4
-x = (-5 ± √49) / 4
-x = (-5 ± 7) / 4
-
-x = (-5 + 7)/4 = 2/4 = 0.5
-or x = (-5 - 7)/4 = -12/4 = -3
-
-The Discriminant (b² - 4ac) tells us about solutions:
-- If > 0: two different real solutions
-- If = 0: one repeated solution (touches x-axis once)
-- If < 0: no real solutions (parabola doesn't cross x-axis)`,
-    keyPoints: [
-      "Formula: x = (-b ± √(b² - 4ac)) / 2a",
-      "Identify a, b, c from ax² + bx + c = 0",
-      "The ± gives two possible solutions",
-      "Discriminant determines number of solutions"
+      "y = mx + c: m is gradient, c is y-intercept",
+      "Use substitution when one equation is already solved",
+      "Use elimination when coefficients can be matched",
+      "Check solutions in both original equations"
     ]
   },
   10: {
-    title: "Pythagoras' Theorem",
-    content: `Pythagoras' Theorem applies to right-angled triangles only. It states that the square of the hypotenuse equals the sum of squares of the other two sides.
+    title: "Algebra Review: Simplifying and Expanding",
+    content: `Term 2 begins with consolidating algebraic skills. Being fluent with simplifying, expanding, and factorising is essential for working with functions and equations.
 
-a² + b² = c²
+Simplifying Algebraic Expressions:
+Combine like terms - terms with the same variables raised to the same power.
+3x + 5y - 2x + 3y = x + 8y
+4a²b - 2ab² + 3a²b = 7a²b - 2ab²
 
-The hypotenuse (c) is always the longest side, opposite the right angle.
+Expanding Single Brackets:
+Multiply the term outside by each term inside.
+3(x + 4) = 3x + 12
+-2(3y - 5) = -6y + 10
+x(x + 3) = x² + 3x
 
-Finding the hypotenuse:
-If a = 3 and b = 4:
-c² = 3² + 4² = 9 + 16 = 25
-c = √25 = 5
+Expanding Double Brackets (FOIL):
+(x + 2)(x + 5)
+= x² + 5x + 2x + 10
+= x² + 7x + 10
 
-Finding a shorter side:
-If c = 13 and a = 5:
-b² = c² - a² = 169 - 25 = 144
-b = √144 = 12
+First × First, Outer × Outer, Inner × Inner, Last × Last
 
-Real-world applications:
-- Finding distances on maps
-- Checking if corners are right angles
-- Calculating diagonal lengths
-- Height and distance problems
+Special Products:
+Perfect square: (a + b)² = a² + 2ab + b²
+Perfect square: (a - b)² = a² - 2ab + b²
+Difference of squares: (a + b)(a - b) = a² - b²
 
-Pythagorean triples are whole number sets that work perfectly:
-3, 4, 5 | 5, 12, 13 | 8, 15, 17 | 7, 24, 25`,
+Factorising (reverse of expanding):
+Common factor: 6x + 9 = 3(2x + 3)
+Grouping: ax + ay + bx + by = a(x+y) + b(x+y) = (a+b)(x+y)`,
     keyPoints: [
-      "Only works for right-angled triangles",
-      "a² + b² = c² where c is the hypotenuse",
-      "Hypotenuse is longest side, opposite the right angle",
-      "Take square root as the final step"
+      "Combine like terms when simplifying",
+      "Use FOIL for double brackets",
+      "(a+b)² = a² + 2ab + b²",
+      "(a+b)(a-b) = a² - b²"
     ]
   },
   11: {
-    title: "Introduction to Trigonometry",
-    content: `Trigonometry studies the relationships between angles and sides in right-angled triangles. The three main ratios are sine, cosine, and tangent.
+    title: "Relations and Functions",
+    content: `Functions are a fundamental concept in mathematics, describing relationships where each input has exactly one output.
 
-For any angle θ in a right triangle:
-- Opposite side: across from the angle
-- Adjacent side: next to the angle (not the hypotenuse)
-- Hypotenuse: longest side, opposite the right angle
+Relations vs Functions:
+A relation is any set of ordered pairs.
+A function is a special relation where each x-value maps to exactly one y-value.
 
-The ratios - remember SOH CAH TOA:
-sin θ = Opposite / Hypotenuse (SOH)
-cos θ = Adjacent / Hypotenuse (CAH)
-tan θ = Opposite / Adjacent (TOA)
+Testing for Functions:
+Vertical Line Test: If any vertical line crosses the graph more than once, it's NOT a function.
 
-Example: In a triangle with angle 30°, opposite = 5, hypotenuse = 10
-sin 30° = 5/10 = 0.5
+Mapping Diagrams:
+Show how each input maps to outputs.
+If any input has more than one arrow leaving it, it's not a function.
 
-Finding a side:
-If θ = 40° and hypotenuse = 15, find opposite:
-sin 40° = opposite/15
-opposite = 15 × sin 40° = 15 × 0.643 = 9.64
+Function Notation:
+f(x) reads as "f of x" - the output when x is input.
+If f(x) = 2x + 3:
+f(1) = 2(1) + 3 = 5
+f(-2) = 2(-2) + 3 = -1
 
-Finding an angle:
-If opposite = 7 and hypotenuse = 10:
-sin θ = 7/10 = 0.7
-θ = sin⁻¹(0.7) = 44.4°`,
+Domain and Range:
+Domain: All possible input values (x-values)
+Range: All possible output values (y-values)
+
+For f(x) = √x:
+Domain: x ≥ 0 (can't take square root of negative)
+Range: y ≥ 0 (square root is always non-negative)
+
+Evaluating Functions:
+To find f(a), substitute a for x in the function rule.
+To find x when f(x) = k, solve the equation.`,
     keyPoints: [
-      "SOH CAH TOA - sine, cosine, tangent ratios",
-      "Identify opposite, adjacent, hypotenuse from the angle",
-      "Use calculator for trig values",
-      "Inverse trig functions find angles from ratios"
+      "Functions: each input has exactly one output",
+      "Vertical line test identifies functions",
+      "f(x) notation: f(2) means substitute x = 2",
+      "Domain = inputs, Range = outputs"
     ]
   },
   12: {
-    title: "Applications of Trigonometry",
-    content: `Trigonometry has many practical applications for measuring heights, distances, and angles in real-world situations.
+    title: "Quadratic Expressions",
+    content: `Quadratic expressions contain a variable squared as the highest power. Learning to factorise them is key to solving quadratic equations.
 
-Angles of elevation and depression:
-- Angle of elevation: looking UP from horizontal
-- Angle of depression: looking DOWN from horizontal
-These are always measured from the horizontal line.
+Standard Form:
+ax² + bx + c where a ≠ 0
 
-Problem-solving approach:
-1. Draw a clear diagram
-2. Mark the right angle
-3. Label known sides and angles
-4. Choose the appropriate ratio (SOH CAH TOA)
-5. Set up and solve the equation
+Factorising when a = 1 (Monic Quadratics):
+x² + bx + c = (x + m)(x + n)
+where m × n = c and m + n = b
 
-Example: A ladder leans against a wall. If the ladder is 5m long and makes a 70° angle with the ground, how high up the wall does it reach?
+Example: x² + 7x + 12
+Need: m × n = 12 and m + n = 7
+Factors of 12: 1×12, 2×6, 3×4
+3 + 4 = 7 ✓
+So x² + 7x + 12 = (x + 3)(x + 4)
 
-Draw the triangle: hypotenuse = 5m, angle = 70°, finding opposite (height)
-sin 70° = height/5
-height = 5 × sin 70° = 5 × 0.940 = 4.7m
+Factorising when a ≠ 1 (Non-Monic):
+2x² + 7x + 3
+Product: 2 × 3 = 6
+Sum: 7
+Factors: 1 and 6 (1 × 6 = 6, 1 + 6 = 7)
+Rewrite: 2x² + x + 6x + 3
+Group: x(2x + 1) + 3(2x + 1)
+Factor: (x + 3)(2x + 1)
 
-Always check: Does the answer make sense? The height should be less than the ladder length.`,
+Special Cases:
+Difference of squares: x² - 16 = (x + 4)(x - 4)
+Perfect square: x² + 6x + 9 = (x + 3)²
+
+Always check by expanding your answer!`,
     keyPoints: [
-      "Elevation = looking up, Depression = looking down",
-      "Always draw a diagram first",
-      "Choose the right ratio based on given information",
-      "Check if your answer is reasonable"
+      "Find two numbers that multiply to c and add to b",
+      "For non-monic: use the product-sum method",
+      "x² - a² = (x + a)(x - a)",
+      "Always check by expanding"
     ]
   },
   13: {
-    title: "Statistics: Data Collection and Representation",
-    content: `Statistics involves collecting, organising, displaying, and interpreting data to understand patterns and make decisions.
+    title: "Representing Quadratic Functions",
+    content: `Quadratic functions create parabolas when graphed. Understanding different forms helps us identify key features.
 
-Types of data:
-- Categorical (qualitative): labels or categories (colours, names)
-- Numerical (quantitative): numbers you can calculate with
-  - Discrete: counted values (number of students)
-  - Continuous: measured values (height, weight)
+Three Forms of Quadratics:
+1. Standard form: y = ax² + bx + c
+   - a determines if parabola opens up (a > 0) or down (a < 0)
+   - c is the y-intercept
 
-Data collection methods:
-- Surveys and questionnaires
-- Observations
-- Experiments
-- Census (entire population) vs Sample (subset)
+2. Factorised form: y = a(x - p)(x - q)
+   - p and q are the x-intercepts (roots)
+   - Axis of symmetry: x = (p + q)/2
 
-Displaying data:
-- Bar graphs: categorical data, compare frequencies
-- Histograms: continuous numerical data, bars touch
-- Pie charts: show proportions of a whole
-- Stem-and-leaf plots: show distribution while keeping original values
-- Scatter plots: relationship between two numerical variables
+3. Vertex form: y = a(x - h)² + k
+   - (h, k) is the vertex (turning point)
+   - Axis of symmetry: x = h
 
-Choosing the right graph depends on your data type and what you want to show. Bar graphs compare categories, histograms show distributions, and scatter plots reveal relationships.`,
+Finding the Vertex:
+From standard form y = ax² + bx + c:
+x-coordinate: x = -b/(2a)
+y-coordinate: Substitute x back into equation
+
+Example: y = x² - 6x + 8
+x = -(-6)/(2×1) = 3
+y = (3)² - 6(3) + 8 = 9 - 18 + 8 = -1
+Vertex: (3, -1)
+
+Converting to Vertex Form (Completing the Square):
+y = x² - 6x + 8
+y = (x² - 6x + 9) - 9 + 8
+y = (x - 3)² - 1
+
+Key Features:
+- Vertex (turning point)
+- Axis of symmetry
+- x-intercepts (if they exist)
+- y-intercept
+- Direction (opens up or down)`,
     keyPoints: [
-      "Categorical vs Numerical (discrete/continuous)",
-      "Choose appropriate graphs for data type",
-      "Histograms for continuous data, bars touch",
-      "Scatter plots show relationships between variables"
+      "Standard form: y = ax² + bx + c (y-intercept = c)",
+      "Factorised form: y = a(x-p)(x-q) (roots at p and q)",
+      "Vertex form: y = a(x-h)² + k (vertex at (h,k))",
+      "Axis of symmetry: x = -b/(2a)"
     ]
   },
   14: {
-    title: "Measures of Centre and Spread",
-    content: `Measures of centre describe the 'typical' value in a dataset. The three main measures are mean, median, and mode.
+    title: "Solving Quadratic Equations",
+    content: `A quadratic equation is when a quadratic expression equals zero. There are several methods to find the solutions (roots).
 
-Mean (average): Add all values and divide by how many there are.
-Example: 3, 5, 7, 8, 12 → Mean = (3+5+7+8+12)/5 = 35/5 = 7
+Method 1: Factorising
+If x² - 5x + 6 = 0
+Factorise: (x - 2)(x - 3) = 0
+If product = 0, one factor must be 0:
+x - 2 = 0 or x - 3 = 0
+x = 2 or x = 3
 
-Median: The middle value when data is ordered.
-For odd count: middle number
-For even count: average of two middle numbers
-Example: 3, 5, 7, 8, 12 → Median = 7 (middle value)
+Method 2: Quadratic Formula
+For ax² + bx + c = 0:
+x = (-b ± √(b² - 4ac)) / (2a)
 
-Mode: Most frequent value. There can be no mode, one mode, or multiple modes.
+The Discriminant (Δ = b² - 4ac):
+- Δ > 0: Two distinct real solutions
+- Δ = 0: One repeated solution
+- Δ < 0: No real solutions
 
-Choosing the right measure:
-- Mean is affected by extreme values (outliers)
-- Median is resistant to outliers - better for skewed data
-- Mode is useful for categorical data
+Example: 2x² + 5x - 3 = 0
+a = 2, b = 5, c = -3
+Δ = 25 - 4(2)(-3) = 25 + 24 = 49
+x = (-5 ± 7)/4
+x = 2/4 = 0.5 or x = -12/4 = -3
 
-Measures of spread show how spread out data is:
-- Range = highest - lowest (simple but affected by outliers)
-- Interquartile Range (IQR) = Q3 - Q1 (middle 50% of data)
-- Standard deviation measures average distance from mean`,
+Method 3: Graphically
+The solutions are where the parabola crosses the x-axis.
+
+Real-Life Applications:
+Projectile motion: height = -4.9t² + v₀t + h₀
+Optimisation problems (finding maximum/minimum)
+Area problems`,
     keyPoints: [
-      "Mean = sum of values ÷ number of values",
-      "Median = middle value when ordered",
-      "Median is better when outliers exist",
-      "Range and IQR measure spread of data"
+      "Factorise and set each bracket to zero",
+      "Quadratic formula: x = (-b ± √(b²-4ac))/2a",
+      "Discriminant tells number of solutions",
+      "Solutions are x-intercepts of the parabola"
     ]
   },
   15: {
-    title: "Probability Fundamentals",
-    content: `Probability measures how likely an event is to occur, expressed as a number between 0 and 1 (or 0% to 100%).
+    title: "Sequences",
+    content: `A sequence is an ordered list of numbers following a pattern. Understanding sequences helps model many real-world situations.
 
-Probability = Number of favourable outcomes / Total number of outcomes
+Key Terms:
+- Term: Each number in the sequence
+- First term (a₁ or a): The starting value
+- Common difference (d): Amount added each time (arithmetic)
+- Common ratio (r): Amount multiplied each time (geometric)
 
-Probability scale:
-- 0 = impossible
-- 0.5 = equally likely (50-50)
-- 1 = certain
+Arithmetic Sequences:
+Each term is found by adding a constant.
+2, 5, 8, 11, 14, ... (d = 3)
 
-Example: Rolling a standard die
-P(rolling a 4) = 1/6 (one 4 out of 6 numbers)
-P(rolling even) = 3/6 = 1/2 (three even numbers: 2, 4, 6)
-P(rolling less than 7) = 6/6 = 1 (certain)
+Explicit formula: aₙ = a₁ + (n-1)d
+Recursive formula: aₙ = aₙ₋₁ + d
 
-Complement: P(not A) = 1 - P(A)
-If P(rain) = 0.3, then P(no rain) = 1 - 0.3 = 0.7
+Example: First term 3, common difference 4
+aₙ = 3 + (n-1)×4 = 3 + 4n - 4 = 4n - 1
 
-Independent events: One doesn't affect the other.
-P(A and B) = P(A) × P(B) for independent events
+Geometric Sequences:
+Each term is found by multiplying by a constant.
+2, 6, 18, 54, ... (r = 3)
 
-Example: Flipping heads twice
-P(H and H) = 1/2 × 1/2 = 1/4`,
+Explicit formula: aₙ = a₁ × r^(n-1)
+Recursive formula: aₙ = aₙ₋₁ × r
+
+Finding the Pattern:
+1. Calculate differences between consecutive terms
+2. If differences are constant → arithmetic
+3. If differences are not constant, check ratios
+4. If ratios are constant → geometric
+
+Real-Life Examples:
+- Simple interest (arithmetic)
+- Compound interest (geometric)
+- Population growth (geometric)`,
     keyPoints: [
-      "Probability ranges from 0 (impossible) to 1 (certain)",
-      "P = favourable outcomes / total outcomes",
-      "Complement: P(not A) = 1 - P(A)",
-      "Independent events: multiply probabilities"
+      "Arithmetic: add constant (aₙ = a₁ + (n-1)d)",
+      "Geometric: multiply constant (aₙ = a₁ × r^(n-1))",
+      "Constant differences → arithmetic sequence",
+      "Constant ratios → geometric sequence"
     ]
   },
   16: {
-    title: "Area and Volume",
-    content: `Area measures the space inside a 2D shape. Volume measures the space inside a 3D object.
+    title: "Rearranging Formulas and Proportion",
+    content: `Being able to rearrange formulas and understand proportional relationships are essential skills for applying mathematics to real situations.
 
-Area formulas:
-- Rectangle: A = length × width
-- Triangle: A = (1/2) × base × height
-- Parallelogram: A = base × height
-- Trapezium: A = (1/2) × (a + b) × height
-- Circle: A = πr²
+Changing the Subject of a Formula:
+Use inverse operations to isolate the desired variable.
 
-Volume formulas:
-- Rectangular prism: V = length × width × height
-- Cylinder: V = πr²h
-- Triangular prism: V = (1/2) × base × height × length
-- Sphere: V = (4/3)πr³
-- Cone: V = (1/3)πr²h
+Example: Make r the subject of A = πr²
+A/π = r²
+r = √(A/π)
 
-Surface area is the total area of all surfaces of a 3D shape.
-- Rectangular prism: SA = 2(lw + lh + wh)
-- Cylinder: SA = 2πr² + 2πrh
+Example: Make t the subject of v = u + at
+v - u = at
+t = (v - u)/a
 
-Always include units! Area is in square units (cm², m²), volume is in cubic units (cm³, m³).`,
+Tips:
+- Do the same operation to both sides
+- Work from the outside in
+- Clear fractions by multiplying by denominators
+
+Direct Proportion:
+When one quantity increases, the other increases by the same factor.
+y ∝ x means y = kx (k is the constant of proportionality)
+
+If y = 12 when x = 4, find k:
+12 = k × 4, so k = 3
+The equation is y = 3x
+
+Inverse Proportion:
+When one quantity increases, the other decreases by the same factor.
+y ∝ 1/x means y = k/x
+
+If y = 6 when x = 2, find k:
+6 = k/2, so k = 12
+The equation is y = 12/x
+
+Graphs:
+Direct proportion: straight line through origin
+Inverse proportion: hyperbola`,
     keyPoints: [
-      "Area is 2D (square units), Volume is 3D (cubic units)",
-      "Circle area: A = πr²",
-      "Cylinder volume: V = πr²h",
-      "Always include appropriate units"
+      "Use inverse operations to change the subject",
+      "Direct: y = kx (straight line through origin)",
+      "Inverse: y = k/x (hyperbola)",
+      "Find k by substituting known values"
     ]
   },
   17: {
-    title: "Review and Exam Preparation",
-    content: `This week focuses on consolidating all the concepts learned throughout the semester. Effective revision strategies will help you prepare for exams.
+    title: "Semester Review and Exam Preparation",
+    content: `This week focuses on reviewing all topics covered this semester in preparation for the end-of-semester examination.
 
-Key topics to review:
-1. Algebra: Solving equations, expanding, factorising
-2. Linear graphs: Gradient, y-intercept, equation of a line
-3. Quadratics: Factorising, quadratic formula, parabolas
-4. Pythagoras and Trigonometry: Finding sides and angles
-5. Statistics: Mean, median, mode, graphing data
-6. Probability: Calculating probabilities, tree diagrams
-7. Measurement: Area and volume formulas
+Term 1 Topics:
+- Problem solving (Polya's steps)
+- Real number system
+- Laws of exponents
+- Units and measurements
+- Surds and radicals
+- Absolute value
+- Patterns and generalisations
+- Coordinate geometry (distance, midpoint, gradient)
+- Linear equations and systems
 
-Exam strategies:
-- Read each question carefully
-- Show all working - partial marks are awarded
-- Check units are consistent
-- Use diagrams where helpful
-- Check answers make sense
-- Attempt every question
+Term 2 Topics:
+- Algebra: simplifying, expanding, factorising
+- Relations and functions
+- Quadratic expressions
+- Quadratic functions (standard, factorised, vertex form)
+- Solving quadratic equations
+- Sequences (arithmetic and geometric)
+- Rearranging formulas
+- Direct and inverse proportion
 
-Practice with past papers and identify any weak areas for extra focus. Remember: understanding concepts is more important than memorising formulas.`,
+Exam Tips:
+1. Read each question carefully
+2. Show all working for partial marks
+3. Check units are consistent
+4. Draw diagrams when helpful
+5. Use the discriminant to check number of solutions
+6. Check answers by substituting back
+7. Manage your time - attempt all questions
+
+Key Formulas to Remember:
+- Distance: d = √[(x₂-x₁)² + (y₂-y₁)²]
+- Midpoint: M = ((x₁+x₂)/2, (y₁+y₂)/2)
+- Quadratic formula: x = (-b ± √(b²-4ac))/2a
+- Arithmetic sequence: aₙ = a₁ + (n-1)d
+- Geometric sequence: aₙ = a₁ × r^(n-1)`,
     keyPoints: [
-      "Review all major topics systematically",
+      "Review all topics from both terms",
       "Practice past exam questions",
-      "Show all working for partial marks",
-      "Check that answers are reasonable"
+      "Show working for partial marks",
+      "Check answers are reasonable"
     ]
   }
 };
 
+// Science reading by week
+// Term 1 (Weeks 1-9): Chemistry - Atomic structure, isotopes, radioactivity, chemical reactions
+// Term 2 (Weeks 10-17): Biology - Homeostasis, endocrine system, diseases, immune system
 const scienceReadingByWeek: Record<number, ReadingContent> = {
   1: {
-    title: "Introduction to Cells: The Building Blocks of Life",
-    content: `All living things are made of cells - the smallest units of life. Cells were first discovered by Robert Hooke in 1665 when he looked at cork through a microscope.
+    title: "The Structure of the Atom",
+    content: `Understanding atomic structure is fundamental to chemistry. Our model of the atom has evolved over centuries as scientists discovered new evidence.
 
-Cell Theory states:
-1. All living things are made of one or more cells
-2. Cells are the basic unit of structure and function
-3. All cells come from pre-existing cells
+History of Atomic Theory:
+- Democritus (400 BC): First proposed matter was made of indivisible "atoms"
+- Dalton (1803): Atoms are solid spheres; each element has unique atoms
+- Thomson (1897): Discovered electrons; "plum pudding" model
+- Rutherford (1911): Discovered the nucleus; mostly empty space
+- Bohr (1913): Electrons orbit in fixed energy levels
+- Modern model: Electron cloud/probability model
 
-There are two main types of cells:
-Prokaryotic cells (bacteria) - simple, no membrane-bound nucleus
-Eukaryotic cells (plants, animals, fungi) - complex, have a true nucleus
+Parts of an Atom:
+- Protons: Positive charge (+1), in nucleus, mass ≈ 1 amu
+- Neutrons: No charge (0), in nucleus, mass ≈ 1 amu
+- Electrons: Negative charge (-1), orbit nucleus, negligible mass
 
-Key cell organelles:
-- Cell membrane: Controls what enters and exits the cell
-- Nucleus: Contains DNA, controls cell activities
-- Cytoplasm: Jelly-like substance where chemical reactions occur
-- Mitochondria: Produces energy through cellular respiration
-- Ribosomes: Makes proteins
-- Endoplasmic Reticulum: Transports materials within cell
-- Golgi body: Packages and distributes proteins
+Key Numbers:
+- Atomic number (Z): Number of protons - defines the element
+- Mass number (A): Protons + neutrons
+- Number of electrons = protons (in neutral atom)
 
-Plant cells have additional structures:
-- Cell wall: Provides rigid support and protection
-- Chloroplasts: Site of photosynthesis (contain chlorophyll)
-- Large central vacuole: Stores water and maintains pressure`,
+The Periodic Table:
+Elements are arranged by increasing atomic number.
+- Rows (periods): Same number of electron shells
+- Columns (groups): Same number of outer electrons
+- Properties repeat periodically (hence the name)
+
+Electron Configuration:
+Electrons fill shells from the nucleus outward.
+Shell 1: Maximum 2 electrons
+Shell 2: Maximum 8 electrons
+Shell 3: Maximum 8 electrons (for first 20 elements)`,
     keyPoints: [
-      "All living things are made of cells",
-      "Prokaryotic cells lack a nucleus, eukaryotic cells have one",
-      "Mitochondria produce energy (ATP)",
-      "Plant cells have cell walls and chloroplasts"
+      "Atomic number = protons, defines the element",
+      "Mass number = protons + neutrons",
+      "Electrons fill shells: 2, 8, 8...",
+      "Periodic table organised by atomic number"
     ]
   },
   2: {
-    title: "Cell Transport: Diffusion and Osmosis",
-    content: `Cells need to exchange materials with their environment to survive. This happens through the cell membrane, which is selectively permeable - allowing some substances through while blocking others.
+    title: "Isotopes and Radioactive Decay",
+    content: `Isotopes are atoms of the same element with different numbers of neutrons. Some isotopes are unstable and undergo radioactive decay.
 
-Diffusion is the movement of particles from an area of high concentration to low concentration. It's a passive process (requires no energy).
+Isotopes:
+- Same number of protons (same element)
+- Different number of neutrons (different mass)
+- Similar chemical properties
+- Different physical properties
 
-Examples of diffusion:
-- Oxygen moving from lungs into blood
-- Carbon dioxide leaving cells
-- Perfume spreading through a room
+Notation:
+Carbon-12: ¹²C (6 protons, 6 neutrons)
+Carbon-14: ¹⁴C (6 protons, 8 neutrons)
+Both are carbon, but C-14 is radioactive.
 
-Osmosis is a special type of diffusion - the movement of water molecules through a selectively permeable membrane from high water concentration to low water concentration.
+Radioactive Decay:
+Unstable nuclei release energy and particles to become more stable.
 
-Effects on cells:
-- Hypotonic solution (more water outside): Water enters cell, cell swells
-  - Animal cells may burst (lysis)
-  - Plant cells become turgid (firm)
-- Hypertonic solution (less water outside): Water leaves cell, cell shrinks
-  - Animal cells shrivel (crenation)
-  - Plant cells become flaccid or plasmolysed
-- Isotonic solution (equal concentration): No net water movement
+Types of Radiation:
+1. Alpha (α) particles:
+   - 2 protons + 2 neutrons (helium nucleus)
+   - Stopped by paper
+   - Most ionising, least penetrating
 
-Active transport requires energy (ATP) to move substances against the concentration gradient - from low to high concentration.`,
+2. Beta (β) particles:
+   - High-energy electron
+   - Stopped by aluminium
+   - Medium ionising and penetrating
+
+3. Gamma (γ) rays:
+   - High-energy electromagnetic radiation
+   - Reduced by lead/concrete
+   - Least ionising, most penetrating
+
+Nuclear Equations:
+Mass number and atomic number must balance.
+²³⁸U → ²³⁴Th + ⁴He (alpha decay)
+¹⁴C → ¹⁴N + e⁻ (beta decay)`,
     keyPoints: [
-      "Diffusion: high to low concentration, no energy required",
-      "Osmosis: water movement through a membrane",
-      "Cells swell in hypotonic, shrink in hypertonic solutions",
-      "Active transport uses energy to move against gradient"
+      "Isotopes: same protons, different neutrons",
+      "Alpha: stopped by paper, most ionising",
+      "Beta: stopped by aluminium",
+      "Gamma: reduced by lead, most penetrating"
     ]
   },
   3: {
-    title: "Photosynthesis: How Plants Make Food",
-    content: `Photosynthesis is the process by which plants, algae, and some bacteria convert light energy into chemical energy stored in glucose. This process is essential for life on Earth.
+    title: "Half-Life and Uses of Radioisotopes",
+    content: `Half-life is a measure of how quickly a radioactive isotope decays. Radioisotopes have many important applications.
 
-The equation for photosynthesis:
-Carbon dioxide + Water → Glucose + Oxygen
-6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂
-(This requires light energy and chlorophyll)
+What is Half-Life?
+Half-life (t½) is the time taken for half of the radioactive nuclei in a sample to decay.
 
-Where it happens: Chloroplasts in plant cells contain chlorophyll, the green pigment that captures light energy.
+Example:
+If you start with 100g and the half-life is 10 years:
+After 10 years: 50g remains
+After 20 years: 25g remains
+After 30 years: 12.5g remains
 
-Requirements for photosynthesis:
-1. Light (usually sunlight)
-2. Carbon dioxide (from the air, enters through stomata)
-3. Water (absorbed by roots from soil)
-4. Chlorophyll (in chloroplasts)
+Calculating Remaining Amount:
+Amount remaining = Initial amount × (1/2)^n
+where n = number of half-lives elapsed
 
-The rate of photosynthesis is affected by:
-- Light intensity: More light = faster rate (up to a point)
-- Carbon dioxide concentration: More CO₂ = faster rate
-- Temperature: Optimal around 25-35°C, too hot damages enzymes
-- Water availability: Drought slows photosynthesis
+Different isotopes have very different half-lives:
+- Polonium-214: 0.00016 seconds
+- Carbon-14: 5,730 years
+- Uranium-238: 4.5 billion years
 
-Importance of photosynthesis:
-- Produces oxygen we breathe
-- Produces glucose for plant growth
-- Forms base of most food chains
-- Removes CO₂ from atmosphere`,
+Applications of Radioisotopes:
+
+Medical Uses:
+- Diagnosis: Tracers show organ function (technetium-99m)
+- Treatment: Radiation kills cancer cells (cobalt-60, iodine-131)
+- Sterilisation: Medical equipment
+
+Dating:
+- Carbon-14 dating: For organic materials up to 50,000 years
+- Uranium-lead dating: For rocks billions of years old
+
+Industrial Uses:
+- Smoke detectors (americium-241)
+- Thickness gauges in manufacturing
+- Detecting leaks in pipes`,
     keyPoints: [
-      "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂",
-      "Occurs in chloroplasts using chlorophyll",
-      "Needs light, CO₂, water, and chlorophyll",
-      "Produces glucose for energy and oxygen as byproduct"
+      "Half-life: time for half the sample to decay",
+      "Amount remaining = Initial × (1/2)^n",
+      "Carbon-14 used to date organic materials",
+      "Medical uses: tracers, cancer treatment"
     ]
   },
   4: {
-    title: "Cellular Respiration: Releasing Energy",
-    content: `Cellular respiration is the process of breaking down glucose to release energy. This energy is stored in molecules called ATP (adenosine triphosphate), which cells use for all their activities.
+    title: "Atomic Model Project Week",
+    content: `This week focuses on consolidating understanding of atomic structure through the Atomic Model Project assessment.
 
-The equation for aerobic respiration:
-Glucose + Oxygen → Carbon dioxide + Water + Energy
-C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP
+Review: Atomic Structure
+The atom consists of:
+- Nucleus: Contains protons (+) and neutrons (neutral)
+- Electron cloud: Electrons (-) orbit the nucleus
 
-This is essentially the reverse of photosynthesis!
+Each element is defined by its number of protons (atomic number).
 
-Aerobic respiration (with oxygen):
-- Occurs in mitochondria
-- Produces large amounts of ATP (about 36-38 per glucose)
-- More efficient than anaerobic respiration
-- Products: CO₂ and H₂O
+Evolution of Atomic Models:
+Scientists refined the atomic model as new evidence emerged:
+1. Dalton's solid sphere → simple but incomplete
+2. Thomson's plum pudding → discovered electrons
+3. Rutherford's nuclear model → gold foil experiment
+4. Bohr's planetary model → fixed electron orbits
+5. Quantum model → electron probability clouds
 
-Anaerobic respiration (without oxygen):
-In animals: Glucose → Lactic acid + Small amount of ATP
-- Occurs during intense exercise
-- Causes muscle fatigue and cramps
-- "Oxygen debt" must be repaid afterward
+Key Evidence:
+- Cathode ray experiments → electrons exist
+- Gold foil experiment → most of atom is empty space
+- Line spectra → electrons have specific energy levels
 
-In yeast (fermentation): Glucose → Ethanol + Carbon dioxide + Small amount of ATP
-- Used in bread making (CO₂ makes dough rise)
-- Used in alcohol production
+Connecting Structure to Properties:
+- Electron configuration determines chemical behaviour
+- Group number relates to number of outer electrons
+- Atoms react to achieve stable outer shells (8 electrons)
 
-All living cells perform cellular respiration - it's not just breathing!`,
+For Your Project:
+Consider how the atomic model:
+- Explains the organisation of the periodic table
+- Predicts chemical properties of elements
+- Has evolved based on experimental evidence`,
     keyPoints: [
-      "Respiration breaks down glucose to release ATP energy",
-      "Aerobic respiration needs oxygen, produces most ATP",
-      "Anaerobic respiration: no oxygen, produces lactic acid or ethanol",
-      "Occurs in mitochondria (aerobic) or cytoplasm (anaerobic)"
+      "Atomic models evolved with new evidence",
+      "Protons define the element",
+      "Outer electrons determine chemical properties",
+      "Scientific models are refined as evidence emerges"
     ]
   },
   5: {
-    title: "DNA and Genes: The Blueprint of Life",
-    content: `DNA (deoxyribonucleic acid) is the molecule that carries genetic information in all living things. It's found in the nucleus of eukaryotic cells.
-
-Structure of DNA:
-- Double helix: twisted ladder shape
-- Made of nucleotides (building blocks)
-- Each nucleotide has: sugar, phosphate, and a base
-- Four bases: Adenine (A), Thymine (T), Guanine (G), Cytosine (C)
-- Base pairing rules: A pairs with T, G pairs with C
-
-Genes and chromosomes:
-- A gene is a section of DNA that codes for a specific protein
-- Chromosomes are long strands of DNA coiled with proteins
-- Humans have 46 chromosomes (23 pairs)
-- Genes are located at specific positions on chromosomes
-
-DNA → RNA → Protein:
-1. DNA is copied (transcription) into messenger RNA (mRNA)
-2. mRNA travels to ribosomes
-3. Ribosomes read mRNA and build proteins (translation)
-4. Proteins carry out functions in the cell
-
-Genetic code:
-- Three bases (codon) code for one amino acid
-- Amino acids join to form proteins
-- Proteins determine our traits`,
-    keyPoints: [
-      "DNA is a double helix made of nucleotides",
-      "Base pairing: A-T and G-C",
-      "Genes are sections of DNA that code for proteins",
-      "Humans have 46 chromosomes (23 pairs)"
-    ]
-  },
-  6: {
-    title: "Cell Division: Mitosis and Meiosis",
-    content: `Cells reproduce by dividing. There are two types of cell division: mitosis and meiosis.
-
-Mitosis produces identical copies of cells:
-- Used for growth, repair, and asexual reproduction
-- One cell divides into two identical daughter cells
-- Same number of chromosomes as parent (46 in humans)
-- Stages: Prophase, Metaphase, Anaphase, Telophase
-
-Mitosis stages:
-1. Interphase: Cell prepares, DNA replicates
-2. Prophase: Chromosomes condense, nuclear membrane breaks down
-3. Metaphase: Chromosomes line up in middle
-4. Anaphase: Chromosomes separate and move to opposite poles
-5. Telophase: Nuclear membranes reform, cell divides (cytokinesis)
-
-Meiosis produces sex cells (gametes):
-- Used for sexual reproduction only
-- One cell divides into four different daughter cells
-- Half the chromosomes of parent (23 in human gametes)
-- Two divisions: Meiosis I and Meiosis II
-- Creates genetic variation through crossing over and random assortment
-
-When egg (23) and sperm (23) combine at fertilisation, the resulting zygote has 46 chromosomes again.`,
-    keyPoints: [
-      "Mitosis: 1 cell → 2 identical cells (same chromosomes)",
-      "Meiosis: 1 cell → 4 different cells (half chromosomes)",
-      "Mitosis for growth/repair, Meiosis for reproduction",
-      "Meiosis creates genetic variation"
-    ]
-  },
-  7: {
-    title: "Genetics and Inheritance",
-    content: `Genetics is the study of heredity - how traits are passed from parents to offspring. Gregor Mendel discovered the basic principles of inheritance by studying pea plants.
-
-Key terms:
-- Alleles: Different versions of a gene (e.g., brown eye allele, blue eye allele)
-- Dominant allele: Shows its effect even with one copy (capital letter: B)
-- Recessive allele: Only shows effect with two copies (lowercase: b)
-- Genotype: The alleles an organism has (BB, Bb, or bb)
-- Phenotype: The physical appearance (brown eyes)
-- Homozygous: Two of the same allele (BB or bb)
-- Heterozygous: Two different alleles (Bb)
-
-Punnett Squares predict offspring genotypes:
-If both parents are Bb (heterozygous):
-        B       b
-   B   BB      Bb
-   b   Bb      bb
-
-Results: 25% BB, 50% Bb, 25% bb
-Phenotype ratio: 3 dominant : 1 recessive
-
-Some traits follow more complex patterns:
-- Incomplete dominance: blend of traits
-- Codominance: both alleles expressed equally
-- Multiple alleles: more than two versions (like blood types)`,
-    keyPoints: [
-      "Alleles are different versions of genes",
-      "Dominant alleles mask recessive alleles",
-      "Genotype = genetic makeup, Phenotype = physical trait",
-      "Punnett squares predict offspring ratios"
-    ]
-  },
-  8: {
-    title: "Evolution and Natural Selection",
-    content: `Evolution is the change in inherited characteristics of populations over generations. Charles Darwin proposed the theory of evolution by natural selection in 1859.
-
-Natural selection works through:
-1. Variation: Individuals in a population have different traits
-2. Overproduction: More offspring are born than can survive
-3. Competition: Individuals compete for limited resources
-4. Survival of the fittest: Those with advantageous traits survive
-5. Reproduction: Survivors pass on their beneficial traits
-6. Gradual change: Over many generations, populations change
-
-Evidence for evolution:
-- Fossil record: Shows change over time
-- Comparative anatomy: Similar bone structures (homologous structures)
-- Embryology: Similar early development stages
-- DNA comparisons: Genetic similarities between species
-- Direct observation: Bacteria developing antibiotic resistance
-
-Types of selection:
-- Directional: Favours one extreme phenotype
-- Stabilising: Favours average phenotype
-- Disruptive: Favours both extreme phenotypes
-
-Speciation occurs when populations become so different they can no longer interbreed, forming new species.`,
-    keyPoints: [
-      "Evolution is change in populations over time",
-      "Natural selection: survival and reproduction of fittest",
-      "Evidence: fossils, comparative anatomy, DNA",
-      "Speciation creates new species over time"
-    ]
-  },
-  9: {
-    title: "Classification and Biodiversity",
-    content: `Classification (taxonomy) is the system of organising living things into groups based on shared characteristics. This helps scientists study and communicate about organisms.
-
-The classification hierarchy (from broadest to narrowest):
-Kingdom → Phylum → Class → Order → Family → Genus → Species
-"King Philip Came Over For Good Soup"
-
-The five kingdoms (traditional):
-1. Animalia: Multicellular, eat other organisms
-2. Plantae: Multicellular, photosynthesise
-3. Fungi: Absorb nutrients from dead/decaying matter
-4. Protista: Mostly single-celled eukaryotes
-5. Monera: Prokaryotes (bacteria)
-
-Scientific naming (binomial nomenclature):
-- Genus + species (e.g., Homo sapiens)
-- Written in italics, genus capitalised
-- Created by Carl Linnaeus
-
-Modern classification uses:
-- Evolutionary relationships (phylogeny)
-- DNA and molecular analysis
-- Three domains: Bacteria, Archaea, Eukarya
-
-Biodiversity refers to the variety of life on Earth. High biodiversity is important for:
-- Ecosystem stability
-- Food security
-- Medicine discovery
-- Economic value`,
-    keyPoints: [
-      "Classification groups organisms by shared features",
-      "Kingdom → Phylum → Class → Order → Family → Genus → Species",
-      "Scientific names: Genus species (italicised)",
-      "Biodiversity is variety of life, essential for ecosystems"
-    ]
-  },
-  10: {
-    title: "Ecosystems and Food Webs",
-    content: `An ecosystem is a community of living organisms (biotic factors) interacting with their physical environment (abiotic factors).
-
-Abiotic factors: Temperature, light, water, soil pH, minerals
-Biotic factors: All living things - plants, animals, bacteria, fungi
-
-Energy flow in ecosystems:
-- Producers (autotrophs): Make their own food through photosynthesis
-- Primary consumers (herbivores): Eat producers
-- Secondary consumers (carnivores): Eat primary consumers
-- Tertiary consumers: Top predators
-- Decomposers: Break down dead organisms
-
-Food chains show single pathways of energy transfer.
-Food webs show multiple interconnected food chains.
-
-Energy pyramid:
-- Only about 10% of energy transfers to each level
-- Rest is lost as heat through respiration
-- Limits the number of trophic levels (usually 4-5)
-
-Nutrient cycling:
-- Carbon cycle: CO₂ → photosynthesis → respiration → decomposition
-- Nitrogen cycle: N₂ → bacteria → plants → animals → decomposition
-- Water cycle: Evaporation → condensation → precipitation
-
-Human impacts on ecosystems: pollution, deforestation, overfishing, climate change.`,
-    keyPoints: [
-      "Ecosystems include biotic and abiotic factors",
-      "Energy flows: producers → consumers → decomposers",
-      "Only ~10% of energy transfers to each level",
-      "Nutrients cycle through ecosystems continuously"
-    ]
-  },
-  11: {
-    title: "The Periodic Table and Atomic Structure",
-    content: `All matter is made of atoms. Understanding atomic structure helps us explain chemical properties and reactions.
-
-Parts of an atom:
-- Protons: Positive charge, in nucleus, determines the element
-- Neutrons: No charge, in nucleus, affects mass
-- Electrons: Negative charge, orbit the nucleus in shells
-
-Key numbers:
-- Atomic number: Number of protons (defines the element)
-- Mass number: Protons + neutrons
-- Number of electrons = number of protons (in neutral atoms)
-
-Electron shells:
-- First shell: Maximum 2 electrons
-- Second shell: Maximum 8 electrons
-- Third shell: Maximum 8 electrons (for first 20 elements)
-
-The Periodic Table:
-- Arranged by increasing atomic number
-- Rows (periods): Same number of electron shells
-- Columns (groups): Same number of outer electrons
-- Group number = number of outer electrons
-- Outer electrons determine chemical properties
-
-Key groups:
-- Group 1 (Alkali metals): 1 outer electron, very reactive
-- Group 7 (Halogens): 7 outer electrons, reactive non-metals
-- Group 0/18 (Noble gases): Full outer shell, unreactive`,
-    keyPoints: [
-      "Atoms have protons (+), neutrons (0), electrons (-)",
-      "Atomic number = protons, defines the element",
-      "Electrons fill shells: 2, 8, 8...",
-      "Group number = outer electrons, determines properties"
-    ]
-  },
-  12: {
-    title: "Chemical Bonding",
-    content: `Atoms bond together to achieve a full outer electron shell (usually 8 electrons, or 2 for the first shell). This is called the octet rule.
-
-Ionic bonding:
-- Metal + Non-metal
-- Electrons are transferred from metal to non-metal
-- Creates charged ions that attract each other
-- Example: Na gives 1 electron to Cl → Na⁺Cl⁻ (sodium chloride)
-
-Properties of ionic compounds:
-- High melting and boiling points
-- Conduct electricity when molten or dissolved (ions can move)
-- Form crystal lattice structures
-- Usually dissolve in water
-
-Covalent bonding:
-- Non-metal + Non-metal
-- Electrons are shared between atoms
-- Forms molecules
-- Example: H₂O - oxygen shares electrons with two hydrogens
-
-Properties of covalent compounds:
-- Lower melting and boiling points
-- Do not conduct electricity (no free ions or electrons)
-- Can be gases, liquids, or soft solids
-
-Metallic bonding:
-- Metal atoms in a sea of delocalised electrons
-- Explains conductivity, malleability, ductility`,
-    keyPoints: [
-      "Ionic bonds: electrons transferred, metal + non-metal",
-      "Covalent bonds: electrons shared, non-metal + non-metal",
-      "Ionic compounds: high melting point, conduct when dissolved",
-      "Covalent compounds: lower melting point, don't conduct"
-    ]
-  },
-  13: {
-    title: "Chemical Reactions and Equations",
+    title: "Introduction to Chemical Reactions",
     content: `A chemical reaction occurs when substances (reactants) are transformed into new substances (products) with different properties.
 
-Signs of a chemical reaction:
+Signs of a Chemical Reaction:
 - Colour change
 - Gas bubbles produced
 - Temperature change (heat released or absorbed)
-- Precipitate forms (solid from mixing liquids)
+- Precipitate forms (solid from liquids)
 - Light or sound produced
+- Difficult to reverse
 
-Writing chemical equations:
-Reactants → Products
+Physical vs Chemical Change:
+Physical change: No new substances formed (e.g., melting ice)
+Chemical change: New substances with different properties formed
+
+Law of Conservation of Mass:
+In a chemical reaction, the total mass of reactants equals the total mass of products. Atoms are rearranged, not created or destroyed.
+
+Writing Chemical Equations:
 Word equation: Hydrogen + Oxygen → Water
 Symbol equation: 2H₂ + O₂ → 2H₂O
 
-Balancing equations:
-- Same number of each atom on both sides
-- Conservation of mass: matter cannot be created or destroyed
-- Only change coefficients (numbers in front), never subscripts
+Balancing Equations:
+The same number of each type of atom must appear on both sides.
 
-Types of reactions:
-- Synthesis: A + B → AB
-- Decomposition: AB → A + B
-- Single replacement: A + BC → AC + B
-- Double replacement: AB + CD → AD + CB
-- Combustion: Fuel + O₂ → CO₂ + H₂O
-- Neutralisation: Acid + Base → Salt + Water
+Steps to Balance:
+1. Write the unbalanced equation with correct formulas
+2. Count atoms of each element on both sides
+3. Add coefficients (numbers in front) to balance
+4. Check all atoms are balanced
+5. Reduce coefficients to smallest whole numbers
 
-Reaction rates depend on: temperature, concentration, surface area, catalysts.`,
+Never change the subscripts in formulas - only add coefficients!`,
     keyPoints: [
       "Chemical reactions form new substances",
-      "Equations must be balanced - same atoms each side",
-      "Conservation of mass: nothing created or destroyed",
-      "Types: synthesis, decomposition, combustion, neutralisation"
+      "Conservation of mass: atoms rearranged, not created",
+      "Same atoms on both sides of equation",
+      "Balance by adding coefficients, not changing formulas"
     ]
   },
-  14: {
-    title: "Acids and Bases",
-    content: `Acids and bases are important chemicals with opposite properties. Their strength is measured using the pH scale.
+  6: {
+    title: "Types of Chemical Reactions",
+    content: `Chemical reactions can be classified into several types based on how atoms are rearranged.
 
-The pH scale:
-- Ranges from 0 to 14
-- pH 0-6: Acidic (lower = stronger acid)
-- pH 7: Neutral (pure water)
-- pH 8-14: Basic/Alkaline (higher = stronger base)
+Synthesis (Combination):
+Two or more substances combine to form one product.
+A + B → AB
+Example: 2Na + Cl₂ → 2NaCl
 
-Common acids:
-- Hydrochloric acid (HCl): stomach acid
-- Sulfuric acid (H₂SO₄): car batteries
-- Citric acid: citrus fruits
-- Carbonic acid: fizzy drinks
+Decomposition:
+One compound breaks down into simpler substances.
+AB → A + B
+Example: 2H₂O → 2H₂ + O₂
 
-Common bases:
-- Sodium hydroxide (NaOH): drain cleaner
-- Calcium hydroxide (Ca(OH)₂): lime
-- Ammonia (NH₃): cleaning products
-- Baking soda (NaHCO₃)
+Single Replacement (Displacement):
+One element replaces another in a compound.
+A + BC → AC + B
+Example: Zn + CuSO₄ → ZnSO₄ + Cu
 
-Properties:
-Acids: Taste sour, turn litmus red, react with metals to produce hydrogen
-Bases: Taste bitter, feel slippery, turn litmus blue
+Double Replacement:
+Two compounds exchange ions.
+AB + CD → AD + CB
+Example: NaCl + AgNO₃ → NaNO₃ + AgCl
+
+Combustion:
+A substance reacts rapidly with oxygen, releasing heat and light.
+Fuel + O₂ → CO₂ + H₂O
+Example: CH₄ + 2O₂ → CO₂ + 2H₂O
 
 Neutralisation:
 Acid + Base → Salt + Water
-HCl + NaOH → NaCl + H₂O
-The products are neutral - pH moves toward 7.
+Example: HCl + NaOH → NaCl + H₂O
 
-Applications: Treating acid spills, antacids for heartburn, soil treatment.`,
+Energy Changes:
+Exothermic: Releases energy (combustion, neutralisation)
+Endothermic: Absorbs energy (photosynthesis, decomposition)`,
     keyPoints: [
-      "pH scale: 0-6 acidic, 7 neutral, 8-14 basic",
-      "Acids donate H⁺ ions, bases donate OH⁻ ions",
-      "Neutralisation: Acid + Base → Salt + Water",
-      "Indicators change colour to show pH"
+      "Synthesis: A + B → AB",
+      "Decomposition: AB → A + B",
+      "Combustion: Fuel + O₂ → CO₂ + H₂O",
+      "Neutralisation: Acid + Base → Salt + Water"
+    ]
+  },
+  7: {
+    title: "Electrolysis and Extraction of Metals",
+    content: `Electrolysis uses electricity to break down compounds and can be used to extract metals from their ores.
+
+What is Electrolysis?
+Electrolysis is the process of using electric current to decompose an ionic compound in solution or when molten.
+
+Components:
+- Electrolyte: The liquid that conducts electricity (molten ionic compound or solution)
+- Electrodes: Conductors where reactions occur
+  - Anode: Positive electrode (oxidation occurs)
+  - Cathode: Negative electrode (reduction occurs)
+
+Electrolysis of Water:
+2H₂O → 2H₂ + O₂
+- Hydrogen forms at cathode (negative)
+- Oxygen forms at anode (positive)
+- Volume of H₂ is twice that of O₂
+
+Extraction of Metals:
+Very reactive metals (like aluminium) cannot be extracted by carbon reduction. They must be extracted by electrolysis.
+
+Aluminium Extraction (Hall-Héroult Process):
+- Aluminium oxide dissolved in molten cryolite
+- At cathode: Al³⁺ + 3e⁻ → Al
+- At anode: Oxygen formed (reacts with carbon anode)
+
+Activity Series:
+Metals can be ranked by reactivity:
+K, Na, Ca, Mg, Al, Zn, Fe, Pb, Cu, Ag, Au
+More reactive metals require more energy to extract.`,
+    keyPoints: [
+      "Electrolysis uses electricity to break down compounds",
+      "Cathode: negative electrode, reduction (gain electrons)",
+      "Anode: positive electrode, oxidation (lose electrons)",
+      "Very reactive metals extracted by electrolysis"
+    ]
+  },
+  8: {
+    title: "Green Chemistry and Environmental Impact",
+    content: `Green chemistry focuses on designing chemical products and processes that reduce or eliminate hazardous substances and environmental impact.
+
+Principles of Green Chemistry:
+1. Prevention: Prevent waste rather than clean it up
+2. Atom economy: Maximise atoms from reactants in products
+3. Less hazardous synthesis: Use and generate safer substances
+4. Safer solvents: Avoid toxic solvents where possible
+5. Energy efficiency: Minimise energy requirements
+6. Renewable feedstocks: Use renewable raw materials
+7. Reduce derivatives: Avoid unnecessary steps
+8. Catalysis: Use catalysts rather than stoichiometric reagents
+9. Design for degradation: Products should break down safely
+10. Pollution prevention: Monitor and prevent releases
+
+Environmental Issues from Chemistry:
+- Acid rain: From SO₂ and NOₓ emissions
+- Ozone depletion: From CFCs
+- Climate change: From CO₂ and other greenhouse gases
+- Water pollution: From industrial waste
+- Plastic pollution: From non-biodegradable materials
+
+Sustainable Solutions:
+- Biodegradable plastics
+- Alternative energy sources
+- Water treatment technologies
+- Recycling and circular economy
+- Electric vehicles and hydrogen fuel cells
+
+As scientists, we have responsibility to consider the environmental impact of chemical processes and develop sustainable alternatives.`,
+    keyPoints: [
+      "Green chemistry aims to reduce environmental impact",
+      "Prevent waste rather than clean up",
+      "Use renewable resources where possible",
+      "Design products to break down safely"
+    ]
+  },
+  9: {
+    title: "Chemistry Review and Revision",
+    content: `This week consolidates all Chemistry topics covered in Term 1 in preparation for assessment.
+
+Atomic Structure:
+- Atoms contain protons, neutrons, and electrons
+- Atomic number = protons, mass number = protons + neutrons
+- Isotopes have same protons, different neutrons
+- Electron configuration determines chemical properties
+
+Radioactivity:
+- Unstable isotopes decay, emitting radiation
+- Alpha (stopped by paper), Beta (stopped by aluminium), Gamma (reduced by lead)
+- Half-life: time for half the sample to decay
+- Applications: dating, medicine, industry
+
+Chemical Reactions:
+- Conservation of mass: atoms rearranged, not created
+- Balance equations using coefficients
+- Types: synthesis, decomposition, displacement, combustion, neutralisation
+- Energy changes: exothermic (releases) vs endothermic (absorbs)
+
+Electrolysis:
+- Uses electricity to decompose compounds
+- Cathode (negative): reduction, metal deposited
+- Anode (positive): oxidation, non-metal released
+- Used to extract reactive metals
+
+Key Skills:
+- Balancing equations
+- Calculating half-life problems
+- Identifying reaction types
+- Writing nuclear equations
+
+Review these topics and practice problems to prepare for Term 2.`,
+    keyPoints: [
+      "Know atomic structure and isotopes",
+      "Understand radioactive decay and half-life",
+      "Balance chemical equations correctly",
+      "Identify reaction types and energy changes"
+    ]
+  },
+  10: {
+    title: "The Endocrine System",
+    content: `Term 2 focuses on Biology. The endocrine system controls body functions through hormones, producing long-lasting effects compared to the nervous system.
+
+Endocrine vs Nervous System:
+Nervous system: Fast, short-lived, electrical signals
+Endocrine system: Slower, long-lasting, chemical signals (hormones)
+
+Hormones:
+Chemical messengers produced by endocrine glands, transported in blood to target organs.
+
+Major Endocrine Glands:
+- Pituitary gland: "Master gland" - controls other glands
+- Thyroid: Metabolism (thyroxine)
+- Adrenal glands: Stress response (adrenaline, cortisol)
+- Pancreas: Blood sugar (insulin, glucagon)
+- Ovaries/Testes: Reproduction (oestrogen, testosterone)
+
+Fight, Flight, or Freeze Response:
+When you perceive danger:
+1. Hypothalamus signals adrenal glands
+2. Adrenaline and noradrenaline released
+3. Effects: increased heart rate, blood to muscles, pupils dilate, digestion stops
+4. Body prepared for immediate action
+
+This response evolved to help us survive threats but can be triggered by modern stressors like exams or public speaking.
+
+Hormones work more slowly than nerve impulses but their effects last longer - from minutes to months.`,
+    keyPoints: [
+      "Hormones are chemical messengers in blood",
+      "Pituitary is the 'master gland'",
+      "Adrenaline triggers fight/flight response",
+      "Hormones act slower but last longer than nerves"
+    ]
+  },
+  11: {
+    title: "Homeostasis and Regulation",
+    content: `Homeostasis is the maintenance of a stable internal environment despite changing external conditions. It's essential for cells to function properly.
+
+Why Homeostasis Matters:
+Cells work best within narrow ranges of temperature, pH, glucose, water, etc. Too much variation can damage or kill cells.
+
+What is Regulated?
+- Body temperature (~37°C)
+- Blood glucose levels
+- Water and salt balance
+- Blood pH
+- Oxygen and carbon dioxide levels
+
+Negative Feedback Loops:
+The main mechanism for homeostasis. When a variable moves away from the set point, mechanisms bring it back.
+
+Example: Blood Glucose Regulation
+1. Blood glucose rises (after eating)
+2. Pancreas detects increase
+3. Pancreas releases insulin
+4. Cells take up glucose; liver stores glucose as glycogen
+5. Blood glucose returns to normal
+
+If blood glucose falls too low:
+1. Pancreas detects decrease
+2. Pancreas releases glucagon
+3. Liver converts glycogen to glucose
+4. Blood glucose rises to normal
+
+Temperature Regulation:
+Too hot: Sweating, vasodilation, less activity
+Too cold: Shivering, vasoconstriction, increased metabolism
+
+The brain (hypothalamus) acts as the control centre for many homeostatic processes.`,
+    keyPoints: [
+      "Homeostasis maintains stable internal conditions",
+      "Negative feedback returns variables to set point",
+      "Insulin lowers blood glucose, glucagon raises it",
+      "Hypothalamus is the control centre"
+    ]
+  },
+  12: {
+    title: "Disruptions to Homeostasis",
+    content: `When homeostatic mechanisms fail, disease can result. Understanding these disruptions helps us appreciate the importance of regulation.
+
+Type 1 Diabetes:
+- Autoimmune disease - immune system destroys insulin-producing cells
+- Body cannot produce insulin
+- Blood glucose remains high
+- Treatment: Insulin injections
+
+Type 2 Diabetes:
+- Cells become resistant to insulin
+- Often linked to lifestyle factors
+- Treatment: Diet, exercise, medication
+
+Hyperthyroidism (Overactive Thyroid):
+- Too much thyroxine produced
+- Symptoms: Weight loss, rapid heartbeat, anxiety
+- Body's metabolism too fast
+
+Hypothyroidism (Underactive Thyroid):
+- Too little thyroxine produced
+- Symptoms: Weight gain, fatigue, feeling cold
+- Body's metabolism too slow
+
+Performance-Enhancing Hormones:
+Athletes sometimes misuse hormones to gain advantage:
+- EPO (Erythropoietin): Increases red blood cells
+- Testosterone/Anabolic steroids: Increase muscle mass
+- Human Growth Hormone: Increases muscle and reduces fat
+
+Ethical Issues:
+- Health risks to athletes
+- Unfair advantage
+- Against the spirit of sport
+- Pressure on others to use them
+
+These substances are banned in competitive sports.`,
+    keyPoints: [
+      "Type 1 diabetes: can't produce insulin (autoimmune)",
+      "Type 2 diabetes: cells resist insulin (lifestyle-related)",
+      "Thyroid disorders affect metabolism",
+      "Performance-enhancing hormones are banned and risky"
+    ]
+  },
+  13: {
+    title: "Homeostasis Project Week",
+    content: `This week focuses on the Homeostasis Project assessment. Apply your understanding of how the body maintains stable internal conditions.
+
+Key Concepts to Include:
+
+What is Homeostasis?
+- Definition: Maintenance of stable internal environment
+- Importance: Cells function best in specific conditions
+- Examples: Temperature, glucose, water, pH
+
+Feedback Mechanisms:
+- Negative feedback: Returns variable to set point
+- Components: Stimulus → Receptor → Control centre → Effector → Response
+- Example: Blood glucose regulation with insulin and glucagon
+
+Case Study Ideas:
+1. Temperature regulation during exercise
+2. Blood glucose control in diabetes
+3. Water balance during dehydration
+4. Hormone regulation in stress response
+
+Data Interpretation:
+- Analyse graphs showing homeostatic responses
+- Identify normal ranges and fluctuations
+- Explain what happens when systems fail
+
+Connections to Real Life:
+- Medical treatments that support homeostasis
+- How diet and exercise affect regulation
+- Environmental factors that challenge homeostasis
+
+Your project should demonstrate understanding of:
+- The concept of homeostasis
+- Specific examples with biological detail
+- What happens when regulation fails
+- Application to real-world scenarios`,
+    keyPoints: [
+      "Define and explain homeostasis clearly",
+      "Include specific examples with detail",
+      "Explain the role of negative feedback",
+      "Connect to real-world applications"
+    ]
+  },
+  14: {
+    title: "Infectious and Non-Infectious Diseases",
+    content: `Diseases can be classified based on whether they can spread from person to person.
+
+Infectious Diseases:
+Caused by pathogens and can spread between organisms.
+- Bacteria: Tuberculosis, cholera, food poisoning
+- Viruses: COVID-19, influenza, measles
+- Fungi: Athlete's foot, thrush
+- Parasites: Malaria, tapeworm
+
+Transmission Methods:
+- Direct contact: Touching infected person
+- Droplet: Coughing, sneezing
+- Airborne: Fine particles in air
+- Vector: Carried by organisms (mosquitoes)
+- Contaminated food/water
+- Body fluids: Blood, sexual contact
+
+Non-Infectious Diseases:
+Cannot spread between people.
+Caused by:
+- Genetics: Cystic fibrosis, sickle cell
+- Lifestyle: Type 2 diabetes, heart disease
+- Environment: Some cancers, asthma
+- Nutritional deficiency: Scurvy, rickets
+- Immune malfunction: Allergies, autoimmune
+
+Risk Factors:
+Factors that increase chance of disease:
+- Modifiable: Diet, exercise, smoking
+- Non-modifiable: Age, genetics, sex
+
+Prevention:
+Infectious: Vaccination, hygiene, quarantine
+Non-infectious: Healthy lifestyle, screening, avoiding risk factors`,
+    keyPoints: [
+      "Infectious diseases spread via pathogens",
+      "Non-infectious diseases don't spread between people",
+      "Pathogens: bacteria, viruses, fungi, parasites",
+      "Risk factors can be modifiable or non-modifiable"
     ]
   },
   15: {
-    title: "Forces and Motion",
-    content: `Force is a push or pull that can change an object's motion, shape, or direction. Forces are measured in Newtons (N).
+    title: "Germ Theory and Pathogens",
+    content: `Germ theory states that many diseases are caused by microorganisms (germs/pathogens) invading the body.
 
-Types of forces:
-- Gravity: Pulls objects toward Earth (weight = mass × g)
-- Friction: Opposes motion between surfaces
-- Normal force: Perpendicular support force from surface
-- Tension: Force in stretched strings/ropes
-- Applied force: Push or pull from contact
+History of Germ Theory:
+Before germ theory, people believed diseases came from "bad air" (miasma) or imbalanced humours.
 
-Newton's Laws of Motion:
-1. Law of Inertia: An object stays at rest or in constant motion unless acted on by a force
-2. F = ma: Force equals mass times acceleration
-3. Action-Reaction: For every action, there's an equal and opposite reaction
+Key Scientists:
+- Louis Pasteur: Proved microorganisms cause disease
+- Robert Koch: Developed Koch's postulates to identify disease-causing organisms
+- Joseph Lister: Introduced antiseptic surgery
 
-Balanced vs Unbalanced forces:
-- Balanced: Equal forces in opposite directions, no change in motion
-- Unbalanced: Net force in one direction, causes acceleration
+Koch's Postulates:
+1. The microorganism must be found in all cases of the disease
+2. It must be isolated and grown in pure culture
+3. It must cause the disease when introduced to a healthy host
+4. It must be re-isolated from the new host
 
-Speed = distance / time (m/s)
-Velocity = speed with direction
-Acceleration = change in velocity / time (m/s²)
+Types of Pathogens:
 
-Free body diagrams show all forces acting on an object with arrows indicating direction and magnitude.`,
+Bacteria:
+- Single-celled organisms
+- Can reproduce rapidly
+- Some produce toxins
+- Treated with antibiotics
+
+Viruses:
+- Not living (can't reproduce alone)
+- Invade cells and use them to replicate
+- Antibiotics don't work against viruses
+- Treated with antivirals or prevented by vaccines
+
+Fungi:
+- Can be single-celled (yeast) or multicellular
+- Often affect skin, nails, respiratory system
+- Treated with antifungals
+
+Parasites:
+- Live on or in a host organism
+- Take nutrients from host
+- Include protozoa, worms, insects`,
     keyPoints: [
-      "Force can change motion, shape, or direction",
-      "Newton's 2nd Law: F = ma",
-      "Balanced forces: no acceleration",
-      "Unbalanced forces: cause acceleration"
+      "Germ theory: microorganisms cause disease",
+      "Koch's postulates identify disease-causing organisms",
+      "Antibiotics only work on bacteria, not viruses",
+      "Different treatments for different pathogen types"
     ]
   },
   16: {
-    title: "Energy Transfer and Transformation",
-    content: `Energy is the ability to do work. It cannot be created or destroyed, only transferred or transformed (Law of Conservation of Energy).
+    title: "Disease Transmission and the Immune System",
+    content: `Understanding how diseases spread helps us prevent infection. The immune system protects us from pathogens.
 
-Types of energy:
-- Kinetic: Energy of motion
-- Potential: Stored energy (gravitational, elastic, chemical)
-- Thermal: Heat energy from particle movement
-- Electrical: Energy from moving charges
-- Light (radiant): Energy from electromagnetic waves
-- Sound: Energy from vibrations
-- Nuclear: Energy stored in atomic nuclei
+How Diseases Spread:
+1. Contact transmission: Direct (touching) or indirect (surfaces)
+2. Droplet: Large particles from coughs/sneezes
+3. Airborne: Small particles stay suspended in air
+4. Vector-borne: Carried by animals (mosquitoes, ticks)
+5. Vehicle: Contaminated food, water, blood
 
-Energy transformations:
-- Solar panel: Light → Electrical
-- Car engine: Chemical → Kinetic + Thermal
-- Speaker: Electrical → Sound
-- Hydroelectric dam: Gravitational potential → Kinetic → Electrical
-- Photosynthesis: Light → Chemical
+Breaking the Chain of Infection:
+- Hand hygiene
+- Masks and barriers
+- Vaccination
+- Safe food handling
+- Vector control
+- Isolation of infected individuals
 
-Energy efficiency:
-Efficiency = (useful energy output / total energy input) × 100%
+The Immune System:
+Three lines of defence protect us from pathogens.
 
-No machine is 100% efficient - some energy is always "lost" as heat.
+First Line (Physical/Chemical Barriers):
+- Skin: Physical barrier
+- Mucus: Traps pathogens
+- Stomach acid: Kills microbes
+- Tears and saliva: Contain enzymes
 
-Renewable vs Non-renewable energy sources:
-Renewable: Solar, wind, hydro, geothermal (replenished naturally)
-Non-renewable: Fossil fuels, nuclear (limited supply)`,
+Second Line (Innate Immune Response):
+- Inflammation: Increases blood flow
+- Phagocytes: Engulf and destroy pathogens
+- Fever: High temperature kills some pathogens
+- Natural killer cells: Destroy infected cells
+
+Third Line (Adaptive Immune Response):
+- B lymphocytes: Produce antibodies
+- T lymphocytes: Destroy infected cells
+- Specific to each pathogen
+- Creates immunological memory`,
     keyPoints: [
-      "Energy cannot be created or destroyed",
-      "Forms: kinetic, potential, thermal, electrical, light, sound",
-      "Energy transforms from one form to another",
-      "Efficiency = useful output / total input × 100%"
+      "Break chain of infection to prevent spread",
+      "First line: physical barriers (skin, mucus)",
+      "Second line: inflammation, phagocytes",
+      "Third line: specific antibodies and memory"
     ]
   },
   17: {
-    title: "Science Review and Connections",
-    content: `This week we consolidate our understanding of the major themes in science and see how different concepts connect.
+    title: "Immunity, Vaccination, and Science Review",
+    content: `Vaccination harnesses the immune system's memory to provide protection against future infections.
 
-Connections between topics:
-- Cells use energy from respiration (chemical reactions)
-- Photosynthesis and respiration are reverse processes
-- DNA codes for proteins that catalyse chemical reactions (enzymes)
-- Evolution is driven by genetic variation (DNA mutations)
-- Ecosystems rely on energy transfer and nutrient cycling
-- Chemical reactions in organisms maintain homeostasis
+How Vaccines Work:
+1. Vaccine contains weakened, dead, or parts of pathogen
+2. Immune system recognises foreign antigens
+3. B cells produce antibodies
+4. Memory cells are created
+5. If exposed to real pathogen, response is rapid
 
-The scientific method:
-1. Observation: Notice something interesting
-2. Question: Ask what, why, or how
-3. Hypothesis: Make a testable prediction
-4. Experiment: Design a fair test with controlled variables
-5. Analyse: Collect and interpret data
-6. Conclusion: Accept or reject hypothesis
-7. Communicate: Share findings with others
+Types of Vaccines:
+- Live attenuated: Weakened pathogen (MMR, chickenpox)
+- Inactivated: Killed pathogen (flu, polio)
+- Subunit: Parts of pathogen (hepatitis B)
+- mRNA: Instructions to make viral protein (COVID-19)
 
-Key skills for science:
-- Designing fair tests (control variables)
-- Collecting accurate data
-- Graphing and analysing results
-- Drawing evidence-based conclusions
-- Evaluating reliability and validity
+Herd Immunity:
+When enough people are vaccinated, disease can't spread easily, protecting those who can't be vaccinated.
 
-Remember: Science is a process of inquiry and discovery. Keep asking questions!`,
+When the Immune System Goes Wrong:
+- Allergies: Overreaction to harmless substances
+- Autoimmune diseases: Immune system attacks own cells
+- Immunodeficiency: Weak immune response (HIV/AIDS)
+
+Semester Review:
+Term 1 Chemistry: Atomic structure, isotopes, radioactivity, chemical reactions, electrolysis
+Term 2 Biology: Endocrine system, homeostasis, diseases, immune system
+
+Key Skills:
+- Explain how body systems maintain homeostasis
+- Describe how pathogens cause disease
+- Explain how the immune system responds
+- Evaluate the importance of vaccination`,
     keyPoints: [
-      "All science topics are interconnected",
-      "Scientific method: observe, hypothesise, test, conclude",
-      "Control variables for fair tests",
-      "Base conclusions on evidence"
+      "Vaccines train immune system using safe antigens",
+      "Memory cells enable rapid secondary response",
+      "Herd immunity protects the whole community",
+      "Review both Chemistry and Biology for exam"
     ]
   }
 };
 
+// History/Humanities reading by week
+// Term 1 (Weeks 1-9): History - Australians at War (WWI, WWII)
+// Term 2 (Weeks 10-17): Politics/Civics - Australian democracy, Constitution, citizenship
 const historyReadingByWeek: Record<number, ReadingContent> = {
   1: {
-    title: "Introduction to Historical Inquiry",
-    content: `History is the study of the past - the people, events, and forces that shaped our world. But history is more than just facts and dates. It's about understanding why things happened and how they connect to our present.
+    title: "The World Goes to War: Setting the Stage for WWI",
+    content: `World War I (1914-1918) was one of the deadliest conflicts in human history. Understanding its causes helps us see how a single event could trigger a global catastrophe.
 
-Primary and Secondary Sources:
-Primary sources are created at the time being studied - diaries, photographs, letters, newspapers, speeches, artefacts. They give us direct evidence but may be biased.
+Global Causes of WWI (MAIN):
 
-Secondary sources are created later by historians who analyse primary sources - textbooks, documentaries, academic articles.
+Militarism:
+Countries built up armies and navies. An arms race between Britain and Germany increased tensions. Military leaders gained political influence.
 
-Evaluating sources - use OPCL:
-O - Origin: Who created it? When and where?
-P - Purpose: Why was it created? To inform, persuade, entertain?
-C - Content: What does it say or show?
-L - Limitation: What are its weaknesses? What's missing? Is there bias?
+Alliances:
+Europe was divided into two armed camps:
+- Triple Alliance: Germany, Austria-Hungary, Italy
+- Triple Entente: France, Russia, Britain
+An attack on one would bring allies into war.
 
-Historical perspectives:
-Different people experience events differently based on their position, beliefs, and circumstances. A wealthy factory owner and a child worker would have very different views of the Industrial Revolution.
+Imperialism:
+European powers competed for colonies in Africa and Asia, creating rivalries and tensions.
 
-Cause and consequence:
-Historical events have multiple causes (short-term triggers and long-term factors) and multiple consequences (immediate and lasting effects).`,
+Nationalism:
+Intense pride in one's nation led countries to believe they were superior. Ethnic groups in empires (especially Austria-Hungary) wanted independence.
+
+The Spark:
+On June 28, 1914, Archduke Franz Ferdinand of Austria-Hungary was assassinated in Sarajevo by a Serbian nationalist.
+
+Chain of Events:
+Austria-Hungary → Serbia → Russia → Germany → France → Britain
+
+Why Australia Went to War:
+- Loyalty to Britain ("when Britain is at war, Australia is at war")
+- Defence concerns about German presence in Pacific
+- Sense of adventure and duty
+- Belief it would be a short war`,
     keyPoints: [
-      "Primary sources: created at the time (diaries, photos, letters)",
-      "Secondary sources: created later by historians",
-      "OPCL: Origin, Purpose, Content, Limitation",
-      "Consider different perspectives on events"
+      "MAIN: Militarism, Alliances, Imperialism, Nationalism",
+      "Assassination of Franz Ferdinand triggered the war",
+      "Alliance system caused rapid escalation",
+      "Australia entered due to ties with Britain"
     ]
   },
   2: {
-    title: "Europe Before World War I",
-    content: `By 1914, Europe was a powder keg waiting to explode. The major powers had built up tensions through alliances, military competition, and imperial rivalries.
+    title: "Gallipoli and the Birth of National Identity",
+    content: `The Gallipoli campaign became a defining moment in Australian history, shaping the ANZAC legend and national identity.
 
-The Great Powers:
-- Britain: Largest empire, powerful navy
-- France: Democratic republic, rivalry with Germany
-- Germany: Newly unified (1871), growing industrial and military power
-- Russia: Vast empire, autocratic rule, industrialising
-- Austria-Hungary: Multi-ethnic empire with internal tensions
-- Ottoman Empire: Declining power in Eastern Europe and Middle East
+The Gallipoli Campaign (1915):
+The Allies aimed to capture the Dardanelles Strait and knock the Ottoman Empire out of the war. The campaign was poorly planned and faced determined Turkish resistance.
 
-MAIN causes of WWI:
-Militarism: Countries built up armies and weapons. Arms race between Britain and Germany.
+April 25, 1915:
+Australian and New Zealand Army Corps (ANZAC) landed at what became known as Anzac Cove. Instead of the expected low beaches, they faced steep cliffs and well-defended positions.
 
-Alliances: Europe divided into two armed camps:
-- Triple Alliance: Germany, Austria-Hungary, Italy
-- Triple Entente: France, Russia, Britain
-An attack on one would bring others into war.
+The Campaign:
+- Soldiers became trapped on narrow beaches
+- Brutal conditions: heat, flies, disease, limited water
+- Neither side could break the deadlock
+- Fighting continued for eight months
 
-Imperialism: Competition for colonies in Africa and Asia caused tensions.
+The Evacuation (December 1915 - January 1916):
+The most successful part of the campaign. Troops were evacuated secretly with minimal casualties.
 
-Nationalism: Pride in one's nation, desire for independence among ethnic groups in empires (especially Austria-Hungary and the Balkans).
+The Cost:
+- 8,000+ Australian soldiers killed
+- 2,700+ New Zealand soldiers killed
+- 21,000+ British soldiers killed
+- ~86,000 Turkish casualties
 
-The Balkans were called "the powder keg of Europe" - many ethnic groups seeking independence, competing interests of major powers.`,
+The ANZAC Legend:
+From this defeat emerged powerful national symbols:
+- Courage under fire
+- Mateship and looking after your mates
+- Endurance in harsh conditions
+- Larrikin spirit and irreverence for authority
+
+Different Perspectives:
+Consider experiences of: soldiers, nurses, families at home, Turkish defenders. Each group experienced Gallipoli differently.`,
     keyPoints: [
-      "MAIN: Militarism, Alliances, Imperialism, Nationalism",
-      "Europe divided into Triple Alliance and Triple Entente",
-      "Arms race increased tensions between powers",
-      "Balkans were politically unstable 'powder keg'"
+      "ANZAC landed April 25, 1915 (now ANZAC Day)",
+      "Eight-month campaign ending in evacuation",
+      "8,000+ Australian soldiers died",
+      "ANZAC legend: courage, mateship, endurance"
     ]
   },
   3: {
-    title: "The Outbreak of World War I",
-    content: `On June 28, 1914, Archduke Franz Ferdinand of Austria-Hungary was assassinated in Sarajevo by Gavrilo Princip, a Serbian nationalist. This single event triggered a chain reaction that plunged Europe into war.
+    title: "The Western Front and the Changing Nature of War",
+    content: `After Gallipoli, Australian forces joined the Western Front in France and Belgium, where they experienced the horrors of modern industrial warfare.
 
-The chain of events:
-1. Austria-Hungary blamed Serbia and issued an ultimatum
-2. Serbia rejected some demands
-3. Austria-Hungary declared war on Serbia (28 July)
-4. Russia mobilised to support Serbia (Slavic ally)
-5. Germany declared war on Russia (1 August)
-6. Germany declared war on France (3 August)
-7. Germany invaded Belgium to attack France
-8. Britain declared war on Germany (4 August) - Belgium's neutrality was guaranteed by treaty
+Key Battles Involving Australians:
 
-The Schlieffen Plan:
-Germany's strategy to avoid fighting on two fronts:
-- Quickly defeat France through Belgium in 6 weeks
-- Then turn to fight Russia (slow to mobilise)
-- The plan failed - France held, leading to stalemate
+Battle of Fromelles (July 1916):
+- First major Australian battle on Western Front
+- Disastrous attack with 5,500 casualties in one night
+- Bodies not recovered for decades
 
-Why did so many countries join so quickly?
-- Alliance obligations
-- Fear of being left out or losing power
-- Nationalist enthusiasm
-- Belief the war would be short ("home by Christmas")
+Battle of the Somme (1916):
+- Massive offensive lasting months
+- Australians involved in battles at Pozières
+- Over 1 million casualties total
 
-By August 1914, most of Europe was at war.`,
+Battle of Passchendaele (1917):
+- Fought in horrific mud
+- Soldiers drowned in shell holes
+- Little territorial gain for massive losses
+
+Trench Warfare:
+- Front lines, support trenches, communication trenches
+- No Man's Land between opposing forces
+- Soldiers lived with mud, rats, disease
+- Constant shelling created psychological trauma
+
+New Technologies:
+- Machine guns: Made frontal attacks suicidal
+- Artillery: Caused most casualties
+- Poison gas: Chemical warfare introduced
+- Tanks: First used 1916, broke stalemate
+- Aircraft: Reconnaissance and fighting
+
+Impact on Soldiers:
+- Physical: Wounds, gas damage, disease
+- Psychological: Shell shock (now PTSD)
+- Loss of innocence about glory of war`,
     keyPoints: [
-      "Assassination of Franz Ferdinand triggered the war",
-      "Alliance system caused rapid escalation",
-      "Schlieffen Plan aimed for quick victory but failed",
-      "Many believed war would be short"
+      "Western Front: years of trench warfare stalemate",
+      "Fromelles, Pozières, Passchendaele - major Australian battles",
+      "New technology made war more deadly",
+      "Physical and psychological trauma affected soldiers"
     ]
   },
   4: {
-    title: "Life in the Trenches",
-    content: `After the failure of the Schlieffen Plan, the Western Front became a stalemate. Both sides dug trenches stretching from the English Channel to Switzerland - over 700km.
+    title: "The Interwar Period: From Hope to Tension",
+    content: `The period between WWI and WWII saw attempts at peace but also growing instability that would lead to another global conflict.
 
-Trench structure:
-- Front line trenches faced the enemy
-- Support trenches behind held reserves
-- Communication trenches connected them
-- No Man's Land between opposing trenches
+Treaty of Versailles (1919):
+The peace treaty that ended WWI:
+- War Guilt Clause: Germany accepted blame
+- Reparations: Germany paid massive compensation
+- Territory: Germany lost land and colonies
+- Military: German army limited to 100,000
+- League of Nations: New international organisation
 
-Conditions in the trenches:
-- Mud: Constant flooding, soldiers stood in water for days
-- Rats: Fed on corpses and food supplies
-- Lice: Spread disease, constant itching
-- Disease: Trench foot (from wet conditions), dysentery
-- Smell: Dead bodies, sewage, unwashed soldiers
-- Cold: Freezing winters with inadequate shelter
-- Boredom: Long periods of waiting between attacks
+Problems with the Treaty:
+- Germany felt humiliated ("diktat" - dictated peace)
+- Reparations crippled German economy
+- National borders didn't match ethnic populations
+- USA didn't join the League of Nations
 
-The daily routine:
-- "Stand to" at dawn and dusk (ready for attack)
-- Sentry duty watching No Man's Land
-- Repair trenches, fill sandbags
-- Rest during the day
-- Raids and attacks mostly at night
+The Great Depression (1929-1939):
+- Stock market crash triggered global economic collapse
+- Unemployment reached 25% in many countries
+- Poverty, hunger, social unrest
+- People lost faith in democratic governments
 
-Psychological impact:
-- Shell shock (now called PTSD)
-- Constant fear of death
-- Witnessing friends killed
-- Censored mail couldn't express true feelings`,
+Rise of Fascism:
+In times of crisis, people turned to strong leaders promising order:
+- Italy: Mussolini (1922)
+- Germany: Hitler (1933)
+- Japan: Military government
+
+These regimes:
+- Rejected democracy
+- Promoted aggressive nationalism
+- Built up military power
+- Sought territorial expansion
+
+League of Nations Failures:
+- No army to enforce decisions
+- Major powers ignored it
+- Failed to stop Japanese invasion of Manchuria (1931)
+- Failed to stop Italian invasion of Ethiopia (1935)`,
     keyPoints: [
-      "Trenches stretched 700km across Western Front",
-      "Conditions: mud, rats, lice, disease, cold",
-      "Soldiers suffered physical and psychological trauma",
-      "Stalemate led to years of little territorial gain"
+      "Treaty of Versailles humiliated Germany",
+      "Great Depression caused global economic collapse",
+      "Fascism rose in Italy, Germany, Japan",
+      "League of Nations couldn't prevent aggression"
     ]
   },
   5: {
-    title: "New Technology of World War I",
-    content: `World War I introduced devastating new weapons that made the war deadlier than any previous conflict. The technology of killing outpaced the ability to protect soldiers.
+    title: "The Outbreak of World War II and Australia's Early Involvement",
+    content: `World War II began in 1939, and Australia was quickly drawn into another global conflict.
 
-Machine guns:
-- Could fire 400-600 rounds per minute
-- Mowed down soldiers charging across No Man's Land
-- Made frontal attacks suicidal
+Causes of WWII:
+- Treaty of Versailles created resentment
+- Rise of totalitarianism (fascism, Nazism)
+- Failure of appeasement (giving in to Hitler's demands)
+- Hitler's territorial expansion
+- Japanese expansion in Asia
 
-Artillery:
-- Massive guns bombarded trenches before attacks
-- Caused the most casualties of any weapon
-- Created the shell-cratered landscape of the Western Front
-- Constant noise led to shell shock
+Hitler's Aggression:
+1935: Reintroduced conscription (broke treaty)
+1936: Remilitarised Rhineland
+1938: Anschluss with Austria
+1938: Munich Agreement (took Sudetenland)
+1939: Invaded Czechoslovakia
+1939: Nazi-Soviet Pact
+September 1, 1939: Invaded Poland
 
-Poison gas:
-- First used by Germany at Ypres in 1915
-- Types: chlorine, phosgene, mustard gas
-- Caused blindness, choking, skin burns
-- Gas masks became essential equipment
+Australia Enters the War:
+Prime Minister Menzies: "Britain is at war; therefore Australia is at war."
+Initially, Australian troops went to North Africa and the Middle East.
 
-Tanks:
-- First used by Britain at the Somme in 1916
-- Could cross trenches and barbed wire
-- Unreliable and slow at first
-- Pointed to future of warfare
+Key Campaigns:
 
-Aircraft:
-- Initially used for reconnaissance
-- Became fighters and bombers
-- "Aces" like the Red Baron became famous
-- Air warfare was born
+Fall of Singapore (February 1942):
+- Britain's "impregnable fortress" fell in days
+- 15,000 Australian soldiers captured
+- Shattered belief in British protection
+- War came to Australia's doorstep
 
-Submarines (U-boats):
-- Germany used U-boats to blockade Britain
-- Unrestricted submarine warfare provoked the USA`,
+Siege of Tobruk (1941):
+- Australian troops held Libyan port for months
+- German propaganda called them "rats of Tobruk"
+- Australians adopted name with pride
+
+Kokoda Track (1942):
+- Japanese advance toward Port Moresby
+- Australian troops fought in brutal jungle conditions
+- First time Australians defended their homeland
+- Stopped Japanese advance toward Australia`,
     keyPoints: [
-      "Machine guns made trench attacks deadly",
-      "Artillery caused most WWI casualties",
-      "Poison gas introduced chemical warfare",
-      "Tanks and aircraft changed future warfare"
+      "Hitler's aggression led to war in 1939",
+      "Fall of Singapore: 15,000 Australians captured",
+      "Kokoda: Australians defended homeland",
+      "War came directly to Australia's region"
     ]
   },
   6: {
-    title: "The Gallipoli Campaign",
-    content: `The Gallipoli Campaign (1915-1916) was an attempt by Allied forces to open a new front against the Ottoman Empire and gain a sea route to Russia. For Australia and New Zealand, it became a defining moment in national identity.
+    title: "The Australian Home Front",
+    content: `WWII affected everyone in Australia, not just soldiers. The home front was essential to the war effort.
 
-The plan:
-- Control the Dardanelles Strait (connecting Mediterranean to Black Sea)
-- Capture Constantinople (Istanbul)
-- Knock the Ottoman Empire out of the war
-- Open supply route to Russia
+Government Controls:
+- Rationing: Limited quantities of food, petrol, clothing
+- Censorship: Government controlled information
+- Manpower regulations: Directed where people worked
+- Internment: Japanese-Australians and others detained
 
-The landing:
-- April 25, 1915: ANZAC troops landed at Anzac Cove
-- They faced steep cliffs and well-defended Turkish positions
-- Instead of easy victory, they became trapped on narrow beaches
+Women's Roles:
+With men away fighting, women filled essential roles:
+- Factories producing munitions and equipment
+- Land Army - farming
+- Armed forces (WAAAF, AWAS, WRANS) - non-combat roles
+- Nursing - including in war zones
+- Volunteer work
 
-The campaign:
-- Fighting in harsh conditions - heat, flies, disease
-- Limited water and supplies
-- Unable to break through Turkish defences
-- Stalemate similar to Western Front
+Indigenous Australians:
+- Many served despite not being citizens
+- Approximately 3,000 enlisted
+- Faced discrimination in and out of military
+- Service not always recognised
+- Some communities used for defence labour
 
-The evacuation:
-- December 1915 - January 1916
-- The most successful part of the campaign
-- Troops evacuated secretly with minimal casualties
+Propaganda:
+Government used posters, radio, and film to:
+- Encourage enlistment
+- Promote war bonds
+- Maintain morale
+- Encourage productivity
+- Promote rationing and conservation
 
-The cost:
-- Over 8,000 Australian soldiers killed
-- 2,700 New Zealand soldiers killed
-- 21,000 British soldiers killed
-- Turkish casualties: approximately 86,000 killed
+Brisbane Line:
+Secret plan to abandon northern Australia if invaded. Controversial and never officially confirmed.
 
-ANZAC Day (April 25) commemorates this sacrifice and all who served.`,
+Attack on Australia:
+- Darwin bombed February 19, 1942 (more bombs than Pearl Harbor)
+- 64 raids on Darwin total
+- Sydney Harbour attacked by Japanese midget submarines
+- Showed vulnerability of Australia`,
     keyPoints: [
-      "Gallipoli aimed to knock Ottoman Empire out of war",
-      "ANZAC troops landed April 25, 1915",
-      "Campaign failed but evacuation was successful",
-      "Foundation of ANZAC legend and national identity"
+      "Rationing, censorship, and labour controls",
+      "Women entered workforce in new roles",
+      "Indigenous Australians served despite discrimination",
+      "Darwin bombed, Sydney Harbour attacked"
     ]
   },
   7: {
-    title: "The End of World War I",
-    content: `By 1917, all sides were exhausted. The war had killed millions and bankrupted nations. New developments finally broke the stalemate.
+    title: "The Holocaust and Human Rights",
+    content: `The Holocaust was the systematic, state-sponsored persecution and murder of six million Jews by the Nazi regime. It stands as one of history's greatest crimes against humanity.
 
-Key events of 1917:
-USA enters the war (April 1917):
-- German unrestricted submarine warfare sank American ships
-- The Zimmermann Telegram (Germany offered Mexico territory)
-- Fresh American troops and resources tipped the balance
-
-Russian Revolution (1917):
-- Revolution overthrew the Tsar
-- Communist government signed Treaty of Brest-Litovsk (March 1918)
-- Russia left the war, freeing German troops for Western Front
-
-1918 - The final year:
-- Germany's Spring Offensive (March-July) nearly succeeded
-- Allied Hundred Days Offensive pushed Germans back
-- German allies collapsed: Bulgaria, Ottoman Empire, Austria-Hungary
-- German Revolution forced the Kaiser to abdicate
-- Armistice signed November 11, 1918 at 11am
-
-The human cost:
-- Over 10 million soldiers killed
-- 20 million wounded
-- Millions of civilian deaths
-- Entire generation devastated
-- Empires collapsed: German, Austrian, Russian, Ottoman
-
-The world would never be the same.`,
-    keyPoints: [
-      "USA entered war in 1917, bringing fresh resources",
-      "Russia left after Communist Revolution",
-      "Armistice signed November 11, 1918",
-      "Over 10 million soldiers killed worldwide"
-    ]
-  },
-  8: {
-    title: "The Treaty of Versailles",
-    content: `The Paris Peace Conference began in January 1919. The Treaty of Versailles was signed on June 28, 1919 - exactly five years after Franz Ferdinand's assassination.
-
-The Big Three:
-- Georges Clemenceau (France): Wanted to punish Germany severely
-- David Lloyd George (Britain): Wanted balance - punish but not crush
-- Woodrow Wilson (USA): Wanted fair peace based on his Fourteen Points
-
-Terms of the Treaty:
-War Guilt: Germany accepted blame for causing the war (Article 231)
-
-Reparations: Germany had to pay massive compensation (132 billion gold marks)
-
-Territory losses:
-- Alsace-Lorraine returned to France
-- Polish Corridor gave Poland access to sea
-- All overseas colonies taken
-- Rhineland demilitarised
-
-Military restrictions:
-- Army limited to 100,000 soldiers
-- No air force
-- Navy severely limited
-- No submarines or tanks
-
-League of Nations:
-- International organisation to prevent future wars
-- Germany initially excluded
-- USA never joined (Congress rejected it)
-
-German reaction:
-Germans felt the treaty was a "diktat" (dictated peace) - unfair and humiliating. This resentment would fuel the rise of Hitler and contribute to World War II.`,
-    keyPoints: [
-      "Germany blamed for war, forced to pay reparations",
-      "Lost territory and colonies, military restricted",
-      "League of Nations created but weakened without USA",
-      "German resentment contributed to WWII"
-    ]
-  },
-  9: {
-    title: "The Interwar Period and Rise of Fascism",
-    content: `The period between WWI and WWII (1919-1939) saw economic turmoil, political extremism, and the rise of dictatorships.
-
-The Great Depression (1929-1939):
-- Wall Street Crash (October 1929) triggered global economic collapse
-- Unemployment soared - up to 25% in some countries
-- Poverty, hunger, and desperation
-- People lost faith in democratic governments
-
-The Rise of Fascism:
-Fascism promised strong leadership, national pride, and economic recovery.
-
-Italy - Benito Mussolini:
-- Seized power in 1922 (March on Rome)
-- Created first fascist state
-- Suppressed opposition, controlled media
-
-Germany - Adolf Hitler:
-- Nazi Party gained support during Depression
-- Became Chancellor in 1933, then Führer in 1934
-- Promised to restore German greatness
-- Blamed Jews, communists for Germany's problems
-- Began rearmament, defying Treaty of Versailles
-
-Japan:
-- Military leaders gained power
-- Invaded Manchuria (1931), then China (1937)
-- Aggressive expansion in Asia
-
-Appeasement:
-Britain and France tried to avoid war by accepting Hitler's demands (e.g., Munich Agreement 1938). This policy failed - Hitler kept demanding more.`,
-    keyPoints: [
-      "Great Depression caused economic devastation",
-      "Fascist dictators rose: Mussolini, Hitler",
-      "Hitler blamed Treaty of Versailles, promised restoration",
-      "Appeasement failed to prevent war"
-    ]
-  },
-  10: {
-    title: "The Causes and Outbreak of World War II",
-    content: `World War II began on September 1, 1939, when Germany invaded Poland. But the roots of the conflict lay in the aftermath of WWI and the failures of the interwar period.
-
-Long-term causes:
-- Treaty of Versailles: Created German resentment
-- Great Depression: Brought extremists to power
-- Failure of League of Nations: Couldn't stop aggression
-- Appeasement: Encouraged Hitler to take more
-
-Hitler's aggression:
-1935: Reintroduced conscription (broke Treaty of Versailles)
-1936: Remilitarised the Rhineland
-1938: Anschluss - united with Austria
-1938: Munich Agreement - given Sudetenland (Czechoslovakia)
-1939: Took rest of Czechoslovakia
-1939: Nazi-Soviet Pact with USSR
-
-The Nazi-Soviet Pact (August 1939):
-- Hitler and Stalin agreed not to attack each other
-- Secretly planned to divide Poland
-- Shocked the world - fascists and communists were enemies
-
-The invasion of Poland:
-- September 1, 1939: Germany invaded Poland using Blitzkrieg
-- September 3, 1939: Britain and France declared war on Germany
-- September 17: USSR invaded Poland from the east
-
-World War II had begun. It would become the deadliest conflict in human history.`,
-    keyPoints: [
-      "WWII caused by Treaty of Versailles, Depression, appeasement",
-      "Hitler broke treaty, expanded German territory",
-      "Nazi-Soviet Pact allowed invasion of Poland",
-      "Britain and France declared war September 3, 1939"
-    ]
-  },
-  11: {
-    title: "World War II: The Global Conflict",
-    content: `World War II (1939-1945) was fought on multiple fronts across the globe, involving more nations and causing more destruction than any previous war.
-
-The European Theatre:
-1939-1940: German Blitzkrieg conquered Poland, Denmark, Norway, Belgium, Netherlands, France
-1940: Battle of Britain - RAF defended against German air attacks
-1941: Germany invaded USSR (Operation Barbarossa)
-1942-1943: Stalingrad - turning point, Germans pushed back
-1944: D-Day (June 6) - Allied invasion of Normandy
-1945: Allies closed in from West (USA, Britain) and East (USSR)
-May 8, 1945: V-E Day - Germany surrendered
-
-The Pacific Theatre:
-1937: Japan invaded China
-1941: Pearl Harbor attack (December 7) - USA entered war
-1942: Battle of Midway - turning point against Japan
-1942-1945: Island-hopping campaign toward Japan
-1945: Atomic bombs on Hiroshima and Nagasaki
-August 15, 1945: V-J Day - Japan surrendered
-
-Key Allied leaders:
-- Winston Churchill (Britain)
-- Franklin D. Roosevelt (USA)
-- Joseph Stalin (USSR)
-
-Axis powers:
-- Germany, Italy, Japan`,
-    keyPoints: [
-      "Blitzkrieg brought quick German victories 1939-1941",
-      "Stalingrad and Midway were turning points",
-      "D-Day opened Western Front in Europe",
-      "Atomic bombs ended war in Pacific"
-    ]
-  },
-  12: {
-    title: "The Holocaust",
-    content: `The Holocaust was the systematic, state-sponsored persecution and murder of six million Jews by the Nazi regime. It stands as one of history's greatest tragedies and crimes against humanity.
-
-Nazi ideology:
-- Believed in racial hierarchy with "Aryans" at top
+Nazi Ideology:
+- Racial hierarchy with "Aryans" at top
 - Jews portrayed as enemies of Germany
-- Other groups also targeted: Roma, disabled people, homosexuals, political opponents
+- Other groups also targeted: Roma, disabled, homosexuals, political opponents
 
-Stages of persecution:
+Stages of Persecution:
+
 1933-1938: Discrimination
 - Anti-Jewish laws (Nuremberg Laws 1935)
 - Jews lost citizenship, jobs, property
-- Kristallnacht (1938) - violent attacks on Jewish businesses and synagogues
+- Kristallnacht (1938) - violent attacks on Jewish businesses
 
 1939-1941: Concentration
 - Jews forced into ghettos
@@ -1691,913 +1872,1404 @@ Stages of persecution:
 
 1942-1945: Extermination
 - "Final Solution" decided at Wannsee Conference
-- Death camps built: Auschwitz, Treblinka, Sobibor
+- Death camps: Auschwitz, Treblinka, Sobibor
 - Mass murder in gas chambers
-
-Resistance:
-- Warsaw Ghetto Uprising (1943)
-- Some individuals hid Jews at great personal risk
-- Jewish partisans fought back
 
 Liberation:
 - Allies discovered camps as they advanced
 - World shocked by evidence of genocide
+- Nuremberg Trials held perpetrators accountable
 
-We must remember the Holocaust to ensure it never happens again.`,
+Lessons for Human Rights:
+- Universal Declaration of Human Rights (1948)
+- Genocide Convention
+- "Never Again" - commitment to prevent genocide
+- Importance of speaking out against hatred
+
+Australia's Response:
+After the war, Australia accepted many Holocaust survivors as refugees, changing immigration policies.`,
     keyPoints: [
       "Six million Jews murdered in systematic genocide",
-      "Persecution escalated from discrimination to extermination",
-      "Death camps like Auschwitz built for mass murder",
-      "We must remember to prevent future genocides"
+      "Persecution escalated: discrimination → ghettos → death camps",
+      "Holocaust led to human rights declarations",
+      "Responsibility to prevent genocide"
     ]
   },
-  13: {
-    title: "The Cold War Begins",
-    content: `The Cold War (1947-1991) was a period of tension between the United States and the Soviet Union. Though they never fought directly, they competed through proxy wars, arms races, and propaganda.
+  8: {
+    title: "Source Interpretation and Historical Analysis",
+    content: `This week focuses on developing skills in analysing historical sources for assessment.
 
-Origins:
-- Wartime allies became post-war rivals
-- Fundamental ideological differences:
-  - USA: Democracy, capitalism, individual freedom
-  - USSR: Communism, state control, collective society
+Types of Sources:
+Primary Sources: Created at the time
+- Letters, diaries, photographs
+- Government documents, speeches
+- Newspapers, propaganda posters
+- Artefacts, uniforms, medals
 
-The Iron Curtain:
-- Winston Churchill's term for the divide across Europe
-- Eastern Europe: Soviet-controlled communist states
-- Western Europe: Democratic, American-aligned
+Secondary Sources: Created later
+- Textbooks, documentaries
+- Historical analyses
+- Museum exhibitions
 
-Key events:
-1947: Truman Doctrine - USA would support countries resisting communism
-1947: Marshall Plan - US economic aid to rebuild Western Europe
-1948-1949: Berlin Blockade and Airlift
-1949: NATO formed (Western military alliance)
-1949: USSR tested atomic bomb
-1955: Warsaw Pact formed (Soviet bloc alliance)
+Analysing Sources - OPCL:
+O - Origin:
+- Who created it? When? Where?
+- What type of source is it?
 
-The nuclear arms race:
-- Both superpowers built massive nuclear arsenals
-- Mutually Assured Destruction (MAD) deterred direct conflict
-- Fear of nuclear war pervaded society
+P - Purpose:
+- Why was it created?
+- To inform? Persuade? Entertain? Record?
+- Who was the intended audience?
 
-Proxy wars:
-- Korean War (1950-1953)
-- Vietnam War (1955-1975)
-- Various conflicts in Africa, Asia, Latin America`,
-    keyPoints: [
-      "Cold War: USA vs USSR ideological competition",
-      "Iron Curtain divided Europe into East and West",
-      "Nuclear arms race created MAD deterrence",
-      "Proxy wars fought instead of direct conflict"
-    ]
-  },
-  14: {
-    title: "Rights and Freedoms Movements",
-    content: `The post-WWII era saw powerful movements for civil rights, decolonisation, and equality around the world. People who had been denied basic rights fought for justice.
+C - Content:
+- What does it say or show?
+- What information does it provide?
+- What language or imagery is used?
 
-African American Civil Rights Movement (USA):
-Key events:
-- 1954: Brown v. Board of Education ended school segregation
-- 1955: Montgomery Bus Boycott (Rosa Parks)
-- 1963: March on Washington ("I Have a Dream" - MLK)
-- 1964: Civil Rights Act banned discrimination
-- 1965: Voting Rights Act protected voting rights
+L - Limitation:
+- What biases might exist?
+- What information is missing?
+- How reliable is this source?
+- What perspective is represented?
 
-Leaders:
-- Martin Luther King Jr.: Non-violent resistance, peaceful protest
-- Malcolm X: More militant approach, Black pride
-- Many ordinary people risked their lives
+Evaluating Reliability:
+- Consider author's position and motivation
+- Cross-reference with other sources
+- Look for corroboration
+- Be aware of propaganda
 
-Decolonisation:
-After WWII, European empires collapsed:
-- India: Independence from Britain (1947)
-- African nations: Ghana (1957), many others followed
-- Asian nations gained independence
-- Some transitions peaceful, others violent
-
-Australian Indigenous Rights:
-- 1962: Right to vote in federal elections
-- 1967 Referendum: Indigenous people counted in census
-- Land rights movements (Mabo 1992)
-- Stolen Generations: Forced removal of Indigenous children
-- 2008: National Apology by Prime Minister Kevin Rudd
-
-These movements continue to inspire struggles for justice today.`,
-    keyPoints: [
-      "Civil rights movement fought racial discrimination in USA",
-      "Decolonisation ended European empires",
-      "1967 Referendum significant for Indigenous Australians",
-      "Movements for rights continue today"
-    ]
-  },
-  15: {
-    title: "Australia's Changing Identity",
-    content: `Australia's national identity has evolved significantly since 1945, shaped by immigration, Indigenous rights recognition, and changing international relationships.
-
-Post-WWII Immigration:
-- Australia needed population growth for defence and development
-- "Populate or Perish" policy
-- Initially preferred British migrants
-- Displaced persons from Europe accepted
-- Southern Europeans (Italians, Greeks) arrived 1950s-60s
-
-End of White Australia Policy:
-- 1966: Migration Act removed racial criteria
-- 1973: Whitlam government officially ended policy
-- Asia-Pacific immigration increased
-- Australia became multicultural society
-
-Multiculturalism:
-- Recognition of cultural diversity as strength
-- Policies supporting ethnic communities
-- SBS, community language programs
-- Food, music, festivals enriched Australian culture
-
-Indigenous Recognition:
-- 1967 Referendum: Yes vote allowed counting in census
-- Land rights: Mabo (1992), Native Title Act (1993)
-- Stolen Generations: Bringing Them Home Report (1997)
-- 2008: National Apology
-- Ongoing movements for constitutional recognition
-
-Modern Australian Identity:
-- Multicultural, diverse
-- Connection to Indigenous heritage
-- Part of Asia-Pacific region
-- Still debating symbols (flag, national day)`,
-    keyPoints: [
-      "Post-WWII immigration transformed Australia",
-      "White Australia Policy ended 1973",
-      "Multiculturalism recognised as national strength",
-      "Indigenous rights recognition ongoing"
-    ]
-  },
-  16: {
-    title: "Analysing Historical Sources",
-    content: `Historians use sources as evidence to understand the past. Developing source analysis skills is essential for studying history.
-
-Types of sources:
-Written: Letters, diaries, newspapers, government documents, speeches
-Visual: Photographs, paintings, posters, cartoons, films
-Oral: Interviews, recorded testimonies
-Physical: Artefacts, buildings, clothing, tools
-
-Corroboration:
-- Compare multiple sources about the same event
-- Look for agreement and contradiction
-- More sources supporting = more reliable claim
-
-Reliability vs Usefulness:
-- Reliability: How accurate and truthful is the source?
-- Usefulness: How helpful is it for understanding a topic?
-- Even biased sources can be useful for showing perspectives
-
-Questions to ask:
-1. Who created this? What was their perspective?
-2. When was it created? During or after the event?
-3. Why was it created? To inform, persuade, record?
-4. What does it show or tell us?
-5. What might be missing or left out?
-6. How does it compare to other sources?
-
-Constructing historical arguments:
+Using Evidence in Arguments:
 - Make a claim (contention)
 - Support with evidence from sources
 - Analyse what the evidence shows
-- Acknowledge limitations
-- Consider different interpretations`,
+- Consider multiple perspectives
+- Acknowledge limitations`,
     keyPoints: [
-      "Use multiple sources for corroboration",
-      "Consider origin, purpose, and bias",
-      "Even biased sources can be useful",
-      "Support arguments with evidence"
+      "OPCL: Origin, Purpose, Content, Limitation",
+      "Primary sources: from the time period",
+      "Consider bias, perspective, and gaps",
+      "Corroborate with multiple sources"
+    ]
+  },
+  9: {
+    title: "Legacy, Remembrance, and Reflection",
+    content: `The world wars continue to shape Australian identity, international relations, and our approach to remembrance.
+
+The ANZAC Legend:
+Emerged from Gallipoli, grew through subsequent wars:
+- Courage and sacrifice
+- Mateship
+- Endurance
+- Australian values under pressure
+
+Changing Narratives:
+How we remember has evolved:
+- Initially: Focus on heroism and sacrifice
+- Later: Recognition of horror and trauma
+- Now: Inclusion of Indigenous service, women's contributions, diverse experiences
+
+ANZAC Day:
+- April 25 commemorates the landing at Gallipoli
+- Dawn services echo the early morning landing
+- "Lest We Forget" - commitment to remember
+- Marches, ceremonies, two-up games
+
+Remembrance Day:
+- November 11, 11am - armistice took effect
+- One minute's silence
+- Red poppies worn
+
+Commemorative Sites:
+- Australian War Memorial, Canberra
+- Shrine of Remembrance, Melbourne
+- Local war memorials throughout Australia
+
+Continuing Legacy:
+The wars shaped:
+- Australia's national identity
+- International alliances (ANZUS, Five Eyes)
+- Immigration policies
+- Commitment to human rights
+- Regional defence relationships
+
+Questions for Reflection:
+- How should we remember war?
+- Whose stories are told? Whose are missing?
+- What responsibilities come from remembrance?
+- How do these events connect to today?`,
+    keyPoints: [
+      "ANZAC legend: courage, mateship, endurance",
+      "Remembrance has evolved to include more perspectives",
+      "ANZAC Day (April 25) and Remembrance Day (November 11)",
+      "Wars continue to shape Australian identity"
+    ]
+  },
+  10: {
+    title: "Australian Democracy and the Constitution",
+    content: `Term 2 focuses on Politics and Civics. Understanding Australia's democratic system is essential for active citizenship.
+
+Federation (1901):
+Six separate British colonies united to form the Commonwealth of Australia.
+
+Reasons for Federation:
+- Defence: Stronger together
+- Immigration: Uniform policies
+- Trade: Remove interstate tariffs
+- National identity
+
+The Australian Constitution:
+The set of rules establishing Australia's system of government.
+- Divides power between federal and state governments
+- Establishes the Parliament, Executive, and Judiciary
+- Can only be changed by referendum
+
+Division of Powers:
+Federal (Commonwealth) Powers:
+- Defence, foreign affairs
+- Immigration, customs
+- Currency, banking
+- Telecommunications
+
+State Powers:
+- Education, health
+- Police, roads
+- Land management
+
+Concurrent (Shared) Powers:
+- Taxation
+- Environment
+- Some social services
+
+Constitutional Monarchy:
+- The King is Head of State (represented by Governor-General)
+- Prime Minister is Head of Government
+- Parliament makes laws
+- Courts interpret laws
+
+Referendums:
+To change the Constitution:
+- Majority of voters nationally must agree
+- Majority of voters in majority of states (4/6)
+- Only 8 of 44 referendums have passed`,
+    keyPoints: [
+      "Federation united six colonies in 1901",
+      "Constitution divides power between federal and state",
+      "Constitutional monarchy with democratic Parliament",
+      "Referendums required to change Constitution"
+    ]
+  },
+  11: {
+    title: "Parliament and the Legislative Process",
+    content: `Understanding how Parliament works helps us see how laws are made and how citizens can influence the process.
+
+Structure of Federal Parliament:
+Three parts:
+1. The King (represented by Governor-General)
+2. Senate (Upper House)
+3. House of Representatives (Lower House)
+
+House of Representatives:
+- 151 members, one per electorate
+- Government formed by party with majority
+- Prime Minister leads the government
+- Debates and passes bills
+- Money bills must start here
+
+Senate:
+- 76 senators (12 per state, 2 per territory)
+- Reviews bills from the House
+- Represents state interests
+- Can block or amend legislation
+- Minor parties often hold balance of power
+
+How a Bill Becomes Law:
+1. Proposal: Drafted by government department
+2. First Reading: Introduced to Parliament
+3. Second Reading: Debated, voted on in principle
+4. Committee Stage: Detailed examination, amendments
+5. Third Reading: Final vote
+6. Other House: Same process in Senate
+7. Royal Assent: Governor-General signs into law
+
+Representation and Legitimacy:
+- Elected members represent constituents
+- Free, fair elections provide legitimacy
+- Voting is compulsory for Australian citizens
+- Preferential voting in House, proportional in Senate`,
+    keyPoints: [
+      "Parliament: House of Representatives + Senate + King",
+      "Government formed in House of Representatives",
+      "Senate reviews and can amend legislation",
+      "Bills require both houses and royal assent"
+    ]
+  },
+  12: {
+    title: "Political Parties, Interest Groups, and Media",
+    content: `Democracy involves many groups trying to influence government decisions. Understanding these influences helps us be informed citizens.
+
+Political Parties:
+Organised groups seeking to win government:
+- Develop policies based on ideology
+- Select candidates for elections
+- Provide stable government
+
+Major Australian Parties:
+- Liberal Party: Centre-right, business focus
+- Labor Party: Centre-left, union origins
+- National Party: Rural and regional
+- Greens: Environmental focus
+- Minor parties and independents
+
+Ideology:
+Left: More government intervention, social equality
+Right: Less government, individual responsibility
+Most parties sit somewhere on this spectrum.
+
+Interest Groups:
+Organised groups that try to influence policy:
+- Unions (workers' rights)
+- Business groups (industry interests)
+- Environmental groups
+- Professional associations
+- Community organisations
+
+How They Influence:
+- Lobbying politicians
+- Media campaigns
+- Protests and demonstrations
+- Providing expertise
+- Political donations
+
+The Media:
+Traditional and social media shape public opinion:
+- Report on government actions
+- Investigate issues
+- Provide platforms for debate
+- Can influence election outcomes
+
+Media literacy is crucial:
+- Identify bias and perspective
+- Check sources
+- Distinguish news from opinion
+- Consider who owns the media`,
+    keyPoints: [
+      "Political parties compete for government",
+      "Ideology ranges from left to right",
+      "Interest groups lobby to influence policy",
+      "Media shapes public opinion - be critical"
+    ]
+  },
+  13: {
+    title: "Citizenship, Rights, and Responsibilities",
+    content: `Australian citizenship comes with both rights and responsibilities. Active citizenship strengthens democracy.
+
+Becoming a Citizen:
+- By birth: Born in Australia to citizen/resident parent
+- By descent: Born overseas to Australian parent
+- By application: Meet residency and character requirements, take pledge
+
+Rights of Citizens:
+- Vote in elections
+- Run for Parliament
+- Work in public service
+- Apply for Australian passport
+- Return to Australia at any time
+- Access to consular assistance overseas
+
+Responsibilities:
+- Vote in elections (compulsory)
+- Serve on a jury if called
+- Defend Australia if needed
+- Obey the law
+
+Values:
+Citizenship test includes commitment to:
+- Democratic beliefs
+- Rule of law
+- Freedom and dignity
+- Equality and fair go
+
+Forms of Civic Participation:
+Beyond voting, citizens can:
+- Join political parties
+- Write to representatives
+- Sign petitions
+- Attend public meetings
+- Join community organisations
+- Volunteer
+- Peaceful protest
+- Engage in public debate
+
+Active citizenship means being informed and participating in democracy, not just following rules.`,
+    keyPoints: [
+      "Citizens have rights (vote, passport) and responsibilities (vote, jury)",
+      "Citizenship by birth, descent, or application",
+      "Civic participation goes beyond voting",
+      "Active citizenship strengthens democracy"
+    ]
+  },
+  14: {
+    title: "Influencing Decision-Making and Global Citizenship",
+    content: `Citizens and groups can influence government decisions at local, national, and global levels.
+
+Ways Citizens Influence Decisions:
+- Voting: Choosing representatives
+- Contacting representatives: Letters, emails, meetings
+- Petitions: Gathering support for causes
+- Protests: Peaceful demonstrations
+- Media: Writing letters, social media campaigns
+- Joining organisations: Amplifying voice through groups
+
+Successful Campaigns:
+Examples of citizen action creating change:
+- Environmental campaigns
+- Marriage equality
+- Indigenous rights recognition
+- Consumer campaigns
+
+Advocacy vs Activism:
+Advocacy: Working within the system (lobbying, submissions)
+Activism: Direct action to demand change (protests, boycotts)
+Both are legitimate forms of civic participation.
+
+Global Citizenship:
+Beyond national citizenship, we are part of a global community.
+
+Global Issues Requiring Cooperation:
+- Climate change
+- Refugees and migration
+- Human rights
+- Global health
+- International trade
+
+Responsibilities:
+- Awareness of global issues
+- Ethical consumption
+- Support for international aid
+- Understanding diverse perspectives
+- Acting locally, thinking globally
+
+Connecting Local to Global:
+Local actions can have global impact. Individual choices about consumption, waste, and engagement matter.`,
+    keyPoints: [
+      "Citizens influence through voting, petitions, protests",
+      "Advocacy works within systems, activism demands change",
+      "Global citizenship: awareness and responsibility beyond borders",
+      "Local actions have global impact"
+    ]
+  },
+  15: {
+    title: "Australia's International Relationships",
+    content: `Australia's foreign policy balances relationships with major powers, regional engagement, and global responsibilities.
+
+Key Relationships:
+
+United States:
+- ANZUS Treaty (1951): Security alliance
+- Five Eyes: Intelligence sharing
+- Trade and investment partner
+- Cultural connections
+
+China:
+- Major trading partner
+- Complex relationship: trade vs security concerns
+- Growing tensions over various issues
+
+United Kingdom:
+- Historical ties
+- Head of Commonwealth
+- Five Eyes member
+- Ongoing cultural connections
+
+Regional Engagement:
+- ASEAN: Association of Southeast Asian Nations
+- Pacific Islands Forum: Regional cooperation
+- Important for security and stability
+
+International Organisations:
+- United Nations: Collective security, human rights
+- World Trade Organization: Trade rules
+- G20: Major economies coordination
+- Commonwealth of Nations
+
+Treaties and Agreements:
+International agreements shape domestic policy:
+- Trade agreements
+- Environmental treaties (Paris Agreement)
+- Human rights conventions
+- Defence agreements
+
+Balancing Sovereignty and Cooperation:
+Australia must balance:
+- National interests
+- Alliance obligations
+- Regional relationships
+- Global responsibilities`,
+    keyPoints: [
+      "ANZUS alliance with USA central to security",
+      "China: major trade partner, complex relationship",
+      "Regional engagement through ASEAN, Pacific Forum",
+      "Balance sovereignty with international cooperation"
+    ]
+  },
+  16: {
+    title: "Contemporary Issues and Civic Engagement",
+    content: `Applying political understanding to contemporary issues helps us engage meaningfully as citizens.
+
+Current Political Issues:
+Consider how different perspectives approach:
+- Climate policy
+- Immigration and refugees
+- Indigenous recognition
+- Economic management
+- Education and health funding
+- Housing affordability
+
+Analysing Issues:
+1. What is the issue?
+2. Who are the stakeholders?
+3. What are different perspectives?
+4. What evidence supports each view?
+5. What are possible solutions?
+6. What are the trade-offs?
+
+Making Informed Decisions:
+- Seek diverse sources of information
+- Distinguish facts from opinions
+- Consider short and long-term consequences
+- Recognise your own biases
+- Be willing to change your mind with evidence
+
+Engaging Respectfully:
+Democratic debate requires:
+- Listening to other views
+- Arguing with evidence, not personal attacks
+- Accepting that people can disagree reasonably
+- Finding common ground where possible
+- Respecting the process even when you disagree
+
+Being an Active Citizen:
+- Stay informed about current affairs
+- Engage with issues that matter to you
+- Participate in democratic processes
+- Encourage others to engage
+- Model respectful debate`,
+    keyPoints: [
+      "Analyse issues from multiple perspectives",
+      "Distinguish facts from opinions",
+      "Engage respectfully in democratic debate",
+      "Active citizenship requires ongoing engagement"
     ]
   },
   17: {
-    title: "Humanities Review: Making Connections",
-    content: `As we conclude this semester's study, let's connect the major themes and understand how historical events relate to our present world.
+    title: "Humanities Review and Exam Preparation",
+    content: `This week consolidates learning from both terms in preparation for the end-of-semester examination.
 
-Key themes across the semester:
-1. Cause and consequence: Events have multiple causes and lead to lasting effects
-2. Continuity and change: Some things change dramatically, others persist
-3. Perspectives: Different groups experience events differently
-4. Significance: Some events shape the course of history
+Term 1: History - Australians at War
+Key Topics:
+- Causes of WWI (MAIN: Militarism, Alliances, Imperialism, Nationalism)
+- Gallipoli campaign and ANZAC legend
+- Western Front battles and trench warfare
+- Treaty of Versailles and interwar period
+- Causes and outbreak of WWII
+- Australian home front
+- Holocaust and human rights
+- Source analysis (OPCL)
 
-Connections between topics:
-- Treaty of Versailles → German resentment → Rise of Hitler → WWII
-- WWII devastation → Cold War rivalry → Proxy conflicts
-- Colonialism → Decolonisation → Modern global inequalities
-- Discrimination → Civil rights movements → Ongoing struggles for equality
+Term 2: Politics and Civics
+Key Topics:
+- Constitution and Federation
+- Structure of Parliament
+- How laws are made
+- Political parties and interest groups
+- Media influence
+- Citizenship rights and responsibilities
+- Civic participation
+- Australia's international relationships
 
-Lessons from history:
-- Extreme nationalism can lead to conflict
-- Economic hardship can empower extremists
-- Appeasement of aggression doesn't prevent war
-- Ordinary people can make extraordinary change
-- Human rights must be protected actively
+Historical Skills:
+- Source analysis using OPCL
+- Identifying perspectives and bias
+- Using evidence to support arguments
+- Understanding cause and effect
+- Recognising continuity and change
 
-Relevance to today:
-- International cooperation (UN, NATO)
-- Ongoing conflicts and their historical roots
-- Movements for Indigenous rights
-- Immigration and multiculturalism debates
-- Importance of democracy and human rights
+Civics Skills:
+- Understanding how democracy works
+- Analysing political issues
+- Evaluating civic participation
+- Connecting local to global
 
-History helps us understand how we got here and guides our choices for the future.`,
+Exam Tips:
+- Read questions carefully
+- Use specific examples
+- Structure responses clearly
+- Support arguments with evidence
+- Consider multiple perspectives`,
     keyPoints: [
-      "Historical events have long-lasting consequences",
-      "Different perspectives reveal complexity",
-      "Lessons from past inform present decisions",
-      "Understanding history shapes better futures"
+      "Review WWI, WWII, and their legacy",
+      "Know Australian democracy and citizenship",
+      "Use OPCL for source analysis",
+      "Support arguments with specific evidence"
     ]
   }
 };
 
+// English reading by week
+// Term 1 (Weeks 1-9): News Article Analysis - rationale, message, persuasive techniques
+// Term 2 (Weeks 10-17): 1984 by George Orwell - dystopia, power, control
 const englishReadingByWeek: Record<number, ReadingContent> = {
   1: {
-    title: "Introduction to Text Analysis",
-    content: `Text analysis is the process of closely examining a piece of writing to understand not just what it says, but how and why the author has crafted it in particular ways.
+    title: "Introduction to News Article Analysis",
+    content: `Term 1 focuses on analysing news articles, understanding how they communicate messages and use persuasive techniques to influence readers.
 
-Key elements of text analysis:
-Purpose: What is the author trying to achieve?
-- To inform (explain, teach)
-- To persuade (convince, argue)
-- To entertain (engage, amuse)
-- To describe (paint a picture with words)
+What is a News Article?
+A news article is a piece of writing that informs readers about current events. While news should be objective, all media involves choices about what to include, how to frame issues, and what language to use.
 
-Audience: Who is the text written for?
-- Consider age, background, knowledge level, interests
-- Language choices reflect intended audience
+Purpose of News Media:
+- Inform: Provide facts about events
+- Interpret: Explain significance
+- Investigate: Uncover hidden information
+- Entertain: Engage audience interest
 
-Context: When and where was the text created?
-- Historical period affects themes and language
-- Social issues of the time influence content
-- Author's background shapes perspective
+Structure of News Articles:
+- Headline: Grabs attention, summarises story
+- Lead/Byline: Opening paragraph with key information (Who, What, When, Where, Why, How)
+- Body: Details in order of importance
+- Quotes: Direct statements from sources
+- Background: Context and history
 
-Structure: How is the text organised?
-- Introduction, body, conclusion
-- Chapters, paragraphs, stanzas
-- How structure supports meaning
+The Inverted Pyramid:
+News articles put the most important information first, with decreasing importance as you read. This allows readers to get key facts quickly.
 
-Language features:
-- Word choice (formal/informal, technical, emotive)
-- Sentence length and variety
-- Figurative language (metaphor, simile, personification)
-- Tone (serious, humorous, critical, hopeful)
-
-Reading actively means questioning as you read: Why did the author choose this word? What effect does this technique create? What is the underlying message?`,
+Analysing News:
+When reading news articles, consider:
+- What facts are presented?
+- What sources are quoted?
+- What language choices are made?
+- What is included and what is left out?
+- What perspective is represented?`,
     keyPoints: [
-      "Consider purpose, audience, and context",
-      "Analyse structure and language choices",
-      "Identify figurative language and techniques",
-      "Question author's choices and their effects"
+      "News articles inform, interpret, investigate, entertain",
+      "Inverted pyramid: most important information first",
+      "Consider what is included and what is left out",
+      "All media involves choices that shape meaning"
     ]
   },
   2: {
-    title: "Introduction to Animal Farm",
-    content: `Animal Farm by George Orwell, published in 1945, is a powerful allegory that uses a farmyard setting to criticise totalitarianism and the corruption of revolutionary ideals.
+    title: "Understanding Rationale and Message",
+    content: `Every news article has an underlying rationale (reason for writing) and message (what the writer wants you to understand or believe).
 
-The author:
-George Orwell (1903-1950) was an English writer concerned with social injustice and political oppression. He fought in the Spanish Civil War and witnessed communist betrayal of socialist ideals, which influenced his writing.
+Rationale:
+The rationale is the purpose behind the article. Ask: Why was this written?
+- To report breaking news
+- To investigate an issue
+- To profile a person
+- To review or critique
+- To persuade readers
+- To generate discussion
 
-Historical context:
-Animal Farm allegorises the Russian Revolution (1917) and the rise of Soviet totalitarianism under Joseph Stalin. Written during WWII, it criticised the Soviet Union at a time when the USSR was a British ally.
+Message:
+The message is the main idea or argument. Ask: What does the writer want me to think?
+- This might be stated explicitly
+- Or implied through choices made
+- Consider the angle or slant
 
-The allegory:
-Mr. Jones = Tsar Nicholas II (incompetent ruler)
-Old Major = Karl Marx/Lenin (revolutionary idealist)
-Napoleon = Joseph Stalin (tyrannical leader)
-Snowball = Leon Trotsky (exiled rival)
-Boxer = Loyal working class
-Squealer = Propaganda machine
-The dogs = Secret police
+Identifying the Message:
+1. Read the headline and lead - what's emphasised?
+2. Look at which facts are highlighted
+3. Consider which sources are quoted
+4. Notice the language used
+5. What conclusion does the article lead to?
 
-The story:
-Animals overthrow the farmer, establish their own society based on "Animalism" (Seven Commandments), but the pigs gradually take power, eventually becoming indistinguishable from the humans they replaced.
+Intended Audience:
+Writers shape content for their audience:
+- Consider the publication (broadsheet vs tabloid)
+- Age and education level of readers
+- Political leanings of readership
+- Existing knowledge assumed
 
-Central theme: "All animals are equal, but some animals are more equal than others."`,
+Context Matters:
+The same event can be reported very differently depending on:
+- When the article was written
+- Where it was published
+- Who the writer is
+- What else was happening at the time`,
     keyPoints: [
-      "Animal Farm is an allegory of the Russian Revolution",
-      "Characters represent historical figures (Napoleon = Stalin)",
-      "Orwell criticises corruption of revolutionary ideals",
-      "Theme: Power corrupts; absolute power corrupts absolutely"
+      "Rationale: Why was this article written?",
+      "Message: What does the writer want you to think?",
+      "Consider audience and publication context",
+      "Same event can be framed differently"
     ]
   },
   3: {
-    title: "Themes in Animal Farm",
-    content: `Animal Farm explores several interconnected themes that remain relevant today.
+    title: "Persuasive Techniques in News",
+    content: `While news should be objective, many articles use persuasive techniques to influence how readers interpret information.
 
-Power and Corruption:
-The pigs begin with noble intentions but gradually abuse their power. Napoleon uses violence (dogs), propaganda (Squealer), and manipulation to control the other animals. The commandments are changed to suit the pigs' behaviour.
+Appeals:
+Ethos: Appeal to credibility
+- Expert quotes
+- References to authority
+- Credentials of writer
 
-"All animals are equal" becomes "All animals are equal, but some animals are more equal than others."
+Pathos: Appeal to emotion
+- Emotive language
+- Personal stories
+- Imagery
 
-Class and Exploitation:
-Despite the revolution, a new ruling class (pigs) emerges that exploits the working class (other animals). Boxer works himself to death while believing in the pigs' leadership.
+Logos: Appeal to logic
+- Statistics and data
+- Facts and evidence
+- Logical reasoning
 
-Propaganda and Manipulation:
-Squealer represents the power of propaganda. He rewrites history, justifies the pigs' privileges, and convinces the animals that things are better than before the revolution, even as their lives worsen.
+Language Techniques:
+Emotive Language:
+Instead of "said," using "claimed" or "admitted" changes meaning.
+"Home" vs "house" vs "property"
 
-Language and Control:
-Control over language means control over thought. The pigs are educated while keeping others illiterate. They use complicated arguments the other animals can't follow.
+Connotation:
+Words carry emotional associations beyond their literal meaning.
+"Freedom fighter" vs "terrorist" - same person, different framing
 
-Ignorance and Compliance:
-The animals' failure to remember the past and question authority allows their exploitation. Education and critical thinking are essential for freedom.
+Rhetorical Questions:
+Questions that don't need answers but make readers think.
+"How long can we ignore this crisis?"
 
-Revolution and Betrayal:
-Well-intentioned revolutions can be corrupted. The idealistic vision of Animalism is betrayed by those who gain power.`,
+Repetition:
+Repeating key words or phrases for emphasis.
+
+Hyperbole:
+Exaggeration for effect.
+"The worst decision in history"
+
+Selection and Omission:
+What facts are included? What is left out?
+This shapes the story without obvious bias.`,
     keyPoints: [
-      "Power corrupts - pigs become like the humans",
-      "Propaganda controls through manipulation of truth",
-      "Language and education used as tools of control",
-      "Revolution betrayed when leaders prioritise themselves"
+      "Ethos (credibility), Pathos (emotion), Logos (logic)",
+      "Emotive language shapes reader response",
+      "Connotation carries meaning beyond definition",
+      "Selection and omission shape without obvious bias"
     ]
   },
   4: {
-    title: "Symbolism in Animal Farm",
-    content: `Orwell uses symbols throughout Animal Farm to represent larger ideas and historical realities.
+    title: "Analysing Visual Elements and Layout",
+    content: `News articles use visual elements strategically. Understanding these choices helps you analyse the full message.
 
-The Windmill:
-Represents Soviet industrialisation and propaganda promises. Snowball designs it, Napoleon takes credit. Building it becomes a distraction from the animals' declining conditions. Despite their sacrifices, the windmill benefits only the pigs.
+Headlines:
+- Large, bold, designed to grab attention
+- May use wordplay, alliteration, questions
+- Often simplify or sensationalise
+- Set expectations for the article
 
-The Seven Commandments:
-Represent the ideals of the revolution. Their gradual alteration shows how propaganda rewrites history and justifies oppression. The final single commandment ("All animals are equal, but some animals are more equal than others") encapsulates the corruption of revolutionary ideals.
+Images and Photographs:
+- Selected to support the story's angle
+- Caption provides interpretation
+- Positioning affects importance
+- Subject's expression/pose matters
 
-The Farmhouse:
-Represents the seat of power. When the pigs move in, they adopt the trappings of the oppressors they replaced - sleeping in beds, wearing clothes, drinking alcohol.
+Consider:
+- Who is shown? Who is not?
+- What is the subject doing?
+- What angle is the photo taken from?
+- What emotions does it evoke?
 
-Animalism:
-Represents communist ideology. Its noble principles of equality and cooperation are corrupted into a system that benefits only the elite.
+Layout and Design:
+- Size and placement show importance
+- Front page vs back pages
+- Above vs below the fold
+- Sidebar vs main story
+- Pull quotes highlight key points
 
-The Flag:
-Green with hoof and horn, representing animal solidarity. Eventually replaced, symbolising the complete betrayal of original ideals.
+Infographics and Data:
+- Statistics presented visually
+- Can clarify or mislead
+- Check scale and context
+- Consider what data is selected
 
-Napoleon's Dogs:
-Represent Stalin's secret police (NKVD). Used to intimidate and eliminate opponents. The private army ensures Napoleon's absolute power.
+Typography:
+- Font size shows hierarchy
+- Bold and italics add emphasis
+- Colour can evoke emotion
+- All-caps suggests urgency
 
-Songs and Rituals:
-"Beasts of England" inspires revolution but is eventually banned when it no longer serves the pigs' purposes.`,
+Reading Images Critically:
+Images are not neutral - they are chosen and cropped to support the story. The same event photographed differently creates different impressions.`,
     keyPoints: [
-      "Windmill: industrialisation and distraction",
-      "Seven Commandments: revolutionary ideals corrupted",
-      "Farmhouse: embracing oppressors' privileges",
-      "Dogs: violence and intimidation to maintain power"
+      "Headlines grab attention and set expectations",
+      "Images are selected to support the story's angle",
+      "Layout and placement indicate importance",
+      "All visual elements are deliberate choices"
     ]
   },
   5: {
-    title: "Character Analysis: The Pigs",
-    content: `The pigs in Animal Farm represent the ruling class that emerges after the revolution.
+    title: "Comparing News Coverage",
+    content: `Comparing how different sources cover the same story reveals how media shapes our understanding of events.
 
-Old Major:
-- Wise old boar who inspires the revolution
-- Represents Karl Marx and/or Lenin
-- Dies before seeing his vision corrupted
-- His teachings (Animalism) are later distorted
+Why Compare?
+- Different outlets have different perspectives
+- Reveals what's emphasised and omitted
+- Shows how framing affects meaning
+- Helps identify bias
+- Develops critical reading skills
 
-Napoleon:
-- Represents Joseph Stalin
-- "Not much of a talker, but with a reputation for getting his own way"
-- Uses violence, fear, and propaganda to control
-- Secretly raises dogs as his private army
-- Expels Snowball, rewrites history, accumulates power
-- By the end, walks on two legs and is indistinguishable from humans
+What to Compare:
+Headlines:
+- How do they frame the same event?
+- What words are chosen?
+- What aspect is emphasised?
 
-Snowball:
-- Represents Leon Trotsky
-- Intelligent, passionate, genuinely believes in Animalism
-- Designs the windmill and works for the animals' benefit
-- Expelled by Napoleon, then blamed for everything wrong
-- History rewrites his heroism as treachery
+Lead Paragraphs:
+- What information comes first?
+- What angle is taken?
+- Who/what is centred?
 
-Squealer:
-- Represents propaganda/state media
-- "Could turn black into white"
-- Justifies every action the pigs take
-- Convinces animals that memory and perception are wrong
-- Uses statistics, complex arguments, and threats
+Sources Quoted:
+- Whose voices are included?
+- What perspectives are represented?
+- Are sources balanced?
 
-The pigs' transformation:
-From walking on four legs to two, from barn to farmhouse, from animalism to capitalism - they become what they overthrew.`,
+Language:
+- Emotive vs neutral words
+- Positive vs negative framing
+- Active vs passive voice
+
+What's Included/Omitted:
+- What facts appear in one but not another?
+- What context is provided?
+- What might change understanding?
+
+Visuals:
+- What images are selected?
+- How do they affect interpretation?
+
+Language for Comparison:
+- "While [Source A] emphasises..., [Source B] focuses on..."
+- "In contrast to..."
+- "Similarly, both sources..."
+- "However, they differ in..."`,
     keyPoints: [
-      "Napoleon represents Stalin - violent, manipulative dictator",
-      "Snowball represents Trotsky - genuine idealist, exiled and vilified",
-      "Squealer represents propaganda - distorts truth to serve power",
-      "Pigs become indistinguishable from human oppressors"
+      "Comparing sources reveals framing and bias",
+      "Compare headlines, leads, sources, language",
+      "Note what's included and what's omitted",
+      "Use comparative language in analysis"
     ]
   },
   6: {
-    title: "Character Analysis: The Other Animals",
-    content: `The non-pig animals represent different groups in society and their responses to oppression.
+    title: "News Article Assessment Preparation",
+    content: `This week prepares you for the News Article Analysis assessment, consolidating skills developed in Term 1.
 
-Boxer:
-- Powerful, loyal cart-horse
-- Represents the exploited working class
-- Motto: "I will work harder" and "Napoleon is always right"
-- Works himself to exhaustion for the farm
-- Sold to the knacker's (glue factory) when no longer useful
-- His fate shows how loyal workers are exploited and discarded
+Assessment Structure:
+You will analyse a news article, identifying:
+- The rationale (purpose)
+- The message (main argument)
+- Persuasive techniques used
+- How techniques support the message
 
-Clover:
-- Gentle mare, motherly figure
-- Senses something is wrong but can't articulate it
-- Represents those who doubt but don't act
-- Tries to remember the original commandments
+Approaching the Task:
+1. Read the article carefully - multiple times
+2. Identify the topic and main message
+3. Note who the audience might be
+4. Highlight persuasive techniques
+5. Consider visual elements if present
+6. Plan your response before writing
 
-Benjamin:
-- Cynical old donkey
-- Represents intellectuals who refuse to speak up
-- "Donkeys live a long time"
-- Only acts when Boxer is taken - too late
-- Knows the truth but does nothing
+Analysis Structure:
+Introduction:
+- Identify the article, author, publication
+- State the main message/contention
+- Preview your analysis
 
-Mollie:
-- Vain white mare who loves ribbons
-- Represents the bourgeoisie who flee revolution
-- Cares only for personal comforts
-- Defects to another farm
+Body Paragraphs:
+Use TEEL structure for each technique:
+- Topic: Identify the technique
+- Explain: How is it used?
+- Evidence: Quote from the text
+- Link: How does it support the message?
 
-The Sheep:
-- Mindlessly repeat slogans ("Four legs good, two legs bad/better")
-- Represent masses easily manipulated by propaganda
-- Drown out dissenting voices
+Conclusion:
+- Summarise how techniques work together
+- Evaluate effectiveness
+- Consider overall impact on readers
 
-Moses the Raven:
-- Tells stories of Sugarcandy Mountain (heaven)
-- Represents religion used to pacify workers
-- Tolerated by pigs because his stories discourage rebellion`,
+Key Terms:
+- Rationale, message, contention
+- Ethos, pathos, logos
+- Emotive language, connotation
+- Rhetorical question, repetition
+- Selection, omission, framing`,
     keyPoints: [
-      "Boxer: loyal worker exploited then discarded",
-      "Benjamin: cynical intellectual who doesn't act",
-      "Sheep: easily manipulated masses",
-      "Each animal represents a social group"
+      "Read carefully and annotate the article",
+      "Identify message before analysing techniques",
+      "Use TEEL paragraphs for each technique",
+      "Link techniques to the overall message"
     ]
   },
   7: {
-    title: "Writing TEEL Paragraphs",
-    content: `TEEL is a structure for writing analytical paragraphs that helps you develop clear, well-supported arguments.
+    title: "Political Campaign Presentation Preparation",
+    content: `This week focuses on preparing your Political Campaign Presentation, demonstrating your understanding of persuasive communication.
 
-T - Topic Sentence:
-Opens the paragraph with the main idea. This is your argument for this paragraph.
-Example: "Orwell uses the character of Boxer to illustrate how totalitarian regimes exploit the loyalty of the working class."
+The Task:
+Create and deliver a persuasive presentation on a political or social issue, using the techniques studied in news analysis.
 
-E - Explain:
-Elaborate on your topic sentence. Provide context and begin to explain your thinking.
-Example: "Boxer's unwavering dedication to the farm represents the naïve trust that workers place in their leaders. His mottos - 'I will work harder' and 'Napoleon is always right' - demonstrate his complete faith in the system."
+Choosing Your Topic:
+Select an issue you care about:
+- Local community issue
+- School-related topic
+- Social justice issue
+- Environmental concern
+- Youth-focused policy
 
-E - Evidence:
-Provide specific examples, quotes, or references from the text.
-Example: "When Boxer is injured and can no longer work, the pigs sell him to the knacker's, despite his years of loyal service. The van that takes him away clearly reads 'Horse Slaughterer,' yet Squealer convinces the animals that Boxer died peacefully in hospital."
+Crafting Your Message:
+- Clear contention (what you want audience to believe/do)
+- Supporting arguments
+- Anticipate counterarguments
+- Call to action
 
-L - Link:
-Connect back to your main argument and/or transition to the next point.
-Example: "Through Boxer's tragic fate, Orwell warns readers that blind loyalty to authority can lead to exploitation and betrayal, reinforcing the novel's critique of totalitarian power."
+Using Persuasive Techniques:
+Ethos: Establish credibility
+- Research your topic
+- Use reliable sources
+- Present professionally
 
-Tips:
-- One main idea per paragraph
-- Use quotes sparingly but effectively
-- Analyse, don't just describe
-- Link paragraphs together for flow`,
+Pathos: Appeal to emotion
+- Personal stories
+- Vivid examples
+- Connect to audience's values
+
+Logos: Appeal to logic
+- Facts and statistics
+- Logical reasoning
+- Cause and effect
+
+Presentation Skills:
+Speaking:
+- Clear, confident voice
+- Appropriate pace
+- Eye contact
+- Avoid reading directly
+
+Visual Aids:
+- Support, don't replace, your words
+- Simple and clear
+- Professional appearance
+
+Structure:
+- Engaging opening
+- Clear arguments
+- Strong conclusion with call to action`,
     keyPoints: [
-      "Topic: State the paragraph's main argument",
-      "Explain: Develop and elaborate on the idea",
-      "Evidence: Use quotes and examples from text",
-      "Link: Connect to overall argument"
+      "Choose a topic you care about",
+      "State a clear contention",
+      "Use ethos, pathos, and logos",
+      "Practise delivery for confidence"
     ]
   },
   8: {
-    title: "Persuasive Writing Techniques",
-    content: `Persuasive writing aims to convince the reader to accept a viewpoint or take action. Understanding these techniques helps you both analyse and create persuasive texts.
+    title: "Presentation Delivery and Feedback",
+    content: `This week focuses on delivering presentations and providing constructive peer feedback.
 
-Appeals (Aristotle's Rhetorical Triangle):
-Ethos: Appeal to credibility and character
-- Expert opinions, qualifications, shared values
-- "As a doctor with 20 years of experience..."
+Presentation Delivery:
+Before:
+- Review your content
+- Practise timing (stay within limits)
+- Prepare visual aids
+- Arrive ready
 
-Pathos: Appeal to emotion
-- Stories, vivid imagery, emotional language
-- "Imagine a child too hungry to concentrate at school..."
+During:
+- Breathe and stay calm
+- Speak clearly and confidently
+- Make eye contact with audience
+- Use gestures naturally
+- Engage with your content
 
-Logos: Appeal to logic and reason
-- Statistics, facts, evidence, logical arguments
-- "Studies show that 90% of students who..."
+After:
+- Answer questions thoughtfully
+- Accept feedback graciously
+- Reflect on your performance
 
-Language techniques:
-Rhetorical questions: Questions that don't need answers
-- "How can we call ourselves a fair society?"
+Providing Peer Feedback:
+Good feedback is:
+- Specific: Not just "good job" but what was good
+- Constructive: Suggestions for improvement
+- Kind: Delivered respectfully
+- Balanced: Positives and areas for growth
 
-Repetition: Emphasises key ideas
-- "We need action. We need change. We need it now."
+Feedback Framework:
+What worked well:
+- Strong opening/closing
+- Effective use of techniques
+- Confident delivery
+- Engaging content
 
-Inclusive language: Creates connection with audience
-- "We all want what's best for our children"
+Areas for development:
+- Clearer structure
+- More evidence
+- Better eye contact
+- Stronger call to action
 
-Emotive language: Triggers emotional responses
-- "Innocent victims," "heartless decision," "devastating consequences"
-
-Rule of three: Groups ideas for impact
-- "Education, equality, opportunity"
-
-Anecdote: Personal story to illustrate a point
-- "Last week I met a family who..."
-
-Hyperbole: Exaggeration for effect
-- "This is the most important decision of our generation"`,
+Receiving Feedback:
+- Listen without defending
+- Ask clarifying questions
+- Note specific suggestions
+- Thank the person
+- Reflect on what's useful`,
     keyPoints: [
-      "Ethos: credibility, Pathos: emotion, Logos: logic",
-      "Rhetorical questions engage the reader",
-      "Inclusive language creates connection",
-      "Balance emotional and logical appeals"
+      "Preparation and practice build confidence",
+      "Engage with audience through eye contact",
+      "Give specific, constructive feedback",
+      "Use feedback to improve future work"
     ]
   },
   9: {
-    title: "Structuring Persuasive Texts",
-    content: `Effective persuasive writing requires careful organisation to build a compelling argument.
+    title: "Term 1 Review and Transition to Term 2",
+    content: `This week consolidates Term 1 learning and prepares for the study of 1984 in Term 2.
 
-Structure of a persuasive essay:
-Introduction:
-- Hook: Grab attention (question, statistic, quote, scenario)
-- Context: Briefly introduce the issue
-- Contention: State your main argument clearly
-- Preview: Outline your main points
+Term 1 Skills Review:
+News Article Analysis:
+- Identifying rationale and message
+- Recognising persuasive techniques
+- Analysing language choices
+- Considering visual elements
+- Comparing coverage
 
-Body paragraphs (TEEL for each):
-- Start with your strongest argument
-- Each paragraph focuses on one main point
-- Include evidence and examples
-- Address counterarguments (rebuttals)
+Persuasive Communication:
+- Ethos, pathos, logos
+- Structuring arguments
+- Supporting with evidence
+- Presentation skills
 
-Conclusion:
-- Restate your contention in different words
-- Summarise main points briefly
-- End with a call to action or memorable statement
-- Leave a lasting impression
+Critical Literacy:
+- Questioning media messages
+- Recognising bias
+- Considering perspectives
+- Evaluating sources
 
-Planning your argument:
-1. Identify your audience - who are you trying to convince?
-2. Research both sides of the issue
-3. Choose your strongest supporting points
-4. Anticipate objections and prepare rebuttals
-5. Select appropriate evidence
+Looking Ahead to Term 2:
+In Term 2, we study George Orwell's dystopian novel 1984.
 
-Addressing counterarguments:
-Acknowledge opposing views, then rebut them:
-- "Some argue that... However..."
-- "While it's true that..., this overlooks..."
-- "Critics may suggest..., but the evidence shows..."
+What is a Dystopia?
+A dystopia is an imagined society with:
+- Oppressive social control
+- Loss of individual freedom
+- Often totalitarian government
+- Warnings about current trends
 
-This shows you've considered multiple perspectives and strengthens your argument.`,
+1984 Overview:
+- Written by George Orwell in 1948
+- Set in a totalitarian future society
+- Explores surveillance, propaganda, control
+- Remains relevant to modern issues
+
+Connecting Terms:
+The persuasive techniques studied in Term 1 connect to 1984's exploration of propaganda and manipulation. Understanding how media influences thinking prepares us to analyse how the Party controls thought in 1984.`,
     keyPoints: [
-      "Introduction: hook, context, contention, preview",
-      "Body: one argument per paragraph with evidence",
-      "Address counterarguments to strengthen position",
-      "Conclusion: restate contention, call to action"
+      "Review news analysis and persuasive techniques",
+      "Dystopia: imagined oppressive society",
+      "1984 explores surveillance, propaganda, control",
+      "Term 1 skills apply to Term 2 text study"
     ]
   },
   10: {
-    title: "Analysing Persuasive Texts",
-    content: `When analysing persuasive texts, look beyond what is said to examine how and why it's said.
+    title: "Introduction to 1984: Dystopia and Context",
+    content: `Term 2 begins our study of George Orwell's 1984, a dystopian novel that remains powerfully relevant today.
 
-Framework for analysis:
-1. What is the contention? (main argument)
-2. Who is the intended audience?
-3. What persuasive techniques are used?
-4. How effective are these techniques?
-5. What evidence is provided?
-6. Are there any logical fallacies or weaknesses?
+About the Author:
+George Orwell (1903-1950):
+- Real name Eric Arthur Blair
+- Fought in Spanish Civil War
+- Witnessed totalitarianism firsthand
+- Concerned with truth, justice, freedom
+- Also wrote Animal Farm
 
-Identifying techniques:
-Read actively and annotate the text:
-- Underline emotive words
-- Circle rhetorical questions
-- Note appeals to ethos, pathos, logos
-- Identify any statistics or expert opinions
-- Mark repetition and patterns
+Historical Context:
+1984 was written in 1948, responding to:
+- Rise of Nazism and fascism
+- Soviet totalitarianism under Stalin
+- World War II and its aftermath
+- Emerging Cold War tensions
+- Concerns about technology and power
 
-Evaluating effectiveness:
-Consider:
-- Does the evidence support the claims?
-- Is the reasoning logical?
-- Are emotional appeals balanced with facts?
-- Does the author address counterarguments?
-- Is the language appropriate for the audience?
+The Dystopian Genre:
+Key features:
+- Imagined future society
+- Oppressive government control
+- Propaganda and surveillance
+- Suppression of individuality
+- Warning about current trends
 
-Common logical fallacies to identify:
-- Ad hominem: Attacking the person, not the argument
-- Appeal to fear: Using scare tactics
-- Bandwagon: "Everyone else believes/does this"
-- False dichotomy: Presenting only two options
-- Strawman: Misrepresenting the opposing view
+1984's World:
+- Set in Oceania (including Britain/Airstrip One)
+- Perpetual war between three superpowers
+- The Party controls everything
+- Big Brother is the symbolic leader
+- History constantly rewritten
 
-Writing your analysis:
-Use TEEL paragraphs to analyse specific techniques and their effects. Quote directly from the text and explain how the technique works.`,
+Key Concepts:
+- Big Brother: Symbol of total surveillance
+- Thought Police: Enforce orthodoxy
+- Newspeak: Language designed to limit thought
+- Doublethink: Holding contradictory beliefs
+- Ministry of Truth: Propaganda and lies`,
     keyPoints: [
-      "Identify contention, audience, and techniques",
-      "Look for ethos, pathos, logos appeals",
-      "Watch for logical fallacies",
-      "Evaluate effectiveness with evidence"
+      "Orwell wrote 1984 in response to totalitarianism",
+      "Dystopia: imagined oppressive future society",
+      "Big Brother symbolises total surveillance",
+      "Newspeak limits thought through language"
     ]
   },
   11: {
-    title: "Comparative Text Analysis",
-    content: `Comparing texts means examining how different authors approach similar themes, issues, or topics. This develops critical thinking about how meaning is constructed.
+    title: "1984 Part 1: Oceania and the Party",
+    content: `Part 1 of 1984 introduces the world of Oceania, the Party's control, and our protagonist Winston Smith.
 
-What to compare:
-Purpose and audience:
-- What is each author trying to achieve?
-- Who are they writing for?
-- How does this affect their choices?
+The Setting:
+London (now Airstrip One) is a dreary place:
+- Crumbling buildings
+- Constant surveillance via telescreens
+- Posters: "Big Brother Is Watching You"
+- Perpetual war creates scarcity
+- Everything controlled by the Party
 
-Argument and perspective:
-- What position does each take on the issue?
-- What values or beliefs underpin their views?
-- How do they support their arguments?
+The Party's Structure:
+- Big Brother: Unseen leader, maybe not real
+- Inner Party: Elite ruling class (2%)
+- Outer Party: Workers like Winston (13%)
+- Proles: Working class, largely ignored (85%)
 
-Techniques and style:
-- What persuasive techniques does each use?
-- How does their language differ?
-- What is the tone of each text?
+Party Slogans:
+"War is Peace" - perpetual war unites people
+"Freedom is Slavery" - independence leads to failure
+"Ignorance is Strength" - thinking leads to trouble
 
-Structure:
-- How is each text organised?
-- How do they introduce and conclude?
-- How do they sequence their arguments?
+Winston Smith:
+- Works at Ministry of Truth
+- Job: Rewriting historical records
+- Secretly hates the Party
+- Begins keeping an illegal diary
+- Commits "thoughtcrime"
 
-Language for comparison:
-Similarity: Similarly, likewise, in the same way, both texts...
-Difference: In contrast, however, whereas, on the other hand...
-Degree: While Text A emphasises..., Text B focuses more on...
+Surveillance and Control:
+- Telescreens watch and listen
+- Thought Police arrest thoughtcriminals
+- Children spy on parents
+- No privacy exists
 
-Structure of comparative analysis:
-Option 1 - Text by text: Analyse Text A fully, then Text B, then compare
-Option 2 - Point by point: Compare both texts on each aspect (usually better)
-
-Example topic sentence: "While both authors oppose the new policy, Text A relies primarily on emotional appeals, whereas Text B emphasises statistical evidence."`,
+Orwell's Techniques:
+- Third-person limited perspective
+- Detailed world-building
+- Ironic naming (Ministry of Truth spreads lies)
+- Cold, oppressive atmosphere`,
     keyPoints: [
-      "Compare purpose, audience, argument, techniques",
-      "Use comparative language (similarly, however, whereas)",
-      "Point-by-point structure usually more effective",
-      "Analyse both similarities and differences"
+      "Oceania: totalitarian society under the Party",
+      "Big Brother represents constant surveillance",
+      "Winston commits thoughtcrime by questioning",
+      "Irony: ministries do opposite of their names"
     ]
   },
   12: {
-    title: "Writing Text Response Essays",
-    content: `A text response essay analyses how a text explores themes, develops characters, or uses literary techniques. It requires close reading and thoughtful interpretation.
+    title: "1984 Part 1-2: Propaganda and Rebellion",
+    content: `The novel develops themes of propaganda, truth manipulation, and the beginning of Winston's rebellion.
 
-Essay structure:
-Introduction:
-- Name the text and author
-- Provide brief context (when written, type of text)
-- State your contention (thesis) - your main argument about the text
-- Preview your main points
+Propaganda in 1984:
+Two Minutes Hate:
+- Daily ritual of directed hatred
+- Emmanuel Goldstein as enemy figure
+- Unifies people against common enemy
+- Releases and redirects anger
 
-Body paragraphs (3-4 typically):
-- Each paragraph explores one aspect of your argument
-- Use TEEL structure
-- Include quotes (evidence from the text)
-- Analyse the quotes - explain what they show and how
+Historical Revisionism:
+- Winston's job: altering historical records
+- "Who controls the past controls the future"
+- No objective truth can exist
+- Memory becomes unreliable
 
-Conclusion:
-- Restate your thesis in different words
-- Summarise how your points support your argument
-- End with a broader statement about significance
+Newspeak:
+The Party is developing a new language:
+- Reduce vocabulary
+- Eliminate words for rebellion
+- Make thoughtcrime literally impossible
+- "Thoughtcrime does not entail death. Thoughtcrime IS death."
 
-Using evidence effectively:
-- Select short, relevant quotes
-- Embed quotes smoothly into your sentences
-- Always analyse - never just quote and move on
-- Explain what the evidence shows
+Winston's Rebellion:
+His acts of rebellion:
+- Keeping a diary ("down with Big Brother")
+- Remembering the past
+- Having independent thoughts
+- His fascination with Julia
+- Seeking the Brotherhood
 
-Example integration:
-Weak: "Napoleon is always right." This shows Boxer is loyal.
-Strong: Boxer's unquestioning devotion is encapsulated in his motto, "Napoleon is always right," which reveals how totalitarian regimes exploit the trust of loyal citizens.
+Julia:
+- Fellow Outer Party member
+- Appears to be devout Party member
+- Actually rebels through pleasure
+- More practical than Winston
+- Their relationship is political act
 
-Key verbs for analysis:
-Orwell demonstrates/suggests/reveals/illustrates/conveys/criticises/highlights/explores/exposes...`,
+The Paperweight:
+Symbol of the past and beauty:
+- Fragment of pre-Party world
+- Represents Winston's hope
+- Later destroyed (foreshadowing)`,
     keyPoints: [
-      "Introduction: text, thesis, preview",
-      "Body: TEEL with embedded quotes",
-      "Always analyse evidence - explain what it shows",
-      "Conclusion: restate thesis, significance"
+      "Two Minutes Hate directs emotion against enemies",
+      "History is constantly rewritten",
+      "Newspeak designed to prevent thoughtcrime",
+      "Winston and Julia's relationship is rebellion"
     ]
   },
   13: {
-    title: "Developing Voice and Tone",
-    content: `Voice is the writer's distinctive style - their personality on the page. Tone is the attitude conveyed toward the subject matter.
+    title: "1984 Part 2-3: Love, Betrayal, and the Brotherhood",
+    content: `Part 2 explores Winston and Julia's relationship, while Part 3 reveals the Party's ultimate power over individuals.
 
-Elements of voice:
-Word choice: Formal vs informal, simple vs sophisticated
-Sentence structure: Short and punchy or long and complex
-Perspective: First person (I), second (you), or third (they)
-Personality: Serious, humorous, conversational, academic
+Winston and Julia:
+Their relationship develops:
+- Secret meetings in countryside
+- Renting room above Mr Charrington's shop
+- Sexual relationship as political act
+- "I love you" as rebellion
+- Different approaches to resistance
 
-Types of tone:
-Formal/Academic: Professional, objective, third person
-Persuasive: Confident, direct, may be passionate
-Descriptive: Evocative, sensory, creative
-Reflective: Thoughtful, personal, introspective
-Satirical: Mocking, ironic, critical through humour
+O'Brien:
+- Inner Party member
+- Winston believes he's Brotherhood member
+- Gives Winston "The Book" (Goldstein's manifesto)
+- Actually working for Thought Police
+- Represents the Party's deception
 
-Matching voice and tone to purpose:
-Persuasive essay: Confident, direct, mix of formal and engaging
-Creative writing: Flexible, character-driven, distinctive
-Text response: Formal, analytical, objective
-Personal reflection: First person, thoughtful, genuine
+The Betrayal:
+- Mr Charrington is Thought Police
+- Telescreen hidden behind painting
+- Winston and Julia arrested
+- Their private world destroyed
+- Paperweight smashed (symbol)
 
-Developing your voice:
-- Read widely to see how other writers create voice
-- Practice writing in different styles
-- Be authentic - don't try to sound like someone else
-- Match your voice to your audience and purpose
+Ministry of Love:
+Part 3 takes place here:
+- Where thought criminals are "cured"
+- Designed to break individuals
+- Physical and psychological torture
+- Goal: make prisoners love Big Brother
 
-Analysing tone in texts:
-Ask: What is the author's attitude toward the subject?
-How do word choices reveal this attitude?
-Does the tone change throughout the text?
-How does tone affect the reader's response?`,
+O'Brien as Torturer:
+Reveals Party's true nature:
+- Power is not a means, but an end
+- "If you want a picture of the future, imagine a boot stamping on a human face—forever"
+- Party seeks power for its own sake`,
     keyPoints: [
-      "Voice is the writer's distinctive style",
-      "Tone is the attitude toward the subject",
-      "Match voice and tone to purpose and audience",
-      "Analyse word choice to identify tone"
+      "Winston and Julia's love is an act of rebellion",
+      "O'Brien betrays Winston's trust",
+      "Ministry of Love 'cures' thought criminals",
+      "Party seeks power as an end in itself"
     ]
   },
   14: {
-    title: "Media and Multimodal Texts",
-    content: `Multimodal texts combine multiple modes of communication - written, visual, audio, and gestural. Understanding how these elements work together is essential in our media-rich world.
+    title: "1984 Part 3: Room 101 and the Ending",
+    content: `The novel's climax shows the Party's complete victory over Winston's individual spirit.
 
-Types of multimodal texts:
-- Advertisements (print and video)
-- Websites and social media
-- Documentary films
-- News broadcasts
-- Graphic novels
-- Infographics
-- Podcasts with visual elements
+Breaking Winston:
+The Party's goal is not just obedience but love.
+Stages of his "re-education":
+1. Physical torture
+2. Psychological manipulation
+3. Understanding Party philosophy
+4. Final step: Room 101
 
-Visual elements to analyse:
-Colour: Warm colours (excitement), cool colours (calm), black and white (serious)
-Layout: Where elements are placed draws attention
-Images: Photographs, illustrations, symbols
-Typography: Font choices convey meaning (formal, fun, urgent)
-Size: Larger elements have more importance
+2+2=5:
+Winston is tortured until he genuinely believes 2+2=5.
+This represents:
+- Complete control over truth
+- Victory of Party over reality
+- Destruction of objective thinking
 
-Analysing advertisements:
-Target audience: Who is this designed for?
-Product positioning: What lifestyle or values is it associated with?
-Visual techniques: Colour, imagery, layout
-Language: Slogans, claims, persuasive techniques
-Appeals: Ethos, pathos, logos
+Room 101:
+Contains each person's worst fear.
+For Winston: rats
+Faced with rats, Winston betrays Julia:
+- "Do it to Julia! Not me!"
+- His last private self is destroyed
+- The Party has conquered his mind
 
-Camera techniques (video):
-Close-up: Emotion, importance
-Long shot: Context, setting
-Low angle: Power, dominance
-High angle: Vulnerability, weakness
-Tracking: Following action
+The Ending:
+After release:
+- Winston works at ministry
+- He and Julia meet but feel nothing
+- He has been "cured"
+- "He loved Big Brother"
 
-Questions for analysis:
-- How do visual and written elements work together?
-- What message is being communicated?
-- Who created this and why?
-- What perspectives are included or excluded?`,
+The Appendix:
+Written in past tense about Newspeak.
+Suggests the Party eventually fell.
+Ambiguous hope in otherwise bleak ending.
+
+Interpretations:
+Is the ending:
+- Complete despair?
+- Warning we can still avoid?
+- Hidden hope in the appendix?
+Orwell leaves readers to decide.`,
     keyPoints: [
-      "Multimodal texts combine written, visual, audio elements",
-      "Analyse colour, layout, images, typography",
-      "Consider target audience and purpose",
-      "Visual and verbal elements work together"
+      "Room 101 contains each person's worst fear",
+      "Winston betrays Julia to save himself",
+      "The ending: 'He loved Big Brother'",
+      "Appendix may suggest eventual Party fall"
     ]
   },
   15: {
-    title: "Creative Writing Techniques",
-    content: `Creative writing brings stories, characters, and ideas to life through imaginative use of language. Strong creative writing engages readers through vivid description, compelling characters, and effective narrative techniques.
+    title: "Themes and Techniques in 1984",
+    content: `Understanding Orwell's major themes and techniques deepens our analysis of 1984.
 
-Show, don't tell:
-Instead of telling readers what to feel, show them through action, dialogue, and sensory detail.
-Telling: She was angry.
-Showing: Her fists clenched, knuckles whitening as she bit back words that would only make things worse.
+Major Themes:
 
-Sensory detail:
-Engage all five senses to immerse readers in your writing.
-- Sight: What does the scene look like?
-- Sound: What can be heard?
-- Touch: Textures, temperatures
-- Smell: Scents and odours
-- Taste: When appropriate
+Totalitarianism and Power:
+- Absolute power corrupts absolutely
+- Power as end in itself
+- Control over history, language, thought
+- Surveillance as control mechanism
 
-Figurative language:
-Simile: The moon hung like a silver coin in the sky.
-Metaphor: Life is a journey with no map.
-Personification: The wind whispered secrets through the trees.
-Symbolism: Objects representing larger ideas.
+Truth and Reality:
+- Party controls what is "true"
+- "Reality exists in the human mind"
+- Memory vs official history
+- Objective truth destroyed
 
-Narrative techniques:
-Point of view: First person (I) is intimate; third person allows wider perspective
-Flashback: Reveals backstory
-Foreshadowing: Hints at what's to come
-Dialogue: Reveals character, advances plot
-Pacing: Vary sentence length for effect
+Language and Thought:
+- Newspeak limits possible thoughts
+- Language shapes consciousness
+- Propaganda replaces genuine communication
+- "Doublethink" holds contradictions
 
-Creating characters:
-- Physical description (but not too much)
-- Distinctive voice and speech patterns
-- Motivation - what do they want?
-- Flaws and contradictions - make them human`,
+Individuality and Identity:
+- Party seeks to destroy the self
+- Love and loyalty as threats
+- "Freedom is the freedom to say 2+2=4"
+- Without private thought, no self exists
+
+Orwell's Techniques:
+
+Symbolism:
+- Big Brother: surveillance
+- Telescreen: constant watching
+- Paperweight: fragile past
+- Golden Country: freedom
+
+Irony:
+- Ministry of Truth spreads lies
+- Ministry of Love tortures
+- Ministry of Peace wages war
+- Ministry of Plenty creates scarcity
+
+Language:
+- Cold, precise prose
+- Newspeak vocabulary
+- Contrast between Party language and Winston's thoughts`,
     keyPoints: [
-      "Show emotions through action and detail, don't tell",
-      "Use sensory detail to immerse readers",
-      "Figurative language creates vivid imagery",
-      "Characters need motivation and flaws"
+      "Power, truth, language, individuality - key themes",
+      "Newspeak shows language controls thought",
+      "Ironic naming of ministries",
+      "Symbols reinforce themes throughout"
     ]
   },
   16: {
-    title: "Grammar and Editing Skills",
-    content: `Clear, correct writing communicates your ideas effectively. Understanding grammar rules and developing editing skills improves all your writing.
+    title: "1984's Relevance Today",
+    content: `Orwell's warnings remain relevant as modern societies grapple with surveillance, misinformation, and power.
 
-Common errors to avoid:
-Sentence fragments: Incomplete sentences lacking subject or verb.
-Wrong: Because it was raining.
-Right: We stayed inside because it was raining.
+Surveillance Today:
+Modern parallels to Big Brother:
+- CCTV cameras everywhere
+- Social media tracking
+- Data collection by companies
+- Government surveillance programs
+- Smart devices that listen
 
-Run-on sentences: Two sentences joined without proper punctuation.
-Wrong: She left early she had a meeting.
-Right: She left early because she had a meeting. OR She left early; she had a meeting.
+"Post-Truth" and Propaganda:
+Modern parallels to Ministry of Truth:
+- "Fake news" debates
+- Social media misinformation
+- Deep fakes and manipulation
+- Denial of established facts
+- Information bubbles
 
-Subject-verb agreement: Subjects and verbs must match in number.
-Wrong: The group of students are waiting.
-Right: The group of students is waiting.
+Language and Manipulation:
+Modern parallels to Newspeak:
+- Political euphemisms
+- Simplified communication
+- Algorithms shaping information
+- Reduced attention spans
 
-Apostrophe use:
-Possession: The dog's bowl (one dog), The dogs' bowls (multiple dogs)
-Contractions: It's = it is, Its = belonging to it
+Individual Freedom:
+Ongoing debates about:
+- Privacy vs security
+- Free speech limits
+- Corporate power
+- Government overreach
 
-Punctuation:
-- Commas: Separate items in lists, after introductory phrases, around non-essential information
-- Semicolons: Connect related independent clauses
-- Colons: Introduce lists or explanations
+Islamic Perspectives:
+Consider through ethical lens:
+- Truth-telling as religious duty
+- Justice and accountability
+- Protection of privacy
+- Speaking truth to power
+- Moral responsibility
 
-Editing checklist:
-1. Read aloud - does it sound right?
-2. Check sentence structure - any fragments or run-ons?
-3. Verify subject-verb agreement
-4. Review punctuation and apostrophes
-5. Check spelling (don't rely only on spell-check)
-6. Ensure paragraphs are focused
-7. Verify you've answered the question
-
-Proofreading tips:
-- Read backwards (sentence by sentence)
-- Change the font or print it out
-- Read slowly and carefully
-- Focus on common personal errors`,
+Critical Questions:
+- What surveillance do you accept?
+- How do you verify information?
+- What would you sacrifice for security?
+- How can we protect truth and freedom?`,
     keyPoints: [
-      "Avoid fragments and run-on sentences",
-      "Ensure subject-verb agreement",
-      "Use apostrophes correctly (possession vs contraction)",
-      "Always edit and proofread your work"
+      "Surveillance technology echoes Big Brother",
+      "Misinformation parallels Ministry of Truth",
+      "Language manipulation continues today",
+      "Consider ethical implications critically"
     ]
   },
   17: {
     title: "English Review and Exam Preparation",
-    content: `As you prepare for assessments, consolidate your understanding of key concepts and develop effective exam strategies.
+    content: `This week consolidates all learning from both terms in preparation for the end-of-semester examination.
 
-Key skills to review:
-Text analysis: Identify and explain techniques and their effects
-Essay writing: Structure, TEEL paragraphs, evidence integration
-Persuasive writing: Techniques, structure, appeals
-Comparative analysis: Similarities, differences, evaluation
-Creative writing: Show don't tell, sensory detail, narrative techniques
+Term 1: News Article Analysis
+Key Skills:
+- Identifying rationale and message
+- Analysing persuasive techniques (ethos, pathos, logos)
+- Examining language choices
+- Considering visual elements
+- Comparing coverage
 
-Animal Farm focus:
-- Know the allegory - what each character/symbol represents
-- Understand key themes: power, propaganda, class, corruption
-- Have quotes ready for each major character and theme
-- Be able to analyse Orwell's techniques and their effects
+Key Terms:
+Contention, emotive language, connotation, rhetorical question, framing, selection, omission
 
-Exam strategies:
-Before the exam:
-- Review notes and practice essays
-- Prepare quotes and examples
-- Get a good night's sleep
+Term 2: 1984 Analysis
+Key Topics:
+- Context: Orwell's purpose and historical background
+- Plot: Winston's journey from rebellion to submission
+- Characters: Winston, Julia, O'Brien, Big Brother
+- Themes: Power, truth, language, individuality
+- Techniques: Symbolism, irony, language
 
-During the exam:
-- Read all questions carefully before starting
-- Plan your response (5 minutes planning saves time)
-- Allocate time based on marks
-- Answer the actual question asked
-- Leave time to proofread
+Key Quotes:
+- "War is Peace. Freedom is Slavery. Ignorance is Strength."
+- "Who controls the past controls the future."
+- "If you want a picture of the future, imagine a boot stamping on a human face—forever."
+- "Freedom is the freedom to say that two plus two make four."
 
-Essay planning:
-1. Underline key words in the question
-2. Brainstorm relevant ideas, quotes, techniques
-3. Organise into logical paragraph order
-4. Write your contention/thesis
-5. Begin writing, following your plan
+Essay Skills:
+- Clear thesis statement
+- TEEL paragraphs
+- Evidence with quotations
+- Link techniques to meaning
+- Consider multiple perspectives
 
-Remember: Quality of analysis matters more than quantity of quotes. Explain and interpret, don't just describe.`,
+Exam Tips:
+- Read questions carefully
+- Plan before writing
+- Use specific textual evidence
+- Connect to themes and context
+- Proofread your work`,
     keyPoints: [
-      "Review all key concepts and texts",
-      "Plan essays before writing",
-      "Answer the question asked",
-      "Quality analysis over quantity"
+      "Review news analysis and 1984 themes",
+      "Know key quotes and their significance",
+      "Use TEEL structure with evidence",
+      "Connect techniques to meaning and context"
     ]
   }
 };
@@ -2605,135 +3277,109 @@ Remember: Quality of analysis matters more than quantity of quotes. Explain and 
 const mathContent: StudyContent = {
   type: "practice",
   vocabulary: [
-    { term: "Variable", definition: "A letter or symbol representing an unknown value" },
-    { term: "Coefficient", definition: "The number multiplied by a variable" },
-    { term: "Equation", definition: "A mathematical statement showing two expressions are equal" },
-    { term: "Linear Equation", definition: "An equation that forms a straight line when graphed (y = mx + b)" },
-    { term: "Quadratic", definition: "An equation with a squared term (ax² + bx + c)" },
+    { term: "Exponent", definition: "A number indicating how many times to multiply the base by itself" },
+    { term: "Surd", definition: "An irrational root that cannot be simplified to a whole number" },
+    { term: "Absolute Value", definition: "The distance of a number from zero, always positive" },
     { term: "Gradient", definition: "The slope or steepness of a line" },
-    { term: "Y-intercept", definition: "Where a line crosses the y-axis" },
-    { term: "Discriminant", definition: "b² - 4ac, determines nature of roots" },
+    { term: "Quadratic", definition: "An expression with a squared term as the highest power" },
+    { term: "Vertex", definition: "The turning point of a parabola" },
+    { term: "Sequence", definition: "An ordered list of numbers following a pattern" },
+    { term: "Proportion", definition: "A relationship where two quantities change at the same rate" },
   ],
   practiceQuestions: mathQuestions,
   summaryPoints: [
-    "Always perform the same operation on both sides of an equation",
-    "FOIL method: First, Outer, Inner, Last for expanding brackets",
-    "Linear equations have form y = mx + b where m is gradient",
-    "Quadratic formula: x = (-b ± √(b²-4ac)) / 2a",
-    "Pythagoras theorem: a² + b² = c² for right triangles",
-    "SOH CAH TOA for trigonometry ratios",
+    "Polya's 4 steps: Understand, Plan, Execute, Check",
+    "Exponent laws: multiply → add indices, divide → subtract indices",
+    "Distance formula: d = √[(x₂-x₁)² + (y₂-y₁)²]",
+    "Quadratic formula: x = (-b ± √(b²-4ac))/2a",
+    "Arithmetic sequence: aₙ = a₁ + (n-1)d",
+    "Direct proportion: y = kx",
   ],
 };
 
 const scienceContent: StudyContent = {
   type: "practice",
   vocabulary: [
-    { term: "Cell", definition: "The basic structural and functional unit of all living organisms" },
-    { term: "Homeostasis", definition: "The maintenance of a stable internal environment" },
-    { term: "Nucleus", definition: "The control center of the cell containing genetic material" },
-    { term: "Mitochondria", definition: "The powerhouse of the cell - produces ATP energy" },
-    { term: "Photosynthesis", definition: "Process by which plants convert light energy into glucose" },
-    { term: "Respiration", definition: "Process of breaking down glucose to release energy" },
-    { term: "Osmosis", definition: "Movement of water from high to low concentration through a membrane" },
-    { term: "Enzyme", definition: "A biological catalyst that speeds up chemical reactions" },
-    { term: "DNA", definition: "Deoxyribonucleic acid - molecule carrying genetic information" },
-    { term: "Evolution", definition: "Change in inherited characteristics of populations over time" },
-    { term: "Ecosystem", definition: "A community of organisms interacting with their environment" },
-    { term: "Atom", definition: "The smallest unit of an element" },
+    { term: "Isotope", definition: "Atoms of the same element with different numbers of neutrons" },
+    { term: "Half-life", definition: "Time for half of a radioactive sample to decay" },
+    { term: "Electrolysis", definition: "Using electricity to break down compounds" },
+    { term: "Homeostasis", definition: "Maintenance of stable internal conditions" },
+    { term: "Hormone", definition: "Chemical messenger produced by endocrine glands" },
+    { term: "Pathogen", definition: "Microorganism that causes disease" },
+    { term: "Antibody", definition: "Protein produced by immune cells to fight specific pathogens" },
+    { term: "Vaccine", definition: "Preparation that stimulates immunity without causing disease" },
   ],
   practiceQuestions: scienceQuestions,
   summaryPoints: [
-    "Cells are the building blocks of all living things",
-    "DNA carries genetic information in chromosomes",
-    "Natural selection leads to evolution over time",
-    "Ecosystems include biotic (living) and abiotic (non-living) factors",
-    "Chemical equations must be balanced - conservation of mass",
-    "pH scale: 0-7 acidic, 7 neutral, 7-14 alkaline",
-    "Energy cannot be created or destroyed, only transformed",
-    "Photosynthesis: 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂",
+    "Atomic number = protons, mass number = protons + neutrons",
+    "Alpha stopped by paper, Beta by aluminium, Gamma by lead",
+    "Chemical equations must balance (conservation of mass)",
+    "Negative feedback maintains homeostasis",
+    "Insulin lowers blood glucose, glucagon raises it",
+    "Three lines of defence: barriers, innate, adaptive",
   ],
 };
 
 const historyContent: StudyContent = {
   type: "review",
   vocabulary: [
-    { term: "Primary Source", definition: "An original document or object created at the time being studied" },
-    { term: "Secondary Source", definition: "An interpretation or analysis of primary sources" },
-    { term: "Bias", definition: "A one-sided or prejudiced perspective in a source" },
-    { term: "Causation", definition: "The relationship between cause and effect in historical events" },
-    { term: "Totalitarianism", definition: "A system of government with absolute power" },
-    { term: "Nationalism", definition: "Strong identification with one's nation, often feeling superior to others" },
-    { term: "Imperialism", definition: "A policy of extending a country's power through colonization" },
-    { term: "Propaganda", definition: "Information used to promote a political cause or viewpoint" },
-    { term: "Armistice", definition: "An agreement to stop fighting temporarily" },
-    { term: "Reparations", definition: "Compensation demanded from a defeated nation" },
-    { term: "Decolonisation", definition: "The process of colonies gaining independence" },
-    { term: "Holocaust", definition: "The systematic genocide of six million Jews by Nazi Germany" },
+    { term: "ANZAC", definition: "Australian and New Zealand Army Corps" },
+    { term: "Armistice", definition: "Agreement to stop fighting" },
+    { term: "Treaty of Versailles", definition: "Peace treaty that ended WWI" },
+    { term: "Federation", definition: "The uniting of Australian colonies in 1901" },
+    { term: "Constitution", definition: "The set of rules establishing government" },
+    { term: "Referendum", definition: "Vote by citizens to change the Constitution" },
+    { term: "Civic Participation", definition: "Ways citizens engage in democracy" },
+    { term: "Primary Source", definition: "Original document from the time studied" },
   ],
   practiceQuestions: historyQuestions,
   flashcards: [
-    { question: "What does MAIN stand for (causes of WWI)?", answer: "Militarism, Alliances, Imperialism, Nationalism", type: "short-answer" },
-    { question: "When was the Treaty of Versailles signed?", answer: "1919", type: "short-answer" },
-    { question: "What was the League of Nations?", answer: "International organization formed after WWI to maintain peace", type: "short-answer" },
-    { question: "What date is ANZAC Day?", answer: "April 25", type: "short-answer" },
-    { question: "Who were the 'Big Three' at Paris Peace Conference?", answer: "Clemenceau (France), Lloyd George (Britain), Wilson (USA)", type: "short-answer" },
+    { question: "What does MAIN stand for?", answer: "Militarism, Alliances, Imperialism, Nationalism", type: "short-answer" },
+    { question: "When is ANZAC Day?", answer: "April 25", type: "short-answer" },
+    { question: "What treaty ended WWI?", answer: "Treaty of Versailles", type: "short-answer" },
+    { question: "When was Australian Federation?", answer: "1901", type: "short-answer" },
   ],
   summaryPoints: [
-    "Always consider who created a source and why",
-    "Compare multiple sources to get a balanced view",
-    "Historical events have multiple causes and consequences",
-    "WWI was caused by nationalism, alliances, imperialism, and militarism",
-    "WWII arose from unresolved issues of WWI and the Great Depression",
-    "The Cold War was ideological conflict between capitalism and communism",
-    "Use OPCL to analyse sources: Origin, Purpose, Content, Limitation",
-    "Primary sources give direct evidence but may be biased",
+    "MAIN: Causes of WWI - Militarism, Alliances, Imperialism, Nationalism",
+    "ANZAC legend: courage, mateship, endurance",
+    "OPCL: Origin, Purpose, Content, Limitation for source analysis",
+    "Parliament: House of Representatives + Senate + King",
+    "Constitution can only be changed by referendum",
   ],
 };
 
 const englishContent: StudyContent = {
   type: "reading",
   vocabulary: [
-    { term: "Allegory", definition: "A story with a hidden political or moral meaning" },
-    { term: "Satire", definition: "Using humor or irony to criticize or expose foolishness" },
-    { term: "Ethos", definition: "Appeal to credibility or character" },
+    { term: "Rationale", definition: "The underlying reason or purpose for something" },
+    { term: "Contention", definition: "The main argument or position" },
+    { term: "Ethos", definition: "Appeal to credibility" },
     { term: "Pathos", definition: "Appeal to emotion" },
-    { term: "Logos", definition: "Appeal to logic and reason" },
-    { term: "Metaphor", definition: "A comparison saying one thing IS another" },
-    { term: "Symbolism", definition: "Using objects or images to represent abstract ideas" },
-    { term: "Contention", definition: "The main argument or position in persuasive writing" },
-    { term: "Rhetoric", definition: "The art of effective or persuasive speaking or writing" },
-    { term: "Tone", definition: "The author's attitude toward the subject matter" },
-    { term: "Irony", definition: "Expressing meaning by using language that signifies the opposite" },
-    { term: "Theme", definition: "The central idea or message of a text" },
+    { term: "Logos", definition: "Appeal to logic" },
+    { term: "Dystopia", definition: "Imagined society with suffering and injustice" },
+    { term: "Newspeak", definition: "The Party's language designed to limit thought" },
+    { term: "Doublethink", definition: "Holding two contradictory beliefs simultaneously" },
   ],
   practiceQuestions: englishQuestions,
-  comprehensionQuestions: [
-    { question: "What is the main message of the text?", answer: "Identify the central argument or thesis the author is presenting" },
-    { question: "Who is the intended audience?", answer: "Consider age, interests, beliefs, and background of target readers" },
-    { question: "What persuasive techniques does the author use?", answer: "Look for emotional appeals, statistics, expert opinions, rhetorical questions" },
-    { question: "Is the text biased? How can you tell?", answer: "Check for one-sided arguments, loaded language, missing counterarguments" },
-  ],
   writingPrompts: [
     {
-      prompt: "Write a persuasive text arguing for or against social media use by teenagers",
-      requirements: ["Clear contention stated early", "At least 3 supporting arguments", "Use of persuasive techniques", "Address a counterargument"],
-      structure: ["Introduction with hook and contention", "Body paragraph 1: Strongest argument", "Body paragraph 2: Supporting argument", "Conclusion with call to action"],
+      prompt: "Analyse how Orwell uses language and structure to critique totalitarianism in 1984",
+      requirements: ["Clear thesis", "Multiple techniques analysed", "Textual evidence", "Link to themes"],
+      structure: ["Introduction with thesis", "Technique 1", "Technique 2", "Technique 3", "Conclusion"],
     },
     {
-      prompt: "Analyze how Orwell uses symbolism in Animal Farm to critique totalitarianism",
-      requirements: ["Clear thesis statement", "At least 3 examples of symbolism", "Explain what each symbol represents", "Use quotes from the text"],
-      structure: ["Introduction with thesis", "Symbol 1: The windmill", "Symbol 2: The commandments", "Symbol 3: The pigs becoming human-like", "Conclusion"],
+      prompt: "Compare how two news articles present the same event differently",
+      requirements: ["Identify both messages", "Compare techniques", "Analyse language", "Evaluate effectiveness"],
+      structure: ["Introduction", "Article A analysis", "Article B analysis", "Comparison", "Conclusion"],
     },
   ],
   summaryPoints: [
-    "Animal Farm is an allegory for the Russian Revolution",
-    "Napoleon represents Stalin; Snowball represents Trotsky",
-    "Use TEEL paragraphs: Topic, Explain, Evidence, Link",
-    "Persuasive texts use ethos, pathos, and logos",
-    "Consider author's purpose: inform, persuade, entertain",
-    "Analyse both what is said and how it's said",
-    "Support arguments with evidence from the text",
-    "Show, don't tell in creative writing",
+    "News analysis: rationale, message, persuasive techniques",
+    "Ethos, pathos, logos - three forms of persuasion",
+    "1984: dystopia exploring surveillance, propaganda, control",
+    "Big Brother represents total surveillance",
+    "Newspeak designed to limit thought",
+    "TEEL: Topic, Explain, Evidence, Link",
   ],
 };
 

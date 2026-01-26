@@ -414,7 +414,35 @@ export default function StudyPage() {
                   <CardHeader>
                     <CardTitle className="text-lg">Reading Material</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-6">
+                    {content.reading && (
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-lg text-primary">{content.reading.title}</h3>
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                          {content.reading.content.split('\n\n').map((paragraph, idx) => (
+                            <p key={idx} className="text-muted-foreground leading-relaxed mb-3">
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
+                        {content.reading.keyPoints && content.reading.keyPoints.length > 0 && (
+                          <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                            <h4 className="font-semibold mb-2 flex items-center gap-2">
+                              <BookOpen className="h-4 w-4 text-primary" />
+                              Key Points
+                            </h4>
+                            <ul className="space-y-1">
+                              {content.reading.keyPoints.map((point, idx) => (
+                                <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                                  <span className="text-primary mt-1">•</span>
+                                  {point}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     {content.vocabulary && content.vocabulary.length > 0 && (
                       <div>
                         <h3 className="font-semibold mb-3">Key Terms</h3>

@@ -11,6 +11,7 @@ A semester study planning application that helps students track their progress a
 - **25 Questions Per Subject**: Comprehensive question banks for Math, Science, History, and English aligned with Victorian Curriculum Year 9/10
 - **Progress Tracking**: Tracks answered questions, correct answers, and overall progress
 - **Content Library**: Located in `client/src/lib/studyContent.ts` with subject-specific educational content
+- **Week-Specific Reading**: 17 weeks of reading materials per subject, covering curriculum-aligned topics with paragraphs and key points
 
 ### Gamification System
 - **Daily Streak Tracker**: Count consecutive study days with visual flame icon that grows with streak length

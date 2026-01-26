@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Task, subjects, SubjectId } from "@shared/schema";
-import { getTasks } from "@/lib/storage";
+import { getTasks, recordPomodoroSession, addStudyMinutes } from "@/lib/storage";
 import { getStudyContent, getTaskType, StudyContent, PracticeQuestion, FlashcardQuestion } from "@/lib/studyContent";
 import {
   ArrowLeft,
@@ -63,8 +63,15 @@ export default function StudyPage() {
     } else if (timeRemaining === 0) {
       playCompletionSound();
       if (timerMode === "pomodoro" && !isBreak) {
+        // Completed a Pomodoro work session - record it
+        recordPomodoroSession();
+        addStudyMinutes(25, task?.subjectId);
         setIsBreak(true);
         setTimeRemaining(5 * 60);
+      } else if (timerMode === "custom") {
+        // Completed a custom timer session
+        addStudyMinutes(customMinutes, task?.subjectId);
+        setIsRunning(false);
       } else {
         setIsRunning(false);
         setIsBreak(false);
@@ -73,7 +80,7 @@ export default function StudyPage() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isRunning, timeRemaining, timerMode, isBreak]);
+  }, [isRunning, timeRemaining, timerMode, isBreak, customMinutes, task?.subjectId]);
 
   const playCompletionSound = () => {
     if (audioRef.current) {

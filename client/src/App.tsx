@@ -13,6 +13,7 @@ import Subject from "@/pages/Subject";
 import CalendarPage from "@/pages/Calendar";
 import GradesPage from "@/pages/Grades";
 import StudyPage from "@/pages/Study";
+import ProfilePage from "@/pages/Profile";
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/calendar" component={CalendarPage} />
       <Route path="/grades" component={GradesPage} />
       <Route path="/study/:taskId" component={StudyPage} />
+      <Route path="/profile" component={ProfilePage} />
       <Route component={NotFound} />
     </Switch>
   );

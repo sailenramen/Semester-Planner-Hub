@@ -397,6 +397,108 @@ export function generateSampleExams(): Exam[] {
   ];
 }
 
+// Gamification types
+
+// Badge definitions
+export type BadgeId = 
+  | "getting-started" | "week-warrior" | "two-weeks-strong" | "month-master" | "century-club"
+  | "task-crusher" | "centurion" | "perfect-score" | "honor-roll" | "early-bird" | "night-owl"
+  | "speed-demon" | "subject-master-math" | "subject-master-science" | "subject-master-history" | "subject-master-english"
+  | "all-rounder" | "time-lord" | "overachiever";
+
+export interface Badge {
+  id: BadgeId;
+  name: string;
+  description: string;
+  icon: string;
+  requirement: string;
+  category: "streak" | "tasks" | "grades" | "time" | "special";
+}
+
+export const badges: Badge[] = [
+  { id: "getting-started", name: "Getting Started", description: "Complete your first task", icon: "Target", requirement: "Complete 1 task", category: "tasks" },
+  { id: "week-warrior", name: "Week Warrior", description: "Maintain a 7 day streak", icon: "Flame", requirement: "7 day streak", category: "streak" },
+  { id: "two-weeks-strong", name: "Two Weeks Strong", description: "Maintain a 14 day streak", icon: "Zap", requirement: "14 day streak", category: "streak" },
+  { id: "month-master", name: "Month Master", description: "Maintain a 30 day streak", icon: "Star", requirement: "30 day streak", category: "streak" },
+  { id: "century-club", name: "Century Club", description: "Reach a 100 day streak", icon: "Crown", requirement: "100 day streak", category: "streak" },
+  { id: "task-crusher", name: "Task Crusher", description: "Complete 50 tasks", icon: "Zap", requirement: "50 tasks completed", category: "tasks" },
+  { id: "centurion", name: "Centurion", description: "Complete 100 tasks", icon: "Trophy", requirement: "100 tasks completed", category: "tasks" },
+  { id: "perfect-score", name: "Perfect Score", description: "Get 100% on any assessment", icon: "Award", requirement: "100% on assessment", category: "grades" },
+  { id: "honor-roll", name: "Honor Roll", description: "Maintain 90%+ average", icon: "Scroll", requirement: "90%+ overall average", category: "grades" },
+  { id: "early-bird", name: "Early Bird", description: "Complete a task before 8am", icon: "Sunrise", requirement: "Task before 8am", category: "time" },
+  { id: "night-owl", name: "Night Owl", description: "Complete a task after 10pm", icon: "Moon", requirement: "Task after 10pm", category: "time" },
+  { id: "speed-demon", name: "Speed Demon", description: "Complete 10 tasks in one day", icon: "Rocket", requirement: "10 tasks in a day", category: "special" },
+  { id: "subject-master-math", name: "Math Master", description: "Complete all Math tasks", icon: "Calculator", requirement: "All Math tasks", category: "tasks" },
+  { id: "subject-master-science", name: "Science Master", description: "Complete all Science tasks", icon: "FlaskConical", requirement: "All Science tasks", category: "tasks" },
+  { id: "subject-master-history", name: "History Master", description: "Complete all History tasks", icon: "BookOpen", requirement: "All History tasks", category: "tasks" },
+  { id: "subject-master-english", name: "English Master", description: "Complete all English tasks", icon: "PenTool", requirement: "All English tasks", category: "tasks" },
+  { id: "all-rounder", name: "All-Rounder", description: "Complete tasks in all 4 subjects in one day", icon: "GraduationCap", requirement: "All subjects in a day", category: "special" },
+  { id: "time-lord", name: "Time Lord", description: "Study for 25+ hours total", icon: "Clock", requirement: "25 hours studied", category: "time" },
+  { id: "overachiever", name: "Overachiever", description: "Complete all semester tasks", icon: "Medal", requirement: "All tasks complete", category: "special" },
+];
+
+export const streakSchema = z.object({
+  currentStreak: z.number().default(0),
+  longestStreak: z.number().default(0),
+  lastStudyDate: z.string().nullable().default(null),
+  lastActiveDate: z.string().nullable().default(null),
+  lastCheckDate: z.string().nullable().default(null),
+  streakFreezes: z.number().default(2),
+  freezesUsedThisMonth: z.number().default(0),
+  freezeDaysRemaining: z.number().default(2),
+  lastFreezeMonth: z.number().nullable().default(null),
+});
+
+export type Streak = z.infer<typeof streakSchema>;
+
+export const userStatsSchema = z.object({
+  totalPoints: z.number().default(0),
+  totalStudyMinutes: z.number().default(0),
+  totalTasksCompleted: z.number().default(0),
+  totalPomodoroSessions: z.number().default(0),
+  badgesEarned: z.array(z.string()).default([]),
+  dailyTaskCompletions: z.record(z.string(), z.number()).default({}),
+  taskCompletionTimes: z.array(z.string()).default([]),
+  subjectStudyMinutes: z.record(z.string(), z.number()).default({}),
+  level: z.number().default(1),
+  lastActiveDate: z.string().nullable().default(null),
+});
+
+export type UserStats = z.infer<typeof userStatsSchema>;
+
+// Points configuration
+export const POINTS_CONFIG = {
+  TASK_COMPLETE: 10,
+  TASK_WITH_QUESTIONS: 25,
+  DAILY_STREAK: 5,
+  POMODORO_SESSION: 15,
+  GRADE_A: 100,
+  GRADE_B: 75,
+  GRADE_IMPROVEMENT: 50,
+};
+
+// Level thresholds
+export function getLevelFromPoints(points: number): number {
+  if (points < 100) return 1;
+  if (points < 250) return 2;
+  if (points < 500) return 3;
+  if (points < 1000) return 4;
+  if (points < 2000) return 5;
+  if (points < 3500) return 6;
+  if (points < 5500) return 7;
+  if (points < 8000) return 8;
+  if (points < 11000) return 9;
+  if (points < 15000) return 10;
+  // Every 5000 points after level 10
+  return 10 + Math.floor((points - 15000) / 5000);
+}
+
+export function getPointsForNextLevel(level: number): number {
+  const thresholds = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000, 15000];
+  if (level < 10) return thresholds[level];
+  return 15000 + (level - 10) * 5000;
+}
+
 // Keep User types for compatibility
 import { sql } from "drizzle-orm";
 import { pgTable, text, varchar } from "drizzle-orm/pg-core";

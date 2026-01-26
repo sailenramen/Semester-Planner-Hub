@@ -1,4 +1,4 @@
-import { Calendar, LayoutDashboard, BookOpen, Calculator, Leaf, Clock, GraduationCap, BarChart3 } from "lucide-react";
+import { Calendar, LayoutDashboard, BookOpen, Calculator, Leaf, Clock, GraduationCap, BarChart3, User, Trophy } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
   Sidebar,
@@ -78,6 +78,14 @@ export function AppSidebar() {
                   <Link href="/calendar" data-testid="link-calendar">
                     <Calendar className="h-4 w-4" />
                     <span>Calendar</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild data-active={location === "/profile"}>
+                  <Link href="/profile" data-testid="link-profile">
+                    <Trophy className="h-4 w-4 text-yellow-500" />
+                    <span>Profile & Badges</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

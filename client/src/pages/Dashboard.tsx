@@ -7,6 +7,10 @@ import { ProgressRing } from "@/components/ProgressRing";
 import { ExamAlert } from "@/components/ExamAlert";
 import { ExamModeToggle } from "@/components/ExamModeToggle";
 import { SubjectProgressChart } from "@/components/SubjectProgressChart";
+import { StreakTracker } from "@/components/StreakTracker";
+import { PointsDisplay } from "@/components/PointsDisplay";
+import { BadgeUnlockModal } from "@/components/BadgeUnlockModal";
+import { Confetti } from "@/components/Confetti";
 import {
   Task,
   Exam,
@@ -16,6 +20,9 @@ import {
   getWeekDates,
   getTermLabel,
   TOTAL_WEEKS,
+  Streak,
+  UserStats,
+  BadgeId,
 } from "@shared/schema";
 import {
   getTasks,
@@ -25,14 +32,22 @@ import {
   setExamMode,
   calculateProgress,
   calculateWeekProgress,
+  getStreak,
+  getUserStats,
+  recordTaskCompletion,
+  checkDailyStreak,
 } from "@/lib/storage";
 import { format, parseISO, differenceInDays } from "date-fns";
-import { Calendar, TrendingUp, BookOpen, RefreshCw, Clock, AlertTriangle, Target } from "lucide-react";
+import { Calendar, TrendingUp, BookOpen, RefreshCw, Clock, AlertTriangle, Target, Flame, Zap } from "lucide-react";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [examMode, setExamModeState] = useState(false);
+  const [streak, setStreak] = useState<Streak | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [unlockedBadge, setUnlockedBadge] = useState<BadgeId | null>(null);
+  const [showLevelUp, setShowLevelUp] = useState(false);
 
   const currentWeek = getCurrentWeek();
   const currentTerm = getCurrentTerm();
@@ -44,11 +59,42 @@ export default function Dashboard() {
     setTasks(getTasks());
     setExams(getExams());
     setExamModeState(getExamMode());
+    
+    // Check and update daily streak on app load
+    const { streak: updatedStreak, newBadges } = checkDailyStreak();
+    setStreak(updatedStreak);
+    setStats(getUserStats());
+    
+    // Show badge unlock if daily check unlocked new badges
+    if (newBadges.length > 0) {
+      setUnlockedBadge(newBadges[0]);
+    }
   }, []);
 
   const handleToggleTask = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    const wasCompleted = task?.completed || false;
+    
     const updated = toggleTaskCompletion(taskId);
     setTasks(updated);
+    
+    // Only trigger gamification if completing (not uncompleting)
+    if (!wasCompleted) {
+      const result = recordTaskCompletion(taskId, false);
+      setStreak(result.streak);
+      setStats(result.stats);
+      
+      // Show badge unlock if any new badges earned
+      if (result.newBadges.length > 0) {
+        setUnlockedBadge(result.newBadges[0]);
+      }
+      
+      // Show level up animation
+      if (result.levelUp) {
+        setShowLevelUp(true);
+        setTimeout(() => setShowLevelUp(false), 3000);
+      }
+    }
   };
 
   const handleExamModeToggle = (enabled: boolean) => {
@@ -115,16 +161,26 @@ export default function Dashboard() {
             Track your progress and stay on top of your studies
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap">
+          {streak && (
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-orange-100 dark:bg-orange-900/30" data-testid="header-streak">
+              <Flame className={`h-4 w-4 ${streak.currentStreak > 0 ? "text-orange-500" : "text-muted-foreground"}`} />
+              <span className="font-semibold">{streak.currentStreak}</span>
+            </div>
+          )}
+          {stats && (
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30" data-testid="header-points">
+              <Zap className="h-4 w-4 text-yellow-500" />
+              <span className="font-semibold">{stats.totalPoints}</span>
+              <span className="text-xs text-muted-foreground">pts</span>
+            </div>
+          )}
           <Badge variant="secondary" className="text-sm px-3 py-1">
             <Calendar className="h-4 w-4 mr-1" />
             {termLabel}
           </Badge>
           <Badge variant="outline" className="text-sm px-3 py-1">
             Week {currentWeek} of {TOTAL_WEEKS}
-          </Badge>
-          <Badge variant="outline" className="text-sm px-3 py-1">
-            {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d")}
           </Badge>
         </div>
       </div>
@@ -390,6 +446,16 @@ export default function Dashboard() {
           <SubjectProgressChart tasks={tasks} />
         </div>
       </div>
+
+      {/* Badge Unlock Modal */}
+      <BadgeUnlockModal
+        badgeId={unlockedBadge}
+        open={!!unlockedBadge}
+        onClose={() => setUnlockedBadge(null)}
+      />
+
+      {/* Level Up Confetti */}
+      <Confetti active={showLevelUp} />
     </div>
   );
 }

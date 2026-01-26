@@ -12,6 +12,16 @@ A semester study planning application that helps students track their progress a
 - **Progress Tracking**: Tracks answered questions, correct answers, and overall progress
 - **Content Library**: Located in `client/src/lib/studyContent.ts` with subject-specific educational content
 
+### Gamification System
+- **Daily Streak Tracker**: Count consecutive study days with visual flame icon that grows with streak length
+- **Streak Freezes**: 2 skip days per month to protect streak
+- **Achievement Badges**: 19 badges across categories (streak, tasks, grades, time, special)
+- **Points System**: Earn points for completing tasks (10 pts), Pomodoro sessions (15 pts), maintaining streaks (5 pts/day)
+- **Level System**: Progress through levels 1-50 based on total points earned
+- **Profile Page**: View stats, study insights, subject breakdown, and badge trophy case at `/profile`
+- **Visual Rewards**: Confetti animations for badge unlocks and level ups
+- **Badge Components**: Located in `client/src/components/` (StreakTracker, BadgeDisplay, PointsDisplay, BadgeIcon, Confetti, BadgeUnlockModal)
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

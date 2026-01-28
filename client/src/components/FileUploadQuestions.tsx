@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Upload,
   FileText,
@@ -17,6 +18,8 @@ import {
   ChevronUp,
   AlertCircle,
   Sparkles,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 interface GeneratedQuestion {
@@ -56,6 +59,9 @@ export default function FileUploadQuestions({ taskId, subject, topic }: FileUplo
   });
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
   const [showAllAnswers, setShowAllAnswers] = useState(false);
+  const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+  const [checkedAnswers, setCheckedAnswers] = useState<Set<string>>(new Set());
+  const [textInputs, setTextInputs] = useState<Record<string, string>>({});
 
   const saveToStorage = useCallback((data: GeneratedQuestionsData) => {
     localStorage.setItem(STORAGE_KEY_PREFIX + taskId, JSON.stringify(data));
@@ -194,6 +200,47 @@ export default function FileUploadQuestions({ taskId, subject, topic }: FileUplo
     localStorage.removeItem(STORAGE_KEY_PREFIX + taskId);
     setGeneratedData(null);
     setFileName(null);
+    setUserAnswers({});
+    setCheckedAnswers(new Set());
+    setTextInputs({});
+  };
+
+  const selectAnswer = (questionId: string, answer: string) => {
+    if (checkedAnswers.has(questionId)) return;
+    setUserAnswers(prev => ({ ...prev, [questionId]: answer }));
+  };
+
+  const checkAnswer = (questionId: string) => {
+    setCheckedAnswers(prev => {
+      const newSet = new Set(prev);
+      newSet.add(questionId);
+      return newSet;
+    });
+  };
+
+  const resetQuiz = () => {
+    setUserAnswers({});
+    setCheckedAnswers(new Set());
+    setTextInputs({});
+    setShowAllAnswers(false);
+  };
+
+  const isCorrect = (questionId: string, correctAnswer: string) => {
+    const userAnswer = userAnswers[questionId];
+    if (!userAnswer) return false;
+    return userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim() ||
+           userAnswer === correctAnswer;
+  };
+
+  const getScore = () => {
+    if (!generatedData) return { correct: 0, total: 0 };
+    let correct = 0;
+    generatedData.questions.forEach(q => {
+      if (checkedAnswers.has(q.id) && isCorrect(q.id, q.correctAnswer)) {
+        correct++;
+      }
+    });
+    return { correct, total: checkedAnswers.size };
   };
 
   const toggleQuestion = (id: string) => {
@@ -269,13 +316,26 @@ export default function FileUploadQuestions({ taskId, subject, topic }: FileUplo
           </CardTitle>
           {generatedData && (
             <div className="flex items-center gap-2">
+              {checkedAnswers.size > 0 && (
+                <Badge variant="outline" className="gap-1">
+                  Score: {getScore().correct}/{getScore().total}
+                </Badge>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetQuiz}
+                data-testid="button-reset-quiz"
+              >
+                Reset Quiz
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAllAnswers(!showAllAnswers)}
                 data-testid="button-toggle-answers"
               >
-                {showAllAnswers ? "Hide Answers" : "Show All Answers"}
+                {showAllAnswers ? <><EyeOff className="h-4 w-4 mr-1" />Hide Answers</> : <><Eye className="h-4 w-4 mr-1" />Reveal All</>}
               </Button>
               <Button
                 variant="outline"
@@ -421,37 +481,112 @@ export default function FileUploadQuestions({ taskId, subject, topic }: FileUplo
 
                   {(expandedQuestions.has(question.id) || showAllAnswers) && (
                     <div className="px-4 pb-4 space-y-3 border-t bg-muted/30">
-                      {question.options && (
+                      {question.type === "multiple_choice" && question.options ? (
                         <div className="pt-3 space-y-2">
-                          {question.options.map((opt, optIdx) => (
-                            <div
-                              key={optIdx}
-                              className={`p-2 rounded text-sm ${
-                                opt === question.correctAnswer
-                                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium"
-                                  : "bg-background"
-                              }`}
+                          {question.options.map((opt, optIdx) => {
+                            const isSelected = userAnswers[question.id] === opt;
+                            const isChecked = checkedAnswers.has(question.id) || showAllAnswers;
+                            const isCorrectOption = opt === question.correctAnswer;
+                            
+                            let optionClass = "p-3 rounded text-sm border cursor-pointer transition-colors ";
+                            
+                            if (isChecked) {
+                              if (isCorrectOption) {
+                                optionClass += "bg-green-100 dark:bg-green-900/30 border-green-500 text-green-700 dark:text-green-300";
+                              } else if (isSelected && !isCorrectOption) {
+                                optionClass += "bg-red-100 dark:bg-red-900/30 border-red-500 text-red-700 dark:text-red-300";
+                              } else {
+                                optionClass += "bg-background border-border opacity-50";
+                              }
+                            } else if (isSelected) {
+                              optionClass += "bg-primary/10 border-primary";
+                            } else {
+                              optionClass += "bg-background border-border hover:border-primary/50 hover:bg-muted/50";
+                            }
+                            
+                            return (
+                              <button
+                                key={optIdx}
+                                onClick={() => selectAnswer(question.id, opt)}
+                                disabled={isChecked}
+                                className={`${optionClass} w-full text-left flex items-center justify-between`}
+                                data-testid={`option-${question.id}-${optIdx}`}
+                              >
+                                <span>{opt}</span>
+                                {isChecked && isCorrectOption && (
+                                  <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                                )}
+                                {isChecked && isSelected && !isCorrectOption && (
+                                  <XCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                                )}
+                              </button>
+                            );
+                          })}
+                          
+                          {!checkedAnswers.has(question.id) && !showAllAnswers && (
+                            <Button
+                              onClick={() => checkAnswer(question.id)}
+                              disabled={!userAnswers[question.id]}
+                              size="sm"
+                              className="mt-2"
+                              data-testid={`check-answer-${question.id}`}
                             >
-                              {opt}
-                              {opt === question.correctAnswer && (
-                                <CheckCircle2 className="h-4 w-4 inline ml-2" />
+                              Check Answer
+                            </Button>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="pt-3 space-y-3">
+                          {!checkedAnswers.has(question.id) && !showAllAnswers ? (
+                            <>
+                              <Textarea
+                                placeholder={question.type === "extended_response" 
+                                  ? "Write your extended response here..." 
+                                  : "Type your answer here..."}
+                                value={textInputs[question.id] || ""}
+                                onChange={(e) => {
+                                  setTextInputs(prev => ({ ...prev, [question.id]: e.target.value }));
+                                  setUserAnswers(prev => ({ ...prev, [question.id]: e.target.value }));
+                                }}
+                                rows={question.type === "extended_response" ? 4 : 2}
+                                className="resize-none"
+                                data-testid={`text-answer-${question.id}`}
+                              />
+                              <Button
+                                onClick={() => checkAnswer(question.id)}
+                                disabled={!userAnswers[question.id]?.trim()}
+                                size="sm"
+                                data-testid={`check-answer-${question.id}`}
+                              >
+                                Check Answer
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              {userAnswers[question.id] && (
+                                <div className="p-3 rounded border bg-muted/50">
+                                  <p className="text-sm font-medium text-muted-foreground mb-1">Your answer:</p>
+                                  <p className="text-sm">{userAnswers[question.id]}</p>
+                                </div>
                               )}
-                            </div>
-                          ))}
+                              <div className="p-3 rounded border border-green-500 bg-green-100 dark:bg-green-900/30">
+                                <p className="text-sm font-medium text-green-700 dark:text-green-300 mb-1">
+                                  <CheckCircle2 className="h-4 w-4 inline mr-1" />
+                                  Correct Answer:
+                                </p>
+                                <p className="text-sm text-green-700 dark:text-green-300">{question.correctAnswer}</p>
+                              </div>
+                            </>
+                          )}
                         </div>
                       )}
 
-                      <div className="pt-3">
-                        <p className="text-sm font-medium text-primary mb-1">Answer:</p>
-                        <p className="text-sm">{question.correctAnswer}</p>
-                      </div>
-
-                      {question.explanation && (
-                        <div className="pt-2">
-                          <p className="text-sm font-medium text-muted-foreground mb-1">
+                      {(checkedAnswers.has(question.id) || showAllAnswers) && question.explanation && (
+                        <div className="pt-2 p-3 rounded bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                          <p className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
                             Explanation:
                           </p>
-                          <p className="text-sm text-muted-foreground">{question.explanation}</p>
+                          <p className="text-sm text-blue-600 dark:text-blue-400">{question.explanation}</p>
                         </div>
                       )}
                     </div>

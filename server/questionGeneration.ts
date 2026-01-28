@@ -1,7 +1,7 @@
 import { Request, Response, Express } from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import multer from "multer";
-import * as pdfjs from "pdfjs-dist";
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import mammoth from "mammoth";
 
 const anthropic = new Anthropic({
@@ -17,13 +17,12 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     const allowedTypes = [
       "application/pdf",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Invalid file type. Only PDF, PPTX, and DOCX files are allowed."));
+      cb(new Error("Invalid file type. Only PDF and DOCX files are allowed."));
     }
   },
 });
@@ -84,10 +83,7 @@ export function registerQuestionGenerationRoutes(app: Express): void {
       
       if (req.file.mimetype === "application/pdf") {
         extractedText = await extractTextFromPDF(req.file.buffer);
-      } else if (
-        req.file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-        req.file.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-      ) {
+      } else if (req.file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
         extractedText = await extractTextFromDocx(req.file.buffer);
       }
 
@@ -164,11 +160,12 @@ Return ONLY the JSON object, no additional text.`;
         return res.status(500).json({ error: "Failed to parse generated questions" });
       }
 
-      const response: GeneratedQuestionsResponse = {
+      const response: GeneratedQuestionsResponse & { extractedText: string } = {
         questions,
         fileName: req.file.originalname,
         topic,
         generatedAt: new Date().toISOString(),
+        extractedText: truncatedText,
       };
 
       res.json(response);

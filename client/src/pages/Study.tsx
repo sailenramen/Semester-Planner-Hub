@@ -23,7 +23,9 @@ import {
   XCircle,
   ChevronRight,
   Volume2,
+  Sparkles,
 } from "lucide-react";
+import FileUploadQuestions from "@/components/FileUploadQuestions";
 
 export default function StudyPage() {
   const params = useParams<{ taskId: string }>();
@@ -232,10 +234,14 @@ export default function StudyPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <Tabs defaultValue="questions" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="questions" className="gap-1" data-testid="tab-questions">
                   <Brain className="h-4 w-4" />
                   Questions
+                </TabsTrigger>
+                <TabsTrigger value="ai-questions" className="gap-1" data-testid="tab-ai-questions">
+                  <Sparkles className="h-4 w-4" />
+                  AI Questions
                 </TabsTrigger>
                 <TabsTrigger value="reading" className="gap-1" data-testid="tab-reading">
                   <BookOpen className="h-4 w-4" />
@@ -407,6 +413,14 @@ export default function StudyPage() {
                     </CardContent>
                   </Card>
                 )}
+              </TabsContent>
+
+              <TabsContent value="ai-questions" className="mt-4">
+                <FileUploadQuestions
+                  taskId={task.id}
+                  subject={subject?.name || "General"}
+                  topic={task.title}
+                />
               </TabsContent>
 
               <TabsContent value="reading" className="mt-4">

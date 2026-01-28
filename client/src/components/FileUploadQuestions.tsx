@@ -97,11 +97,10 @@ export default function FileUploadQuestions({ taskId, subject, topic }: FileUplo
 
     const allowedTypes = [
       "application/pdf",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
     if (!allowedTypes.includes(file.type)) {
-      setError("Invalid file type. Only PDF, PPTX, and DOCX files are allowed.");
+      setError("Invalid file type. Only PDF and DOCX files are allowed.");
       return;
     }
 
@@ -348,7 +347,7 @@ export default function FileUploadQuestions({ taskId, subject, topic }: FileUplo
                 <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <h3 className="font-medium mb-2">Upload Study Material</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Drag and drop a PDF, PPTX, or DOCX file here, or click to browse
+                  Drag and drop a PDF or DOCX file here, or click to browse
                 </p>
                 <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mb-4">
                   <Badge variant="outline" className="gap-1">
@@ -357,16 +356,12 @@ export default function FileUploadQuestions({ taskId, subject, topic }: FileUplo
                   </Badge>
                   <Badge variant="outline" className="gap-1">
                     <FileIcon className="h-3 w-3" />
-                    PPTX
-                  </Badge>
-                  <Badge variant="outline" className="gap-1">
-                    <FileIcon className="h-3 w-3" />
                     DOCX
                   </Badge>
                 </div>
                 <input
                   type="file"
-                  accept=".pdf,.pptx,.docx"
+                  accept=".pdf,.docx"
                   onChange={handleFileSelect}
                   className="hidden"
                   id="file-upload"

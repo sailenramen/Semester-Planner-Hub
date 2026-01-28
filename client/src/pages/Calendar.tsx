@@ -26,7 +26,8 @@ import {
   parseISO,
   addWeeks,
 } from "date-fns";
-import { Calendar as CalendarIcon, Printer } from "lucide-react";
+import { Calendar as CalendarIcon, Printer, ListTodo } from "lucide-react";
+import CustomTodoList, { getTodosForDate, getOverdueTodos } from "@/components/CustomTodoList";
 
 const subjectColorClasses: Record<string, string> = {
   math: "bg-blue-500",
@@ -39,13 +40,32 @@ export default function CalendarPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [customTodosCount, setCustomTodosCount] = useState<Record<string, number>>({});
   
   const currentWeek = getCurrentWeek();
 
   useEffect(() => {
     setTasks(getTasks());
     setExams(getExams());
+    refreshCustomTodoCounts();
   }, []);
+
+  const refreshCustomTodoCounts = () => {
+    const counts: Record<string, number> = {};
+    for (let w = 1; w <= TOTAL_WEEKS; w++) {
+      const { start, end } = getWeekDates(w);
+      let current = new Date(start);
+      while (current <= end) {
+        const dateStr = format(current, "yyyy-MM-dd");
+        const todos = getTodosForDate(current);
+        if (todos.length > 0) {
+          counts[dateStr] = todos.filter(t => !t.completed).length;
+        }
+        current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
+      }
+    }
+    setCustomTodosCount(counts);
+  };
 
   const handleToggleTask = (taskId: string) => {
     const updated = toggleTaskCompletion(taskId);
@@ -142,6 +162,10 @@ export default function CalendarPage() {
           <div className="h-3 w-3 rounded-full bg-yellow-500 ring-2 ring-yellow-500/30" />
           <span className="text-sm">Exam</span>
         </div>
+        <div className="flex items-center gap-2">
+          <ListTodo className="h-3 w-3 text-primary" />
+          <span className="text-sm">Custom To-Do</span>
+        </div>
       </div>
 
       {/* Calendar Grid */}
@@ -224,6 +248,15 @@ export default function CalendarPage() {
                                 className={`h-2 w-2 rounded-full ${subjectColorClasses[subjectId]}`}
                               />
                             ))}
+                          </div>
+                        )}
+
+                        {/* Custom todo indicator */}
+                        {customTodosCount[format(day, "yyyy-MM-dd")] > 0 && (
+                          <div className="absolute top-1 right-1">
+                            <div className="h-4 w-4 bg-primary/20 rounded-full flex items-center justify-center">
+                              <ListTodo className="h-2.5 w-2.5 text-primary" />
+                            </div>
                           </div>
                         )}
 
@@ -310,9 +343,19 @@ export default function CalendarPage() {
               </div>
             )}
 
+            {/* Custom To-Dos Section */}
+            {selectedDate && (
+              <div className="border-t pt-4">
+                <CustomTodoList 
+                  date={selectedDate} 
+                  onTodosChange={() => refreshCustomTodoCounts()}
+                />
+              </div>
+            )}
+
             {selectedTasks.length === 0 && selectedExams.length === 0 && (
               <p className="text-center text-muted-foreground py-4">
-                No tasks or exams scheduled for this week
+                No study tasks or exams scheduled for this week
               </p>
             )}
           </div>

@@ -1,0 +1,54 @@
+1. FILE UPLOAD FOR QUESTION GENERATION:
+
+On each study task modal, add:
+- "Upload File" button (accept .pdf and .pptx files)
+- For PDFs: Use PDF.js library to extract text
+- For PowerPoints: Use mammoth.js or similar to extract text/content
+- Send extracted content to Anthropic Claude API
+- API call: POST to https://api.anthropic.com/v1/messages
+- Prompt: "You are a Year 9/10 Victorian Curriculum tutor. Based on this content about [subject/topic from task], generate 8-10 study questions suitable for Year 9/10 students. Include: 3 multiple choice, 3 short answer, 2-4 extended response questions. Provide answers for all questions. Format as JSON."
+- Parse API response and display questions in task modal
+- Save questions to localStorage linked to that task
+- "Regenerate" button for different questions
+- Export questions as PDF
+
+Upload UI:
+- Drag-and-drop zone for files
+- File type indicator (.pdf or .pptx)
+- Upload progress bar
+- "Generating questions..." loading state
+- Preview uploaded file name
+- Success message when questions generated
+- Edit questions before saving
+
+2. CALENDAR CUSTOM TO-DO LIST:
+
+Click any date on calendar to open:
+- Date-specific sidebar/modal showing that day
+- Display existing study tasks scheduled for that day
+- "Add Custom To-Do" button
+- Input fields: Task name, Subject (dropdown), Time estimate, Priority (High/Med/Low)
+- Custom to-dos show differently from scheduled tasks (different icon/color)
+- Checkbox to mark complete
+- Delete/edit custom to-dos
+- To-dos save to localStorage with date key
+- Show incomplete to-dos carry over with warning indicator
+- Filter: "Show only custom to-dos" or "Show all tasks"
+
+Calendar To-Do UI:
+- Clean list view of all tasks for selected date
+- Color-coded by subject
+- Time estimates shown
+- Priority badges (🔴 High, 🟡 Med, 🟢 Low)
+- Quick add button (+ icon)
+- Swipe to delete on mobile
+- Total time estimate for the day
+- Completion percentage for the day
+
+3. FEATURES:
+- File size limit: 10MB for uploads
+- Error handling for failed uploads/API calls
+- Retry button if generation fails
+- Save both uploaded files and generated questions
+- View history of uploaded files per task
+- "Regenerate from file" option to create new questions from same file

@@ -3,6 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { TaskCard } from "@/components/TaskCard";
 import {
   Task,
@@ -15,7 +18,7 @@ import {
   getTermLabel,
   TOTAL_WEEKS,
 } from "@shared/schema";
-import { getTasks, toggleTaskCompletion, getExams } from "@/lib/storage";
+import { getTasks, toggleTaskCompletion, getExams, calculateWeekProgress } from "@/lib/storage";
 import {
   format,
   startOfWeek,
@@ -25,8 +28,13 @@ import {
   isWithinInterval,
   parseISO,
   addWeeks,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  isSameMonth,
 } from "date-fns";
-import { Calendar as CalendarIcon, Printer, ListTodo } from "lucide-react";
+import { Calendar as CalendarIcon, Printer, ListTodo, Target, Clock, StickyNote, ChevronLeft, ChevronRight, ToggleLeft, ToggleRight } from "lucide-react";
 import CustomTodoList, { getTodosForDate, getOverdueTodos } from "@/components/CustomTodoList";
 
 const subjectColorClasses: Record<string, string> = {
@@ -36,11 +44,75 @@ const subjectColorClasses: Record<string, string> = {
   english: "bg-purple-500",
 };
 
+const STORAGE_KEYS = {
+  WEEKLY_GOAL: "study-planner-weekly-goal",
+  STUDY_TIME_PREFIX: "study-planner-study-time-",
+  DAY_NOTES_PREFIX: "study-planner-day-notes-",
+};
+
+function getStudyTime(date: Date): number {
+  const key = STORAGE_KEYS.STUDY_TIME_PREFIX + format(date, "yyyy-MM-dd");
+  const stored = localStorage.getItem(key);
+  return stored ? parseFloat(stored) : 0;
+}
+
+function saveStudyTime(date: Date, hours: number): void {
+  const key = STORAGE_KEYS.STUDY_TIME_PREFIX + format(date, "yyyy-MM-dd");
+  if (hours > 0) {
+    localStorage.setItem(key, hours.toString());
+  } else {
+    localStorage.removeItem(key);
+  }
+}
+
+function getDayNote(date: Date): string {
+  const key = STORAGE_KEYS.DAY_NOTES_PREFIX + format(date, "yyyy-MM-dd");
+  return localStorage.getItem(key) || "";
+}
+
+function saveDayNote(date: Date, note: string): void {
+  const key = STORAGE_KEYS.DAY_NOTES_PREFIX + format(date, "yyyy-MM-dd");
+  if (note.trim()) {
+    localStorage.setItem(key, note.trim());
+  } else {
+    localStorage.removeItem(key);
+  }
+}
+
+function getWeeklyGoal(): number {
+  const stored = localStorage.getItem(STORAGE_KEYS.WEEKLY_GOAL);
+  return stored ? parseFloat(stored) : 10;
+}
+
+function saveWeeklyGoal(hours: number): void {
+  localStorage.setItem(STORAGE_KEYS.WEEKLY_GOAL, hours.toString());
+}
+
+function getWeeklyStudyTime(weekNumber: number): number {
+  const { start, end } = getWeekDates(weekNumber);
+  let total = 0;
+  let current = new Date(start);
+  while (current <= end) {
+    total += getStudyTime(current);
+    current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
+  }
+  return total;
+}
+
 export default function CalendarPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [customTodosCount, setCustomTodosCount] = useState<Record<string, number>>({});
+  const [viewMode, setViewMode] = useState<"semester" | "month">("semester");
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [weeklyGoal, setWeeklyGoal] = useState<number>(10);
+  const [editingGoal, setEditingGoal] = useState(false);
+  const [tempGoal, setTempGoal] = useState("");
+  const [studyTimeInput, setStudyTimeInput] = useState("");
+  const [noteInput, setNoteInput] = useState("");
+  const [studyTimesCache, setStudyTimesCache] = useState<Record<string, number>>({});
+  const [notesCache, setNotesCache] = useState<Record<string, boolean>>({});
   
   const currentWeek = getCurrentWeek();
 
@@ -48,7 +120,57 @@ export default function CalendarPage() {
     setTasks(getTasks());
     setExams(getExams());
     refreshCustomTodoCounts();
+    setWeeklyGoal(getWeeklyGoal());
+    refreshStudyTimeAndNotesCache();
   }, []);
+
+  useEffect(() => {
+    if (selectedDate) {
+      setStudyTimeInput(getStudyTime(selectedDate).toString() || "");
+      setNoteInput(getDayNote(selectedDate));
+    }
+  }, [selectedDate]);
+
+  const refreshStudyTimeAndNotesCache = () => {
+    const times: Record<string, number> = {};
+    const notes: Record<string, boolean> = {};
+    
+    for (let w = 1; w <= TOTAL_WEEKS; w++) {
+      const { start, end } = getWeekDates(w);
+      let current = new Date(start);
+      while (current <= end) {
+        const dateStr = format(current, "yyyy-MM-dd");
+        const studyTime = getStudyTime(current);
+        if (studyTime > 0) {
+          times[dateStr] = studyTime;
+        }
+        const note = getDayNote(current);
+        if (note) {
+          notes[dateStr] = true;
+        }
+        current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
+      }
+    }
+    
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+    let monthCurrent = new Date(monthStart);
+    while (monthCurrent <= monthEnd) {
+      const dateStr = format(monthCurrent, "yyyy-MM-dd");
+      const studyTime = getStudyTime(monthCurrent);
+      if (studyTime > 0) {
+        times[dateStr] = studyTime;
+      }
+      const note = getDayNote(monthCurrent);
+      if (note) {
+        notes[dateStr] = true;
+      }
+      monthCurrent = new Date(monthCurrent.getTime() + 24 * 60 * 60 * 1000);
+    }
+    
+    setStudyTimesCache(times);
+    setNotesCache(notes);
+  };
 
   const refreshCustomTodoCounts = () => {
     const counts: Record<string, number> = {};
@@ -72,25 +194,47 @@ export default function CalendarPage() {
     setTasks(updated);
   };
 
-  // Generate all weeks of the semester
+  const handleSaveGoal = () => {
+    const goalValue = parseFloat(tempGoal);
+    if (!isNaN(goalValue) && goalValue > 0) {
+      saveWeeklyGoal(goalValue);
+      setWeeklyGoal(goalValue);
+    }
+    setEditingGoal(false);
+    setTempGoal("");
+  };
+
+  const handleSaveStudyTime = () => {
+    if (selectedDate) {
+      const hours = parseFloat(studyTimeInput);
+      if (!isNaN(hours) && hours >= 0) {
+        saveStudyTime(selectedDate, hours);
+        refreshStudyTimeAndNotesCache();
+      }
+    }
+  };
+
+  const handleSaveNote = () => {
+    if (selectedDate) {
+      saveDayNote(selectedDate, noteInput);
+      refreshStudyTimeAndNotesCache();
+    }
+  };
+
   const semesterWeeks: { week: number; start: Date; end: Date; term: number }[] = [];
   for (let w = 1; w <= TOTAL_WEEKS; w++) {
     const { start, end, term } = getWeekDates(w);
     semesterWeeks.push({ week: w, start, end, term });
   }
 
-  // Get tasks for a specific date - returns tasks for the week that contains this date
   const getTasksForDate = (date: Date) => {
     const weekInfo = semesterWeeks.find(
       (w) => isWithinInterval(date, { start: w.start, end: w.end })
     );
     if (!weekInfo) return [];
-    
-    // Return all tasks for this week (showing them on any day of the week)
     return tasks.filter((t) => t.week === weekInfo.week);
   };
 
-  // Get the week number for a date
   const getWeekForDate = (date: Date): number | null => {
     const weekInfo = semesterWeeks.find(
       (w) => isWithinInterval(date, { start: w.start, end: w.end })
@@ -98,12 +242,10 @@ export default function CalendarPage() {
     return weekInfo?.week || null;
   };
 
-  // Get exams for a specific date
   const getExamsForDate = (date: Date) => {
     return exams.filter((e) => isSameDay(parseISO(e.date), date));
   };
 
-  // Generate calendar grid (Sunday to Saturday)
   const generateCalendarGrid = () => {
     const weeks: Date[][] = [];
     let current = startOfWeek(TERM1_START, { weekStartsOn: 0 });
@@ -119,29 +261,191 @@ export default function CalendarPage() {
     return weeks;
   };
 
-  const calendarWeeks = generateCalendarGrid();
+  const generateMonthGrid = () => {
+    const weeks: Date[][] = [];
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+    let current = startOfWeek(monthStart, { weekStartsOn: 0 });
+    const end = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
-  // Selected date tasks/exams
+    while (current <= end) {
+      const weekEnd = endOfWeek(current, { weekStartsOn: 0 });
+      const days = eachDayOfInterval({ start: current, end: weekEnd });
+      weeks.push(days);
+      current = addWeeks(current, 1);
+    }
+
+    return weeks;
+  };
+
+  const calendarWeeks = viewMode === "semester" ? generateCalendarGrid() : generateMonthGrid();
+
   const selectedTasks = selectedDate ? getTasksForDate(selectedDate) : [];
   const selectedExams = selectedDate ? getExamsForDate(selectedDate) : [];
   const selectedWeek = selectedDate ? getWeekForDate(selectedDate) : null;
 
-  // Handle print/export
   const handlePrint = () => {
     window.print();
   };
 
+  const weeklyStudyTotal = getWeeklyStudyTime(currentWeek);
+  const goalProgress = weeklyGoal > 0 ? Math.min((weeklyStudyTotal / weeklyGoal) * 100, 100) : 0;
+
+  const renderDayCell = (day: Date, dayIndex: number, semesterWeekInfo: { week: number; start: Date; end: Date; term: number } | undefined, isMonthView: boolean = false) => {
+    const dayTasks = getTasksForDate(day);
+    const dayExams = getExamsForDate(day);
+    const isToday = isSameDay(day, new Date());
+    const dateStr = format(day, "yyyy-MM-dd");
+    const studyTime = studyTimesCache[dateStr] || 0;
+    const hasNote = notesCache[dateStr] || false;
+    
+    let isInSemester = semesterWeeks.some(
+      (sw) => isWithinInterval(day, { start: sw.start, end: sw.end })
+    );
+    
+    if (isMonthView) {
+      isInSemester = isSameMonth(day, currentMonth);
+    }
+    
+    const isCurrentSemesterWeek = semesterWeekInfo?.week === currentWeek;
+    const uniqueSubjects = Array.from(new Set(dayTasks.map((t) => t.subjectId)));
+
+    return (
+      <button
+        key={dayIndex}
+        onClick={() => setSelectedDate(day)}
+        disabled={!isInSemester && !isMonthView}
+        className={`
+          min-h-[80px] p-1 rounded-md text-left transition-colors relative
+          ${isInSemester || isMonthView ? "hover-elevate cursor-pointer" : "opacity-40 cursor-default"}
+          ${isToday ? "ring-2 ring-primary bg-primary/10" : ""}
+          ${!isToday && isCurrentSemesterWeek && isInSemester ? "bg-primary/5" : ""}
+          ${!isToday && !isCurrentSemesterWeek ? "bg-muted/30" : ""}
+          ${isMonthView && !isSameMonth(day, currentMonth) ? "opacity-30" : ""}
+        `}
+        data-testid={`calendar-day-${dateStr}`}
+      >
+        <div className="flex justify-between items-start">
+          <span
+            className={`text-sm ${
+              isToday
+                ? "font-bold text-primary bg-primary/20 rounded-full w-6 h-6 flex items-center justify-center"
+                : "text-muted-foreground"
+            }`}
+          >
+            {format(day, "d")}
+          </span>
+          {dayIndex === 0 && semesterWeekInfo && !isMonthView && (
+            <Badge variant="outline" className="text-[10px] px-1">
+              W{semesterWeekInfo.week}
+            </Badge>
+          )}
+        </div>
+
+        {dayIndex === 0 && uniqueSubjects.length > 0 && !isMonthView && (
+          <div className="flex flex-wrap gap-0.5 mt-1">
+            {uniqueSubjects.map((subjectId) => (
+              <div
+                key={subjectId}
+                className={`h-2 w-2 rounded-full ${subjectColorClasses[subjectId]}`}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="absolute top-1 right-1 flex gap-0.5">
+          {customTodosCount[dateStr] > 0 && (
+            <div className="h-4 w-4 bg-primary/20 rounded-full flex items-center justify-center">
+              <ListTodo className="h-2.5 w-2.5 text-primary" />
+            </div>
+          )}
+          {hasNote && (
+            <div className="h-4 w-4 bg-yellow-500/20 rounded-full flex items-center justify-center" data-testid={`note-indicator-${dateStr}`}>
+              <StickyNote className="h-2.5 w-2.5 text-yellow-600 dark:text-yellow-400" />
+            </div>
+          )}
+        </div>
+
+        {studyTime > 0 && (
+          <div className="absolute bottom-1 left-1 flex items-center gap-0.5" data-testid={`study-time-indicator-${dateStr}`}>
+            <Clock className="h-2.5 w-2.5 text-muted-foreground" />
+            <span className="text-[9px] text-muted-foreground">{studyTime}h</span>
+          </div>
+        )}
+
+        {dayExams.length > 0 && (
+          <div className="absolute bottom-1 right-1">
+            {dayExams.map((exam) => (
+              <div
+                key={exam.id}
+                className="text-[10px] bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 px-1 rounded truncate font-medium"
+              >
+                {exam.title.split(" ")[0]}
+              </div>
+            ))}
+          </div>
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="p-4 md:p-6 space-y-6" data-testid="calendar-page">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Semester Calendar</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">
+            {viewMode === "semester" ? "Semester Calendar" : format(currentMonth, "MMMM yyyy")}
+          </h1>
           <p className="text-muted-foreground">
-            {TOTAL_WEEKS}-week overview - Term 1 (9 weeks) + Term 2 (8 weeks)
+            {viewMode === "semester" 
+              ? `${TOTAL_WEEKS}-week overview - Term 1 (9 weeks) + Term 2 (8 weeks)`
+              : "Monthly view"}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {viewMode === "month" && (
+            <>
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => {
+                  setCurrentMonth(subMonths(currentMonth, 1));
+                  setTimeout(refreshStudyTimeAndNotesCache, 0);
+                }}
+                data-testid="button-prev-month"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => {
+                  setCurrentMonth(addMonths(currentMonth, 1));
+                  setTimeout(refreshStudyTimeAndNotesCache, 0);
+                }}
+                data-testid="button-next-month"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+          <Button 
+            variant="outline" 
+            onClick={() => setViewMode(viewMode === "semester" ? "month" : "semester")}
+            data-testid="button-toggle-view"
+          >
+            {viewMode === "semester" ? (
+              <>
+                <ToggleLeft className="h-4 w-4 mr-2" />
+                Month View
+              </>
+            ) : (
+              <>
+                <ToggleRight className="h-4 w-4 mr-2" />
+                Semester View
+              </>
+            )}
+          </Button>
           <Button variant="outline" onClick={handlePrint} data-testid="button-print">
             <Printer className="h-4 w-4 mr-2" />
             Print
@@ -149,30 +453,88 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap items-center gap-4 p-4 bg-card rounded-lg border">
-        <span className="text-sm font-medium">Legend:</span>
-        {subjects.map((subject) => (
-          <div key={subject.id} className="flex items-center gap-2">
-            <div className={`h-3 w-3 rounded-full ${subjectColorClasses[subject.id]}`} />
-            <span className="text-sm">{subject.name}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <Card className="lg:col-span-1" data-testid="weekly-goal-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              Weekly Study Goal
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {editingGoal ? (
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  value={tempGoal}
+                  onChange={(e) => setTempGoal(e.target.value)}
+                  placeholder="Hours"
+                  className="h-8"
+                  data-testid="input-weekly-goal"
+                />
+                <Button size="sm" onClick={handleSaveGoal} data-testid="button-save-goal">
+                  Save
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-bold">{weeklyGoal}h</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    setTempGoal(weeklyGoal.toString());
+                    setEditingGoal(true);
+                  }}
+                  data-testid="button-edit-goal"
+                >
+                  Edit
+                </Button>
+              </div>
+            )}
+            <div className="space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">This week</span>
+                <span className="font-medium">{weeklyStudyTotal.toFixed(1)}h / {weeklyGoal}h</span>
+              </div>
+              <Progress value={goalProgress} className="h-2" data-testid="progress-weekly-goal" />
+              <p className="text-xs text-muted-foreground text-right">
+                {goalProgress.toFixed(0)}% complete
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="lg:col-span-3 flex flex-wrap items-center gap-4 p-4 bg-card rounded-lg border">
+          <span className="text-sm font-medium">Legend:</span>
+          {subjects.map((subject) => (
+            <div key={subject.id} className="flex items-center gap-2">
+              <div className={`h-3 w-3 rounded-full ${subjectColorClasses[subject.id]}`} />
+              <span className="text-sm">{subject.name}</span>
+            </div>
+          ))}
+          <div className="flex items-center gap-2 ml-4">
+            <div className="h-3 w-3 rounded-full bg-yellow-500 ring-2 ring-yellow-500/30" />
+            <span className="text-sm">Exam</span>
           </div>
-        ))}
-        <div className="flex items-center gap-2 ml-4">
-          <div className="h-3 w-3 rounded-full bg-yellow-500 ring-2 ring-yellow-500/30" />
-          <span className="text-sm">Exam</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <ListTodo className="h-3 w-3 text-primary" />
-          <span className="text-sm">Custom To-Do</span>
+          <div className="flex items-center gap-2">
+            <ListTodo className="h-3 w-3 text-primary" />
+            <span className="text-sm">To-Do</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-3 w-3 text-muted-foreground" />
+            <span className="text-sm">Study Time</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <StickyNote className="h-3 w-3 text-yellow-600 dark:text-yellow-400" />
+            <span className="text-sm">Note</span>
+          </div>
         </div>
       </div>
 
-      {/* Calendar Grid */}
       <Card data-testid="calendar-grid">
         <CardContent className="p-4">
-          {/* Day Headers */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
+          <div className="grid grid-cols-8 gap-1 mb-2">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
@@ -181,101 +543,42 @@ export default function CalendarPage() {
                 {day}
               </div>
             ))}
+            {viewMode === "semester" && (
+              <div className="text-center text-sm font-medium text-muted-foreground py-2">
+                Progress
+              </div>
+            )}
           </div>
 
-          {/* Calendar Weeks */}
           <div className="space-y-1">
             {calendarWeeks.map((week, weekIndex) => {
-              // Find the semester week number
               const firstDayOfWeek = week[0];
               const semesterWeekInfo = semesterWeeks.find(
                 (sw) => isWithinInterval(firstDayOfWeek, { start: sw.start, end: sw.end })
               );
 
+              const weekProgress = semesterWeekInfo 
+                ? calculateWeekProgress(tasks, semesterWeekInfo.week)
+                : { completed: 0, total: 0, percentage: 0 };
+
               return (
-                <div key={weekIndex} className="grid grid-cols-7 gap-1">
-                  {week.map((day, dayIndex) => {
-                    const dayTasks = getTasksForDate(day);
-                    const dayExams = getExamsForDate(day);
-                    const isToday = isSameDay(day, new Date());
-                    const isInSemester = semesterWeeks.some(
-                      (sw) => isWithinInterval(day, { start: sw.start, end: sw.end })
-                    );
-                    const isCurrentSemesterWeek =
-                      semesterWeekInfo?.week === currentWeek;
-
-                    // Get unique subjects for this day (week's tasks)
-                    const uniqueSubjects = Array.from(
-                      new Set(dayTasks.map((t) => t.subjectId))
-                    );
-
-                    return (
-                      <button
-                        key={dayIndex}
-                        onClick={() => setSelectedDate(day)}
-                        disabled={!isInSemester}
-                        className={`
-                          min-h-[80px] p-1 rounded-md text-left transition-colors relative
-                          ${isInSemester ? "hover-elevate cursor-pointer" : "opacity-40 cursor-default"}
-                          ${isToday ? "ring-2 ring-primary" : ""}
-                          ${isCurrentSemesterWeek && isInSemester ? "bg-primary/5" : "bg-muted/30"}
-                        `}
-                        data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
-                      >
-                        <div className="flex justify-between items-start">
-                          <span
-                            className={`text-sm ${
-                              isToday
-                                ? "font-bold text-primary"
-                                : "text-muted-foreground"
-                            }`}
-                          >
-                            {format(day, "d")}
-                          </span>
-                          {dayIndex === 0 && semesterWeekInfo && (
-                            <Badge variant="outline" className="text-[10px] px-1">
-                              W{semesterWeekInfo.week}
-                            </Badge>
-                          )}
-                        </div>
-
-                        {/* Task indicators - show on Monday of each week */}
-                        {dayIndex === 0 && uniqueSubjects.length > 0 && (
-                          <div className="flex flex-wrap gap-0.5 mt-1">
-                            {uniqueSubjects.map((subjectId) => (
-                              <div
-                                key={subjectId}
-                                className={`h-2 w-2 rounded-full ${subjectColorClasses[subjectId]}`}
-                              />
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Custom todo indicator */}
-                        {customTodosCount[format(day, "yyyy-MM-dd")] > 0 && (
-                          <div className="absolute top-1 right-1">
-                            <div className="h-4 w-4 bg-primary/20 rounded-full flex items-center justify-center">
-                              <ListTodo className="h-2.5 w-2.5 text-primary" />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Exam indicators */}
-                        {dayExams.length > 0 && (
-                          <div className="absolute bottom-1 left-1 right-1">
-                            {dayExams.map((exam) => (
-                              <div
-                                key={exam.id}
-                                className="text-[10px] bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 px-1 rounded truncate font-medium"
-                              >
-                                {exam.title.split(" ")[0]}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
+                <div key={weekIndex} className={`grid ${viewMode === "semester" ? "grid-cols-8" : "grid-cols-7"} gap-1`}>
+                  {week.map((day, dayIndex) => renderDayCell(day, dayIndex, semesterWeekInfo, viewMode === "month"))}
+                  
+                  {viewMode === "semester" && semesterWeekInfo && (
+                    <div className="flex flex-col justify-center items-center p-1 bg-muted/20 rounded-md" data-testid={`week-progress-${semesterWeekInfo.week}`}>
+                      <Progress value={weekProgress.percentage} className="h-2 w-full mb-1" />
+                      <span className="text-[10px] text-muted-foreground">
+                        {weekProgress.percentage}%
+                      </span>
+                      <span className="text-[9px] text-muted-foreground">
+                        {weekProgress.completed}/{weekProgress.total}
+                      </span>
+                    </div>
+                  )}
+                  {viewMode === "semester" && !semesterWeekInfo && (
+                    <div className="p-1 bg-muted/10 rounded-md opacity-40" />
+                  )}
                 </div>
               );
             })}
@@ -283,7 +586,6 @@ export default function CalendarPage() {
         </CardContent>
       </Card>
 
-      {/* Date Details Dialog */}
       <Dialog open={!!selectedDate} onOpenChange={() => setSelectedDate(null)}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -299,6 +601,63 @@ export default function CalendarPage() {
           </DialogHeader>
 
           <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Study Time (hours)
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    value={studyTimeInput}
+                    onChange={(e) => setStudyTimeInput(e.target.value)}
+                    placeholder="0"
+                    data-testid="input-study-time"
+                  />
+                  <Button 
+                    size="sm" 
+                    onClick={handleSaveStudyTime}
+                    data-testid="button-save-study-time"
+                  >
+                    Log
+                  </Button>
+                </div>
+              </div>
+              
+              {selectedDate && getStudyTime(selectedDate) > 0 && (
+                <div className="flex items-end">
+                  <Badge variant="secondary" className="text-sm">
+                    Logged: {getStudyTime(selectedDate)}h today
+                  </Badge>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <StickyNote className="h-4 w-4" />
+                Quick Note
+              </label>
+              <Textarea
+                value={noteInput}
+                onChange={(e) => setNoteInput(e.target.value)}
+                placeholder="Add a note for this day..."
+                className="min-h-[80px]"
+                data-testid="textarea-day-note"
+              />
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={handleSaveNote}
+                data-testid="button-save-note"
+              >
+                Save Note
+              </Button>
+            </div>
+
             {selectedExams.length > 0 && (
               <div>
                 <h3 className="font-semibold text-sm mb-2 text-yellow-600 dark:text-yellow-400">
@@ -307,11 +666,12 @@ export default function CalendarPage() {
                 {selectedExams.map((exam) => {
                   const subject = subjects.find((s) => s.id === exam.subjectId);
                   return (
-                    <Card
-                      key={exam.id}
-                      className={`border-l-4 ${subject?.borderColor}`}
-                    >
+                    <Card key={exam.id}>
                       <CardContent className="p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={`w-2 h-2 rounded-full ${subjectColorClasses[exam.subjectId]}`} />
+                          <Badge variant="outline" className="text-xs">{subject?.name}</Badge>
+                        </div>
                         <h4 className="font-medium">{exam.title}</h4>
                         {exam.description && (
                           <p className="text-sm text-muted-foreground mt-1">
@@ -343,7 +703,6 @@ export default function CalendarPage() {
               </div>
             )}
 
-            {/* Custom To-Dos Section */}
             {selectedDate && (
               <div className="border-t pt-4">
                 <CustomTodoList 

@@ -52,7 +52,7 @@ const getGreeting = (name: string): string => {
   } else if (hour >= 17 && hour < 21) {
     return `Good evening, ${name}`;
   } else {
-    return `Late night study sesh, ${name}`;
+    return `Late night study sesh?, ${name}`;
   }
 };
 

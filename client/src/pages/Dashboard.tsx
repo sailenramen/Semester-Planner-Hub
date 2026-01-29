@@ -38,7 +38,23 @@ import {
   checkDailyStreak,
 } from "@/lib/storage";
 import { format, parseISO, differenceInDays } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { Calendar, TrendingUp, BookOpen, RefreshCw, Clock, AlertTriangle, Target, Flame, Zap } from "lucide-react";
+
+const getGreeting = (name: string): string => {
+  const aestTime = toZonedTime(new Date(), "Australia/Sydney");
+  const hour = aestTime.getHours();
+  
+  if (hour >= 5 && hour < 12) {
+    return `Good morning, ${name}`;
+  } else if (hour >= 12 && hour < 17) {
+    return `Good afternoon, ${name}`;
+  } else if (hour >= 17 && hour < 21) {
+    return `Good evening, ${name}`;
+  } else {
+    return `Late night study sesh, ${name}`;
+  }
+};
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -156,7 +172,7 @@ export default function Dashboard() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Study Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold" data-testid="greeting-text">{getGreeting("Sahil")}</h1>
           <p className="text-muted-foreground mt-1">
             Track your progress and stay on top of your studies
           </p>

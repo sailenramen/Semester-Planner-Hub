@@ -37,6 +37,15 @@ A semester study planning application that helps students track their progress a
 - **Edit Modal**: Opens badge selection dialog with all earned badges
 - **Persistence**: Selected showcase badges saved in UserStats.showcasedBadges field
 
+### Authentication System
+- **Login Page**: Located at `/login` with login and registration tabs
+- **AuthContext**: Authentication state management at `client/src/contexts/AuthContext.tsx`
+- **User Storage**: User data stored in localStorage under `study-planner-users` and `study-planner-current-user` keys
+- **Protected Routes**: All app routes require authentication, unauthenticated users redirected to `/login`
+- **Personalized Greeting**: Dashboard greeting uses logged-in user's name with time-based messages (AEST timezone)
+- **Header User Info**: Displays user's name and logout button in app header
+- **Note**: This is client-side auth for demo purposes only - not secure for production use
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

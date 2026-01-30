@@ -562,21 +562,155 @@ export function getPointsForNextLevel(level: number): number {
   return 15000 + (level - 10) * 5000;
 }
 
-// Keep User types for compatibility
+// Database tables using Drizzle ORM
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
+// Users table
+export const usersTable = pgTable("users", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
   password: text("password").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+// Tasks table
+export const tasksTable = pgTable("tasks", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id),
+  subjectId: text("subject_id").notNull(),
+  week: integer("week").notNull(),
+  term: integer("term").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  estimatedMinutes: integer("estimated_minutes").notNull(),
+  completed: boolean("completed").default(false).notNull(),
+  dueDate: text("due_date").notNull(),
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type DrizzleUser = typeof users.$inferSelect;
+// Notes table
+export const notesTable = pgTable("notes", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id),
+  subjectId: text("subject_id").notNull(),
+  content: text("content").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Exams table
+export const examsTable = pgTable("exams", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id),
+  subjectId: text("subject_id").notNull(),
+  title: text("title").notNull(),
+  date: text("date").notNull(),
+  week: integer("week").notNull(),
+  term: integer("term"),
+  description: text("description"),
+});
+
+// Grades table
+export const gradesTable = pgTable("grades", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id),
+  subjectId: text("subject_id").notNull(),
+  assessmentId: text("assessment_id").notNull(),
+  score: integer("score"),
+});
+
+// User Stats table
+export const userStatsTable = pgTable("user_stats", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id).unique(),
+  totalPoints: integer("total_points").default(0).notNull(),
+  totalStudyMinutes: integer("total_study_minutes").default(0).notNull(),
+  totalTasksCompleted: integer("total_tasks_completed").default(0).notNull(),
+  totalPomodoroSessions: integer("total_pomodoro_sessions").default(0).notNull(),
+  level: integer("level").default(1).notNull(),
+  badgesEarned: jsonb("badges_earned").default([]).notNull(),
+  dailyTaskCompletions: jsonb("daily_task_completions").default({}).notNull(),
+  taskCompletionTimes: jsonb("task_completion_times").default([]).notNull(),
+  subjectStudyMinutes: jsonb("subject_study_minutes").default({}).notNull(),
+  lastActiveDate: text("last_active_date"),
+  showcasedBadges: jsonb("showcased_badges").default([]).notNull(),
+});
+
+// Streaks table
+export const streaksTable = pgTable("streaks", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id).unique(),
+  currentStreak: integer("current_streak").default(0).notNull(),
+  longestStreak: integer("longest_streak").default(0).notNull(),
+  lastStudyDate: text("last_study_date"),
+  lastActiveDate: text("last_active_date"),
+  lastCheckDate: text("last_check_date"),
+  streakFreezes: integer("streak_freezes").default(2).notNull(),
+  freezesUsedThisMonth: integer("freezes_used_this_month").default(0).notNull(),
+  freezeDaysRemaining: integer("freeze_days_remaining").default(2).notNull(),
+  lastFreezeMonth: integer("last_freeze_month"),
+});
+
+// Avatar Settings table
+export const avatarSettingsTable = pgTable("avatar_settings", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id).unique(),
+  baseColor: text("base_color").default("blue").notNull(),
+  accentColor: text("accent_color").default("purple").notNull(),
+  style: text("style").default("default").notNull(),
+  accessory: text("accessory"),
+});
+
+// Custom Todos table
+export const customTodosTable = pgTable("custom_todos", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id),
+  date: text("date").notNull(),
+  title: text("title").notNull(),
+  completed: boolean("completed").default(false).notNull(),
+});
+
+// Study Time table
+export const studyTimeTable = pgTable("study_time", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id),
+  date: text("date").notNull(),
+  hours: integer("hours").default(0).notNull(),
+});
+
+// Day Notes table
+export const dayNotesTable = pgTable("day_notes", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id),
+  date: text("date").notNull(),
+  content: text("content").notNull(),
+});
+
+// Weekly Goal table
+export const weeklyGoalTable = pgTable("weekly_goals", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => usersTable.id).unique(),
+  hours: integer("hours").default(10).notNull(),
+});
+
+// Insert schemas
+export const insertUserDbSchema = createInsertSchema(usersTable).omit({ id: true, createdAt: true });
+export const insertTaskSchema = createInsertSchema(tasksTable).omit({ id: true });
+export const insertNoteDbSchema = createInsertSchema(notesTable).omit({ id: true, updatedAt: true });
+export const insertExamDbSchema = createInsertSchema(examsTable).omit({ id: true });
+export const insertGradeDbSchema = createInsertSchema(gradesTable).omit({ id: true });
+
+// Infer types from tables
+export type DbUser = typeof usersTable.$inferSelect;
+export type DbTask = typeof tasksTable.$inferSelect;
+export type DbNote = typeof notesTable.$inferSelect;
+export type DbExam = typeof examsTable.$inferSelect;
+export type DbGrade = typeof gradesTable.$inferSelect;
+export type DbUserStats = typeof userStatsTable.$inferSelect;
+export type DbStreak = typeof streaksTable.$inferSelect;
+export type DbAvatarSettings = typeof avatarSettingsTable.$inferSelect;
+export type DbCustomTodo = typeof customTodosTable.$inferSelect;
+export type DbStudyTime = typeof studyTimeTable.$inferSelect;
+export type DbDayNote = typeof dayNotesTable.$inferSelect;
+export type DbWeeklyGoal = typeof weeklyGoalTable.$inferSelect;

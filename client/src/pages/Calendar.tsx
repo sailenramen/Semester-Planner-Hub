@@ -6,10 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TaskCard } from "@/components/TaskCard";
 import {
-  Task,
-  Exam,
   subjects,
   TERM1_START,
   TERM2_END,
@@ -18,7 +17,18 @@ import {
   getTermLabel,
   TOTAL_WEEKS,
 } from "@shared/schema";
-import { getTasks, toggleTaskCompletion, getExams, calculateWeekProgress } from "@/lib/storage";
+import {
+  useTasks,
+  useExams,
+  useToggleTask,
+  useWeeklyGoal,
+  useSaveWeeklyGoal,
+  useStudyTime,
+  useSaveStudyTime,
+  useDayNote,
+  useSaveDayNote,
+  calculateWeekProgress,
+} from "@/hooks/useApi";
 import {
   format,
   startOfWeek,
@@ -35,7 +45,7 @@ import {
   isSameMonth,
 } from "date-fns";
 import { Calendar as CalendarIcon, Printer, ListTodo, Target, Clock, StickyNote, ChevronLeft, ChevronRight, ToggleLeft, ToggleRight } from "lucide-react";
-import CustomTodoList, { getTodosForDate, getOverdueTodos } from "@/components/CustomTodoList";
+import CustomTodoList from "@/components/CustomTodoList";
 
 const subjectColorClasses: Record<string, string> = {
   math: "bg-blue-500",
@@ -44,161 +54,55 @@ const subjectColorClasses: Record<string, string> = {
   english: "bg-purple-500",
 };
 
-const STORAGE_KEYS = {
-  WEEKLY_GOAL: "study-planner-weekly-goal",
-  STUDY_TIME_PREFIX: "study-planner-study-time-",
-  DAY_NOTES_PREFIX: "study-planner-day-notes-",
-};
-
-function getStudyTime(date: Date): number {
-  const key = STORAGE_KEYS.STUDY_TIME_PREFIX + format(date, "yyyy-MM-dd");
-  const stored = localStorage.getItem(key);
-  return stored ? parseFloat(stored) : 0;
-}
-
-function saveStudyTime(date: Date, hours: number): void {
-  const key = STORAGE_KEYS.STUDY_TIME_PREFIX + format(date, "yyyy-MM-dd");
-  if (hours > 0) {
-    localStorage.setItem(key, hours.toString());
-  } else {
-    localStorage.removeItem(key);
-  }
-}
-
-function getDayNote(date: Date): string {
-  const key = STORAGE_KEYS.DAY_NOTES_PREFIX + format(date, "yyyy-MM-dd");
-  return localStorage.getItem(key) || "";
-}
-
-function saveDayNote(date: Date, note: string): void {
-  const key = STORAGE_KEYS.DAY_NOTES_PREFIX + format(date, "yyyy-MM-dd");
-  if (note.trim()) {
-    localStorage.setItem(key, note.trim());
-  } else {
-    localStorage.removeItem(key);
-  }
-}
-
-function getWeeklyGoal(): number {
-  const stored = localStorage.getItem(STORAGE_KEYS.WEEKLY_GOAL);
-  return stored ? parseFloat(stored) : 10;
-}
-
-function saveWeeklyGoal(hours: number): void {
-  localStorage.setItem(STORAGE_KEYS.WEEKLY_GOAL, hours.toString());
-}
-
-function getWeeklyStudyTime(weekNumber: number): number {
-  const { start, end } = getWeekDates(weekNumber);
-  let total = 0;
-  let current = new Date(start);
-  while (current <= end) {
-    total += getStudyTime(current);
-    current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
-  }
-  return total;
-}
-
 export default function CalendarPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [exams, setExams] = useState<Exam[]>([]);
+  const { data: tasks = [], isLoading: tasksLoading } = useTasks();
+  const { data: exams = [], isLoading: examsLoading } = useExams();
+  const { data: weeklyGoalData, isLoading: goalLoading } = useWeeklyGoal();
+  const toggleTask = useToggleTask();
+  const saveWeeklyGoal = useSaveWeeklyGoal();
+  
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [customTodosCount, setCustomTodosCount] = useState<Record<string, number>>({});
   const [viewMode, setViewMode] = useState<"semester" | "month">("semester");
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-  const [weeklyGoal, setWeeklyGoal] = useState<number>(10);
   const [editingGoal, setEditingGoal] = useState(false);
   const [tempGoal, setTempGoal] = useState("");
   const [studyTimeInput, setStudyTimeInput] = useState("");
   const [noteInput, setNoteInput] = useState("");
-  const [studyTimesCache, setStudyTimesCache] = useState<Record<string, number>>({});
-  const [notesCache, setNotesCache] = useState<Record<string, boolean>>({});
+  const [todoRefreshKey, setTodoRefreshKey] = useState(0);
   
   const currentWeek = getCurrentWeek();
+  const weeklyGoal = weeklyGoalData?.hours ?? 10;
+
+  const selectedDateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : "";
+  const { data: studyTimeData } = useStudyTime(selectedDateStr);
+  const { data: dayNoteData } = useDayNote(selectedDateStr);
+  const saveStudyTime = useSaveStudyTime();
+  const saveDayNote = useSaveDayNote();
 
   useEffect(() => {
-    setTasks(getTasks());
-    setExams(getExams());
-    refreshCustomTodoCounts();
-    setWeeklyGoal(getWeeklyGoal());
-    refreshStudyTimeAndNotesCache();
-  }, []);
+    if (selectedDate && studyTimeData) {
+      setStudyTimeInput(studyTimeData.hours > 0 ? studyTimeData.hours.toString() : "");
+    } else {
+      setStudyTimeInput("");
+    }
+  }, [selectedDate, studyTimeData]);
 
   useEffect(() => {
-    if (selectedDate) {
-      setStudyTimeInput(getStudyTime(selectedDate).toString() || "");
-      setNoteInput(getDayNote(selectedDate));
+    if (selectedDate && dayNoteData) {
+      setNoteInput(dayNoteData.content || "");
+    } else {
+      setNoteInput("");
     }
-  }, [selectedDate]);
-
-  const refreshStudyTimeAndNotesCache = () => {
-    const times: Record<string, number> = {};
-    const notes: Record<string, boolean> = {};
-    
-    for (let w = 1; w <= TOTAL_WEEKS; w++) {
-      const { start, end } = getWeekDates(w);
-      let current = new Date(start);
-      while (current <= end) {
-        const dateStr = format(current, "yyyy-MM-dd");
-        const studyTime = getStudyTime(current);
-        if (studyTime > 0) {
-          times[dateStr] = studyTime;
-        }
-        const note = getDayNote(current);
-        if (note) {
-          notes[dateStr] = true;
-        }
-        current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
-      }
-    }
-    
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(currentMonth);
-    let monthCurrent = new Date(monthStart);
-    while (monthCurrent <= monthEnd) {
-      const dateStr = format(monthCurrent, "yyyy-MM-dd");
-      const studyTime = getStudyTime(monthCurrent);
-      if (studyTime > 0) {
-        times[dateStr] = studyTime;
-      }
-      const note = getDayNote(monthCurrent);
-      if (note) {
-        notes[dateStr] = true;
-      }
-      monthCurrent = new Date(monthCurrent.getTime() + 24 * 60 * 60 * 1000);
-    }
-    
-    setStudyTimesCache(times);
-    setNotesCache(notes);
-  };
-
-  const refreshCustomTodoCounts = () => {
-    const counts: Record<string, number> = {};
-    for (let w = 1; w <= TOTAL_WEEKS; w++) {
-      const { start, end } = getWeekDates(w);
-      let current = new Date(start);
-      while (current <= end) {
-        const dateStr = format(current, "yyyy-MM-dd");
-        const todos = getTodosForDate(current);
-        if (todos.length > 0) {
-          counts[dateStr] = todos.filter(t => !t.completed).length;
-        }
-        current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
-      }
-    }
-    setCustomTodosCount(counts);
-  };
+  }, [selectedDate, dayNoteData]);
 
   const handleToggleTask = (taskId: string) => {
-    const updated = toggleTaskCompletion(taskId);
-    setTasks(updated);
+    toggleTask.mutate(taskId);
   };
 
   const handleSaveGoal = () => {
     const goalValue = parseFloat(tempGoal);
     if (!isNaN(goalValue) && goalValue > 0) {
-      saveWeeklyGoal(goalValue);
-      setWeeklyGoal(goalValue);
+      saveWeeklyGoal.mutate(goalValue);
     }
     setEditingGoal(false);
     setTempGoal("");
@@ -208,16 +112,14 @@ export default function CalendarPage() {
     if (selectedDate) {
       const hours = parseFloat(studyTimeInput);
       if (!isNaN(hours) && hours >= 0) {
-        saveStudyTime(selectedDate, hours);
-        refreshStudyTimeAndNotesCache();
+        saveStudyTime.mutate({ date: selectedDateStr, hours });
       }
     }
   };
 
   const handleSaveNote = () => {
     if (selectedDate) {
-      saveDayNote(selectedDate, noteInput);
-      refreshStudyTimeAndNotesCache();
+      saveDayNote.mutate({ date: selectedDateStr, content: noteInput });
     }
   };
 
@@ -288,16 +190,44 @@ export default function CalendarPage() {
     window.print();
   };
 
+  const getWeeklyStudyTime = (weekNumber: number): number => {
+    return 0;
+  };
+
   const weeklyStudyTotal = getWeeklyStudyTime(currentWeek);
   const goalProgress = weeklyGoal > 0 ? Math.min((weeklyStudyTotal / weeklyGoal) * 100, 100) : 0;
+
+  const isLoading = tasksLoading || examsLoading || goalLoading;
+
+  if (isLoading) {
+    return (
+      <div className="p-4 md:p-6 space-y-6" data-testid="calendar-page">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <Skeleton className="h-8 w-64 mb-2" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-24" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <Skeleton className="h-32" />
+          <div className="lg:col-span-3">
+            <Skeleton className="h-32" />
+          </div>
+        </div>
+        <Skeleton className="h-96" />
+      </div>
+    );
+  }
 
   const renderDayCell = (day: Date, dayIndex: number, semesterWeekInfo: { week: number; start: Date; end: Date; term: number } | undefined, isMonthView: boolean = false) => {
     const dayTasks = getTasksForDate(day);
     const dayExams = getExamsForDate(day);
     const isToday = isSameDay(day, new Date());
     const dateStr = format(day, "yyyy-MM-dd");
-    const studyTime = studyTimesCache[dateStr] || 0;
-    const hasNote = notesCache[dateStr] || false;
     
     let isInSemester = semesterWeeks.some(
       (sw) => isWithinInterval(day, { start: sw.start, end: sw.end })
@@ -353,26 +283,6 @@ export default function CalendarPage() {
           </div>
         )}
 
-        <div className="absolute top-1 right-1 flex gap-0.5">
-          {customTodosCount[dateStr] > 0 && (
-            <div className="h-4 w-4 bg-primary/20 rounded-full flex items-center justify-center">
-              <ListTodo className="h-2.5 w-2.5 text-primary" />
-            </div>
-          )}
-          {hasNote && (
-            <div className="h-4 w-4 bg-yellow-500/20 rounded-full flex items-center justify-center" data-testid={`note-indicator-${dateStr}`}>
-              <StickyNote className="h-2.5 w-2.5 text-yellow-600 dark:text-yellow-400" />
-            </div>
-          )}
-        </div>
-
-        {studyTime > 0 && (
-          <div className="absolute bottom-1 left-1 flex items-center gap-0.5" data-testid={`study-time-indicator-${dateStr}`}>
-            <Clock className="h-2.5 w-2.5 text-muted-foreground" />
-            <span className="text-[9px] text-muted-foreground">{studyTime}h</span>
-          </div>
-        )}
-
         {dayExams.length > 0 && (
           <div className="absolute bottom-1 right-1">
             {dayExams.map((exam) => (
@@ -408,10 +318,7 @@ export default function CalendarPage() {
               <Button 
                 variant="outline" 
                 size="icon"
-                onClick={() => {
-                  setCurrentMonth(subMonths(currentMonth, 1));
-                  setTimeout(refreshStudyTimeAndNotesCache, 0);
-                }}
+                onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
                 data-testid="button-prev-month"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -419,10 +326,7 @@ export default function CalendarPage() {
               <Button 
                 variant="outline" 
                 size="icon"
-                onClick={() => {
-                  setCurrentMonth(addMonths(currentMonth, 1));
-                  setTimeout(refreshStudyTimeAndNotesCache, 0);
-                }}
+                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
                 data-testid="button-next-month"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -472,7 +376,12 @@ export default function CalendarPage() {
                   className="h-8"
                   data-testid="input-weekly-goal"
                 />
-                <Button size="sm" onClick={handleSaveGoal} data-testid="button-save-goal">
+                <Button 
+                  size="sm" 
+                  onClick={handleSaveGoal}
+                  disabled={saveWeeklyGoal.isPending}
+                  data-testid="button-save-goal"
+                >
                   Save
                 </Button>
               </div>
@@ -620,17 +529,18 @@ export default function CalendarPage() {
                   <Button 
                     size="sm" 
                     onClick={handleSaveStudyTime}
+                    disabled={saveStudyTime.isPending}
                     data-testid="button-save-study-time"
                   >
-                    Log
+                    {saveStudyTime.isPending ? "..." : "Log"}
                   </Button>
                 </div>
               </div>
               
-              {selectedDate && getStudyTime(selectedDate) > 0 && (
+              {selectedDate && studyTimeData && studyTimeData.hours > 0 && (
                 <div className="flex items-end">
                   <Badge variant="secondary" className="text-sm">
-                    Logged: {getStudyTime(selectedDate)}h today
+                    Logged: {studyTimeData.hours}h today
                   </Badge>
                 </div>
               )}
@@ -652,9 +562,10 @@ export default function CalendarPage() {
                 size="sm" 
                 variant="outline"
                 onClick={handleSaveNote}
+                disabled={saveDayNote.isPending}
                 data-testid="button-save-note"
               >
-                Save Note
+                {saveDayNote.isPending ? "Saving..." : "Save Note"}
               </Button>
             </div>
 
@@ -706,8 +617,9 @@ export default function CalendarPage() {
             {selectedDate && (
               <div className="border-t pt-4">
                 <CustomTodoList 
+                  key={todoRefreshKey}
                   date={selectedDate} 
-                  onTodosChange={() => refreshCustomTodoCounts()}
+                  onTodosChange={() => setTodoRefreshKey(k => k + 1)}
                 />
               </div>
             )}

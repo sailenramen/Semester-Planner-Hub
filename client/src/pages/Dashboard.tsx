@@ -11,33 +11,27 @@ import { StreakTracker } from "@/components/StreakTracker";
 import { PointsDisplay } from "@/components/PointsDisplay";
 import { BadgeUnlockModal } from "@/components/BadgeUnlockModal";
 import { Confetti } from "@/components/Confetti";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  Task,
-  Exam,
+  useTasks,
+  useExams,
+  useStreak,
+  useUserStats,
+  useToggleTask,
+  calculateProgress,
+  calculateWeekProgress,
+} from "@/hooks/useApi";
+import { getExamMode, setExamMode } from "@/lib/storage";
+import {
   subjects,
   getCurrentWeek,
   getCurrentTerm,
   getWeekDates,
   getTermLabel,
   TOTAL_WEEKS,
-  Streak,
-  UserStats,
   BadgeId,
 } from "@shared/schema";
-import {
-  getTasks,
-  toggleTaskCompletion,
-  getExams,
-  getExamMode,
-  setExamMode,
-  calculateProgress,
-  calculateWeekProgress,
-  getStreak,
-  getUserStats,
-  recordTaskCompletion,
-  checkDailyStreak,
-} from "@/lib/storage";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { Calendar, TrendingUp, BookOpen, RefreshCw, Clock, AlertTriangle, Target, Flame, Zap } from "lucide-react";
@@ -61,11 +55,13 @@ export default function Dashboard() {
   const { user } = useAuth();
   const userName = user?.name || "Student";
   
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [exams, setExams] = useState<Exam[]>([]);
+  const { data: tasks = [], isLoading: tasksLoading } = useTasks();
+  const { data: exams = [], isLoading: examsLoading } = useExams();
+  const { data: streak, isLoading: streakLoading } = useStreak();
+  const { data: stats, isLoading: statsLoading } = useUserStats();
+  const toggleTask = useToggleTask();
+  
   const [examMode, setExamModeState] = useState(false);
-  const [streak, setStreak] = useState<Streak | null>(null);
-  const [stats, setStats] = useState<UserStats | null>(null);
   const [unlockedBadge, setUnlockedBadge] = useState<BadgeId | null>(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
 
@@ -76,51 +72,51 @@ export default function Dashboard() {
   const today = new Date();
 
   useEffect(() => {
-    setTasks(getTasks());
-    setExams(getExams());
     setExamModeState(getExamMode());
-    
-    // Check and update daily streak on app load
-    const { streak: updatedStreak, newBadges } = checkDailyStreak();
-    setStreak(updatedStreak);
-    setStats(getUserStats());
-    
-    // Show badge unlock if daily check unlocked new badges
-    if (newBadges.length > 0) {
-      setUnlockedBadge(newBadges[0]);
-    }
   }, []);
 
   const handleToggleTask = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     const wasCompleted = task?.completed || false;
     
-    const updated = toggleTaskCompletion(taskId);
-    setTasks(updated);
-    
-    // Only trigger gamification if completing (not uncompleting)
-    if (!wasCompleted) {
-      const result = recordTaskCompletion(taskId, false);
-      setStreak(result.streak);
-      setStats(result.stats);
-      
-      // Show badge unlock if any new badges earned
-      if (result.newBadges.length > 0) {
-        setUnlockedBadge(result.newBadges[0]);
-      }
-      
-      // Show level up animation
-      if (result.levelUp) {
-        setShowLevelUp(true);
-        setTimeout(() => setShowLevelUp(false), 3000);
-      }
-    }
+    toggleTask.mutate(taskId);
   };
 
   const handleExamModeToggle = (enabled: boolean) => {
     setExamModeState(enabled);
     setExamMode(enabled);
   };
+
+  const isLoading = tasksLoading || examsLoading || streakLoading || statsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="p-4 md:p-6 space-y-6" data-testid="dashboard-page">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <Skeleton className="h-8 w-64 mb-2" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-8 w-24" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <Skeleton className="h-48" />
+            <Skeleton className="h-48" />
+          </div>
+          <Skeleton className="h-96" />
+        </div>
+      </div>
+    );
+  }
 
   // This week's tasks - tasks for current week
   const thisWeeksTasks = tasks.filter((t) => t.week === currentWeek);
@@ -415,7 +411,7 @@ export default function Dashboard() {
                 </p>
               )}
             </div>
-            <Button variant="ghost" size="sm" data-testid="button-refresh-tasks" onClick={() => setTasks(getTasks())}>
+            <Button variant="ghost" size="sm" data-testid="button-refresh-tasks" onClick={() => window.location.reload()}>
               <RefreshCw className="h-4 w-4 mr-1" />
               Refresh
             </Button>

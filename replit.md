@@ -2,7 +2,7 @@
 
 ## Overview
 
-A semester study planning application that helps students track their progress across four subjects: Math, Science/Biology, History/Humanities, and English. The app features weekly task management, exam alerts, progress visualization with charts, subject-specific notes, calendar view, and interactive study sessions with built-in timers. Data is persisted using browser localStorage, making it a client-heavy application with a minimal Express backend.
+A semester study planning application that helps students track their progress across four subjects: Math, Science/Biology, History/Humanities, and English. The app features weekly task management, exam alerts, progress visualization with charts, subject-specific notes, calendar view, and interactive study sessions with built-in timers. Data is now persisted in a PostgreSQL database with full user authentication, replacing the previous browser localStorage approach.
 
 ### Interactive Study Features
 - **Study Page**: Click any task to open a full-page interactive study session at `/study/:taskId`
@@ -29,7 +29,7 @@ A semester study planning application that helps students track their progress a
 - **3 Avatar Styles**: default (sharp corners), rounded (soft corners), hexagon (clipped hexagon shape)
 - **7 Accessories**: Unlock at specific levels - crown (5), halo (10), flame (15), sparkle (20), lightning (25), rainbow (30)
 - **Visual Evolution**: Glow effects increase at levels 10+, 20+, 30+, 40+ with special ring effects
-- **Avatar Settings Storage**: Persisted in localStorage under `study-planner-avatar` key
+- **Avatar Settings Storage**: Persisted in database under user's account
 
 ### Badge Showcase
 - **BadgeShowcase Component**: Featured badges display at `client/src/components/BadgeShowcase.tsx`
@@ -39,12 +39,13 @@ A semester study planning application that helps students track their progress a
 
 ### Authentication System
 - **Login Page**: Located at `/login` with login and registration tabs
-- **AuthContext**: Authentication state management at `client/src/contexts/AuthContext.tsx`
-- **User Storage**: User data stored in localStorage under `study-planner-users` and `study-planner-current-user` keys
+- **AuthContext**: Authentication state management at `client/src/contexts/AuthContext.tsx`, uses API calls
+- **Session-Based Auth**: Server-side session storage with `express-session` and `connect-pg-simple` for PostgreSQL
+- **Password Hashing**: bcrypt with salt rounds for secure password storage
 - **Protected Routes**: All app routes require authentication, unauthenticated users redirected to `/login`
 - **Personalized Greeting**: Dashboard greeting uses logged-in user's name with time-based messages (AEST timezone)
 - **Header User Info**: Displays user's name and logout button in app header
-- **Note**: This is client-side auth for demo purposes only - not secure for production use
+- **Session Expiry**: 7-day cookie expiration with httpOnly and secure (in production) flags
 
 ## User Preferences
 
@@ -63,22 +64,26 @@ Preferred communication style: Simple, everyday language.
 ### Key Frontend Patterns
 - **Component Structure**: Pages in `client/src/pages/`, reusable components in `client/src/components/`
 - **UI Components**: Pre-built shadcn/ui components in `client/src/components/ui/`
-- **Data Persistence**: LocalStorage for tasks, notes, exams, and user preferences (`client/src/lib/storage.ts`)
-- **Theme System**: ThemeProvider context with light/dark mode toggle
+- **Data Fetching**: React Query hooks in `client/src/hooks/useApi.ts` for all API data operations
+- **API Communication**: All data (tasks, notes, exams, grades, stats) fetched from backend API
+- **Theme System**: ThemeProvider context with light/dark mode toggle (localStorage for theme preference only)
 
 ### Backend Architecture
 - **Framework**: Express 5 on Node.js
-- **Server Structure**: Minimal REST API setup with routes in `server/routes.ts`
-- **Storage Interface**: `IStorage` interface in `server/storage.ts` with in-memory implementation (MemStorage)
+- **Server Structure**: Full REST API with routes in `server/routes.ts` for all CRUD operations
+- **Storage Interface**: `IStorage` interface in `server/storage.ts` with DatabaseStorage implementation
+- **Authentication**: Session-based auth using `express-session` with PostgreSQL session store
+- **Authorization**: `requireAuth` middleware protects all data routes
 - **Static Serving**: Production builds served from `dist/public`
 - **Development**: Vite dev server with HMR integration
 
 ### Database Schema
 - **ORM**: Drizzle ORM configured for PostgreSQL
 - **Schema Location**: `shared/schema.ts`
-- **Current Models**: User schema with basic username field
+- **Tables**: users, tasks, notes, exams, grades, streaks, user_stats, avatar_settings, custom_todos, study_time, day_notes, weekly_goals
+- **User-Scoped Data**: All tables reference userId for data isolation between users
 - **Validation**: Zod schemas for Task, Exam, Note, and Subject types
-- **Note**: Database is configured but the app primarily uses localStorage for data persistence
+- **Migrations**: Use `npm run db:push` to sync schema changes
 
 ### Build System
 - **Client Build**: Vite bundles React app to `dist/public`

@@ -292,6 +292,82 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/stats/points", requireAuth, async (req, res) => {
+    try {
+      const { points } = req.body;
+      const stats = await storage.addPoints(req.session.userId!, points);
+      res.json(stats);
+    } catch (error) {
+      console.error("Add points error:", error);
+      res.status(500).json({ error: "Failed to add points" });
+    }
+  });
+
+  app.post("/api/stats/study-minutes", requireAuth, async (req, res) => {
+    try {
+      const { minutes, subjectId } = req.body;
+      const currentStats = await storage.getUserStats(req.session.userId!);
+      const updatedStats = {
+        ...currentStats,
+        totalStudyMinutes: (currentStats?.totalStudyMinutes || 0) + minutes,
+        subjectStudyMinutes: {
+          ...(currentStats?.subjectStudyMinutes || {}),
+          ...(subjectId ? { [subjectId]: ((currentStats?.subjectStudyMinutes as Record<string, number>)?.[subjectId] || 0) + minutes } : {}),
+        },
+      };
+      const stats = await storage.saveUserStats(req.session.userId!, updatedStats);
+      res.json(stats);
+    } catch (error) {
+      console.error("Add study minutes error:", error);
+      res.status(500).json({ error: "Failed to add study minutes" });
+    }
+  });
+
+  app.post("/api/stats/pomodoro", requireAuth, async (req, res) => {
+    try {
+      const currentStats = await storage.getUserStats(req.session.userId!);
+      const updatedStats = {
+        ...currentStats,
+        totalPomodoroSessions: (currentStats?.totalPomodoroSessions || 0) + 1,
+        totalPoints: (currentStats?.totalPoints || 0) + 15,
+      };
+      const stats = await storage.saveUserStats(req.session.userId!, updatedStats);
+      res.json(stats);
+    } catch (error) {
+      console.error("Record pomodoro error:", error);
+      res.status(500).json({ error: "Failed to record pomodoro" });
+    }
+  });
+
+  app.post("/api/stats/badge", requireAuth, async (req, res) => {
+    try {
+      const { badgeId } = req.body;
+      const currentStats = await storage.getUserStats(req.session.userId!);
+      const badgesEarned = currentStats?.badgesEarned || [];
+      if (!badgesEarned.includes(badgeId)) {
+        badgesEarned.push(badgeId);
+      }
+      const stats = await storage.saveUserStats(req.session.userId!, { badgesEarned });
+      res.json(stats);
+    } catch (error) {
+      console.error("Earn badge error:", error);
+      res.status(500).json({ error: "Failed to earn badge" });
+    }
+  });
+
+  app.post("/api/stats/showcased-badges", requireAuth, async (req, res) => {
+    try {
+      const { badges } = req.body;
+      const stats = await storage.saveUserStats(req.session.userId!, { 
+        showcasedBadges: badges.slice(0, 4) 
+      });
+      res.json(stats);
+    } catch (error) {
+      console.error("Update showcased badges error:", error);
+      res.status(500).json({ error: "Failed to update showcased badges" });
+    }
+  });
+
   // ================== STREAK ROUTES ==================
   app.get("/api/streak", requireAuth, async (req, res) => {
     try {
@@ -356,6 +432,17 @@ export async function registerRoutes(
       res.json(todos);
     } catch (error) {
       console.error("Get todos error:", error);
+      res.status(500).json({ error: "Failed to get todos" });
+    }
+  });
+
+  app.get("/api/calendar/todos/:date", requireAuth, async (req, res) => {
+    try {
+      const todos = await storage.getCustomTodos(req.session.userId!);
+      const filteredTodos = todos.filter(t => t.date === req.params.date);
+      res.json(filteredTodos);
+    } catch (error) {
+      console.error("Get todos by date error:", error);
       res.status(500).json({ error: "Failed to get todos" });
     }
   });

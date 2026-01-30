@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { subjects, assessmentsBySubject, Assessment, SubjectId } from "@shared/schema";
-import { getGrades, saveGrade, getSubjectGrades } from "@/lib/storage";
+import { useGrades, useSaveGrade } from "@/hooks/useApi";
 import { Calculator, TrendingUp, CheckCircle } from "lucide-react";
 
 interface SubjectGradeData {
@@ -58,20 +59,24 @@ const subjectBgClasses: Record<string, string> = {
 };
 
 export default function GradesPage() {
+  const { data: grades = [], isLoading } = useGrades();
+  const saveGrade = useSaveGrade();
   const [subjectData, setSubjectData] = useState<SubjectGradeData[]>([]);
 
   useEffect(() => {
-    loadGradeData();
-  }, []);
+    if (!isLoading) {
+      loadGradeData();
+    }
+  }, [grades, isLoading]);
 
   const loadGradeData = () => {
     const data: SubjectGradeData[] = subjects.map((subject) => {
       const assessments = assessmentsBySubject[subject.id] || [];
-      const grades = getSubjectGrades(subject.id);
+      const subjectGrades = grades.filter(g => g.subjectId === subject.id);
       
       const scores: Record<string, number | null> = {};
       assessments.forEach((a) => {
-        const grade = grades.find((g) => g.assessmentId === a.id);
+        const grade = subjectGrades.find((g) => g.assessmentId === a.id);
         scores[a.id] = grade?.score ?? null;
       });
 
@@ -95,14 +100,33 @@ export default function GradesPage() {
   const handleScoreChange = (subjectId: SubjectId, assessmentId: string, value: string) => {
     const numValue = value === "" ? null : Math.min(100, Math.max(0, parseInt(value) || 0));
     
-    saveGrade({
+    saveGrade.mutate({
       subjectId,
       assessmentId,
       score: numValue,
     });
-
-    loadGradeData();
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-4 md:p-6 space-y-6" data-testid="grades-page">
+        <div>
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Skeleton className="h-64" />
+          <Skeleton className="h-64" />
+          <Skeleton className="h-64" />
+          <Skeleton className="h-64" />
+        </div>
+      </div>
+    );
+  }
 
   const overallStats = {
     totalEntered: subjectData.reduce((acc, s) => acc + s.entered, 0),

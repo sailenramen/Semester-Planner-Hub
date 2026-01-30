@@ -1,59 +1,105 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { StreakTracker } from "@/components/StreakTracker";
 import { BadgeDisplay } from "@/components/BadgeDisplay";
 import { BadgeShowcase } from "@/components/BadgeShowcase";
 import { PointsDisplay } from "@/components/PointsDisplay";
 import { LevelAvatar } from "@/components/LevelAvatar";
+import { useAuth } from "@/contexts/AuthContext";
+import { subjects, AvatarSettings } from "@shared/schema";
 import { 
-  Streak, UserStats, subjects, getPointsForNextLevel, AvatarSettings 
-} from "@shared/schema";
-import { 
-  getStreak, getUserStats, getTasks, getMostProductiveDay, getOverallAverage,
-  getAvatarSettings, saveAvatarSettings, updateShowcasedBadges
-} from "@/lib/storage";
+  useStreak, 
+  useUserStats, 
+  useTasks, 
+  useGrades,
+  useAvatarSettings, 
+  useSaveAvatarSettings, 
+  useUpdateShowcasedBadges 
+} from "@/hooks/useApi";
 import { 
   Clock, CheckCircle2, Target, Calendar, BookOpen, 
   TrendingUp, Award, Flame 
 } from "lucide-react";
 
 export default function Profile() {
-  const [streak, setStreak] = useState<Streak | null>(null);
-  const [stats, setStats] = useState<UserStats | null>(null);
-  const [avatarSettings, setAvatarSettings] = useState<AvatarSettings | null>(null);
-  const [taskStats, setTaskStats] = useState<{ completed: number; total: number }>({ completed: 0, total: 0 });
+  const { user } = useAuth();
+  const { data: streak, isLoading: streakLoading } = useStreak();
+  const { data: stats, isLoading: statsLoading } = useUserStats();
+  const { data: avatarSettings, isLoading: avatarLoading } = useAvatarSettings();
+  const { data: tasks = [], isLoading: tasksLoading } = useTasks();
+  const { data: grades = [], isLoading: gradesLoading } = useGrades();
+  
+  const saveAvatarSettings = useSaveAvatarSettings();
+  const updateShowcasedBadges = useUpdateShowcasedBadges();
 
-  useEffect(() => {
-    setStreak(getStreak());
-    setStats(getUserStats());
-    setAvatarSettings(getAvatarSettings());
-    const tasks = getTasks();
-    setTaskStats({
-      completed: tasks.filter(t => t.completed).length,
-      total: tasks.length
-    });
-  }, []);
+  const isLoading = streakLoading || statsLoading || avatarLoading || tasksLoading || gradesLoading;
+
+  if (isLoading) {
+    return (
+      <div className="p-6 max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center gap-6">
+          <Skeleton className="h-20 w-20 rounded-full" />
+          <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64 mb-2" />
+            <div className="flex gap-2">
+              <Skeleton className="h-6 w-20" />
+              <Skeleton className="h-6 w-24" />
+            </div>
+          </div>
+        </div>
+        <Skeleton className="h-32" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+        </div>
+      </div>
+    );
+  }
 
   if (!streak || !stats || !avatarSettings) {
-    return <div className="p-6">Loading...</div>;
+    return <div className="p-6">Unable to load profile data</div>;
   }
+
+  const taskStats = {
+    completed: tasks.filter(t => t.completed).length,
+    total: tasks.length
+  };
 
   const studyHours = Math.floor(stats.totalStudyMinutes / 60);
   const studyMinutes = stats.totalStudyMinutes % 60;
+  
+  const getMostProductiveDay = (): string | null => {
+    return null;
+  };
+  
+  const getOverallAverage = (): number | null => {
+    if (grades.length === 0) return null;
+    const scores = grades.filter(g => g.score !== null).map(g => g.score as number);
+    if (scores.length === 0) return null;
+    return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  };
+
   const mostProductiveDay = getMostProductiveDay();
   const overallAverage = getOverallAverage();
 
   const handleAvatarChange = (newSettings: AvatarSettings) => {
-    saveAvatarSettings(newSettings);
-    setAvatarSettings(newSettings);
+    saveAvatarSettings.mutate(newSettings);
   };
 
   const handleShowcaseChange = (badges: string[]) => {
-    const updatedStats = updateShowcasedBadges(badges);
-    setStats(updatedStats);
+    updateShowcasedBadges.mutate(badges);
   };
+
+  const userName = user?.name || "Student";
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -66,7 +112,7 @@ export default function Profile() {
           editable
         />
         <div>
-          <h1 className="text-2xl font-bold">My Profile</h1>
+          <h1 className="text-2xl font-bold">{userName}'s Profile</h1>
           <p className="text-muted-foreground">Track your study progress and achievements</p>
           <div className="flex items-center gap-2 mt-2">
             <Badge variant="secondary" className="text-sm">

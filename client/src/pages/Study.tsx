@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Task, subjects, SubjectId } from "@shared/schema";
-import { getTasks, recordPomodoroSession, addStudyMinutes } from "@/lib/storage";
+import { Skeleton } from "@/components/ui/skeleton";
+import { subjects, SubjectId } from "@shared/schema";
+import { useTasks, useRecordPomodoro, useAddStudyMinutes } from "@/hooks/useApi";
 import { getStudyContent, getTaskType, StudyContent, PracticeQuestion, FlashcardQuestion } from "@/lib/studyContent";
 import {
   ArrowLeft,
@@ -22,7 +22,6 @@ import {
   CheckCircle2,
   XCircle,
   ChevronRight,
-  Volume2,
   Sparkles,
 } from "lucide-react";
 import FileUploadQuestions from "@/components/FileUploadQuestions";
@@ -30,8 +29,13 @@ import FileUploadQuestions from "@/components/FileUploadQuestions";
 export default function StudyPage() {
   const params = useParams<{ taskId: string }>();
   const [, setLocation] = useLocation();
-  const [task, setTask] = useState<Task | null>(null);
   const [content, setContent] = useState<StudyContent | null>(null);
+  
+  const { data: allTasks = [], isLoading: tasksLoading } = useTasks();
+  const recordPomodoro = useRecordPomodoro();
+  const addStudyMinutes = useAddStudyMinutes();
+  
+  const task = allTasks.find(t => t.id === params.taskId) || null;
   
   const [timerMode, setTimerMode] = useState<"pomodoro" | "custom">("pomodoro");
   const [customMinutes, setCustomMinutes] = useState(30);
@@ -48,14 +52,11 @@ export default function StudyPage() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   useEffect(() => {
-    const allTasks = getTasks();
-    const foundTask = allTasks.find(t => t.id === params.taskId);
-    if (foundTask) {
-      setTask(foundTask);
-      const studyContent = getStudyContent(foundTask.subjectId, foundTask.title, foundTask.week);
+    if (task) {
+      const studyContent = getStudyContent(task.subjectId, task.title, task.week);
       setContent(studyContent);
     }
-  }, [params.taskId]);
+  }, [task]);
 
   useEffect(() => {
     if (isRunning && timeRemaining > 0) {
@@ -65,14 +66,12 @@ export default function StudyPage() {
     } else if (timeRemaining === 0) {
       playCompletionSound();
       if (timerMode === "pomodoro" && !isBreak) {
-        // Completed a Pomodoro work session - record it
-        recordPomodoroSession();
-        addStudyMinutes(25, task?.subjectId);
+        recordPomodoro.mutate();
+        addStudyMinutes.mutate({ minutes: 25, subjectId: task?.subjectId });
         setIsBreak(true);
         setTimeRemaining(5 * 60);
       } else if (timerMode === "custom") {
-        // Completed a custom timer session
-        addStudyMinutes(customMinutes, task?.subjectId);
+        addStudyMinutes.mutate({ minutes: customMinutes, subjectId: task?.subjectId });
         setIsRunning(false);
       } else {
         setIsRunning(false);
@@ -150,6 +149,23 @@ export default function StudyPage() {
     }
   };
 
+  if (tasksLoading) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="container max-w-6xl mx-auto space-y-6">
+          <Skeleton className="h-12 w-48" />
+          <Skeleton className="h-8 w-64" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <Skeleton className="h-96" />
+            </div>
+            <Skeleton className="h-64" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!task) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-[400px] gap-4">
@@ -172,7 +188,7 @@ export default function StudyPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <audio ref={audioRef} src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2KkZSQjIB0bG93goyUk5GNhn1zbHN9iZKUkpCMhHxycXeAi5STk5GNhX5zcXV+iJKUk5KOhoF5c3R4gYuTlJOSjoaCeXRzeoCKk5SUko+Hg3p0dHl/iZKUlJKQiIR8dXR5fomSk5SUkYmFfXZ1eH6Ik5OUlJGKhn52dXh+iJKTlJSRiod/d3Z4fYiRk5SUkYqIgHh2d32HkJOUlJKLiYF5d3d8ho+Tk5STi4qCent3fIaOkpOUk4yLg3t7eHyFjZGTlJOMjIR8e3l7hIyQk5SUjY2FfXx6e4SLj5KUlI6OhoB9ent+go2RkpSVj4+IgX5+fH6CjZCSlZWQkImCf399f4GLj5GTlZGRioOAf35+gYqOkJOWkpKLhYGAfn5/iIyPkpWTk42GgoGAfn+HjI6RlZSTjoiEgoF+foaKjZCUlZWQiYWDgn9+hYmMj5OWlZGLhoOCgH6EiIuOkpaWkoyIhYOBfoOHioyRlZaUjomGhIKAg4aJi4+UlpWPi4eGhIKCg4aIio6TlpaPjImGhYOCgoWHiY2SlpaSjouIhYSDgoSGh4qNkpaUkY2KiIaEg4OEhYmLjpKVlJKOi4mGhIODg4WIio2RlJWTj4yKh4WDg4OEhoiLjpGVlZSQjYuIhYODg4OFh4mMj5OVlJKPjImGhIODgoSGiIuNkJOVlJKQjYqHhIODgoOFh4mLjpKUlZOQjouIhYODgoOEhoiKjZCTlJWRj42KiIWDg4KDhYaIio2Pk5SUkpCNioiGhIODg4SGiIqMj5GTlJOQjo2KiIaEg4ODhIaHiYuNkJKUk5KQjouJh4WEg4OEhYaIiouOkJKUk5KQjouJiIaFg4OEhIaHiImLjZCSkpOSkI6MiomHhoSEhISFhoiJi42PkZOTkpGPjYuKiIaFhISEhYaHiImLjY+RkpOSkY+OjIqJh4aFhISEhYaHiImLjY+Rk5OSkZCOjYuKiIeGhYSEhYWGh4iKi42PkZKTkpGQjo2MioqIh4aFhYWFhoaHiYqMjY+RkpKSkZCPjoyLiomIh4aFhYWFhoaHiImLjI6QkZKSkpGQj42MioqJiIeGhYWFhYaGh4iJi4yOkJGSkpKRkI+OjYuKiYmIh4aFhYWFhYaGh4iJi4yOkJGSkpKRkI+OjYyLiomIh4eGhYWFhYWGhoaHiImLjI6PkZKSkpGQj46NjIuKiYiHhoaGhYWFhYWFhoaHiImKjI2PkJGSkpKRkI+OjYyLiomIiIeGhoWFhQ==" />
+      <audio ref={audioRef} src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2KkZSQjIB0bG93goyUk5GNhn1zbHN9iZKUkpCMhHxycXeAi5STk5GNhX5zcXV+iJKUk5KOhoF5c3R4gYuTlJOSjoaCeXRzeoCKk5SUko+Hg3p0dHl/iZKUlJKQiIR8dXR5fomSk5SUkYmFfXZ1eH6Ik5OUlJGKhn52dXh+iJKTlJSRiod/d3Z4fYiRk5SUkYqIgHh2d32HkJOUlJKLiYF5d3d8ho+Tk5STi4qCent3fIaOkpOUk4yLg3t7eHyFjZGTlJOMjIR8e3l7hIyQk5SUjY2FfXx6e4SLj5KUlI6OhoB9ent+go2RkpSVj4+IgX5+fH6CjZCSlZWQkImCf399f4GLj5GTlZGRioOAf35+gYqOkJOWkpKLhYGAfn5/iIyPkpWTk42GgoGAfn+HjI6RlZSTjoiEgoF+foaKjZCUlZWQiYWDgn9+hYmMj5OWlZGLhoOCgH6EiIuOkpaWkoyIhYOBfoOHioyRlZaUjomGhIKAg4aJi4+UlpWPi4eGhIKCg4aIio6TlpaPjImGhIOCgoWHiY2SlpaSjouIhYSDgoSGh4qNkpaUkY2KiIaEg4OEhYmLjpKVlJKOi4mGhIODg4WIio2RlJWTj4yKh4WDg4OEhoiLjpGVlZSQjYuIhYODg4OFh4mMj5OVlJKPjImGhIODgoSGiIuNkJOVlJKQjYqHhIODgoOFh4mLjpKUlZOQjouIhYODgoOEhoiKjZCTlJWRj42KiIWDg4KDhYaIio2Pk5SUkpCNioiGhIODg4SGiIqMj5GTlJOQjo2KiIaEg4OEhIaHiImLjZCSkpOSkI6MiomHhoSEhISFhoiJi42PkZOTkpGPjYuKiIaFhISEhYaHiImLjY+RkpOSkY+OjIqJh4aFhISEhYaHiImLjY+Rk5OSkZCOjYuKiIeGhYSEhYWGh4iKi42PkZKTkpGQjo2MioqIh4aFhYWFhoaHiYqMjY+RkpKSkZCPjoyLiomIh4aFhYWFhoaHiImLjI6QkZKSkpGQj42MioqJiIeGhYWFhYaGh4iJi4yOkJGSkpKRkI+OjYuKiYmIh4aFhYWFhYaGhoaHiImLjI6PkZKSkpGQj46NjIuKiYiHhoaGhYWFhYWFhoaHiImKjI2PkJGSkpKRkI+OjYyLiomIiIeGhoWFhQ==" />
       
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b">
         <div className="container max-w-6xl mx-auto px-4 py-3">
@@ -505,19 +521,11 @@ export default function StudyPage() {
                               ))}
                             </ul>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-primary mb-1">Structure:</p>
-                            <ol className="list-decimal list-inside text-sm text-muted-foreground">
-                              {prompt.structure.map((s, i) => (
-                                <li key={i}>{s}</li>
-                              ))}
-                            </ol>
-                          </div>
                         </div>
                       ))
                     ) : (
                       <p className="text-muted-foreground text-center py-8">
-                        No writing prompts for this topic.
+                        No writing prompts available for this topic.
                       </p>
                     )}
                   </CardContent>
@@ -527,21 +535,26 @@ export default function StudyPage() {
               <TabsContent value="summary" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Key Points Summary</CardTitle>
+                    <CardTitle className="text-lg">Topic Summary</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {content.summaryPoints && content.summaryPoints.length > 0 ? (
-                      <ul className="space-y-2">
-                        {content.summaryPoints.map((point, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    {content.reading ? (
+                      <div className="space-y-4">
+                        <p className="text-muted-foreground">{content.reading.content.substring(0, 500)}...</p>
+                        {content.reading.keyPoints && (
+                          <div>
+                            <h4 className="font-semibold mb-2">Key Takeaways:</h4>
+                            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                              {content.reading.keyPoints.slice(0, 5).map((point, idx) => (
+                                <li key={idx}>{point}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <p className="text-muted-foreground text-center py-8">
-                        No summary points available.
+                        No summary available for this topic.
                       </p>
                     )}
                   </CardContent>
@@ -552,32 +565,62 @@ export default function StudyPage() {
 
           <div className="space-y-4">
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Timer Settings</CardTitle>
+              <CardHeader>
+                <CardTitle className="text-lg">Study Progress</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Questions Answered</span>
+                    <span>{answeredQuestions.size}/{totalQuestions}</span>
+                  </div>
+                  <Progress value={progressPercent} className="h-2" />
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Accuracy</span>
+                    <span>
+                      {answeredQuestions.size > 0 
+                        ? Math.round((correctAnswers / answeredQuestions.size) * 100) 
+                        : 0}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={answeredQuestions.size > 0 ? (correctAnswers / answeredQuestions.size) * 100 : 0} 
+                    className="h-2" 
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Timer Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 <div className="flex gap-2">
                   <Button
                     variant={timerMode === "pomodoro" ? "default" : "outline"}
-                    className="flex-1"
+                    size="sm"
                     onClick={() => {
                       setTimerMode("pomodoro");
                       setTimeRemaining(25 * 60);
                       setIsRunning(false);
+                      setIsBreak(false);
                     }}
-                    data-testid="button-pomodoro"
+                    className="flex-1"
                   >
                     Pomodoro
                   </Button>
                   <Button
                     variant={timerMode === "custom" ? "default" : "outline"}
-                    className="flex-1"
+                    size="sm"
                     onClick={() => {
                       setTimerMode("custom");
                       setTimeRemaining(customMinutes * 60);
                       setIsRunning(false);
                     }}
-                    data-testid="button-custom-timer"
+                    className="flex-1"
                   >
                     Custom
                   </Button>
@@ -585,77 +628,20 @@ export default function StudyPage() {
                 {timerMode === "custom" && (
                   <div className="flex items-center gap-2">
                     <input
-                      type="range"
-                      min="5"
-                      max="60"
+                      type="number"
+                      min="1"
+                      max="120"
                       value={customMinutes}
                       onChange={(e) => {
-                        const mins = parseInt(e.target.value);
-                        setCustomMinutes(mins);
-                        if (!isRunning) setTimeRemaining(mins * 60);
+                        const val = parseInt(e.target.value) || 30;
+                        setCustomMinutes(val);
+                        if (!isRunning) setTimeRemaining(val * 60);
                       }}
-                      className="flex-1"
-                      data-testid="slider-custom-minutes"
+                      className="w-20 px-2 py-1 border rounded text-center"
                     />
-                    <span className="text-sm font-medium w-12">{customMinutes} min</span>
+                    <span className="text-sm text-muted-foreground">minutes</span>
                   </div>
                 )}
-                <div className="text-xs text-muted-foreground">
-                  {timerMode === "pomodoro" 
-                    ? "25 min focus, 5 min break" 
-                    : `${customMinutes} min session`}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Progress</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Questions Answered</span>
-                  <span className="font-medium">{answeredQuestions.size}/{totalQuestions}</span>
-                </div>
-                <Progress value={progressPercent} className="h-2" />
-                <div className="flex items-center justify-between text-sm">
-                  <span>Accuracy</span>
-                  <span className="font-medium">
-                    {answeredQuestions.size > 0 
-                      ? Math.round((correctAnswers / answeredQuestions.size) * 100) 
-                      : 0}%
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Quick Navigation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-5 gap-1">
-                  {allQuestions.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setCurrentQuestionIndex(idx);
-                        setShowAnswer(false);
-                        setSelectedAnswer(null);
-                      }}
-                      className={`aspect-square rounded text-xs font-medium transition-colors ${
-                        idx === currentQuestionIndex
-                          ? "bg-primary text-primary-foreground"
-                          : answeredQuestions.has(idx)
-                            ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
-                            : "bg-muted hover-elevate"
-                      }`}
-                      data-testid={`quick-nav-${idx}`}
-                    >
-                      {idx + 1}
-                    </button>
-                  ))}
-                </div>
               </CardContent>
             </Card>
           </div>

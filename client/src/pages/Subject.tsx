@@ -8,20 +8,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProgressRing } from "@/components/ProgressRing";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Task,
   subjects,
   SubjectId,
   getCurrentWeek,
   getTermLabel,
 } from "@shared/schema";
 import {
-  getTasks,
-  toggleTaskCompletion,
-  getSubjectNote,
-  saveNote,
+  useTasks,
+  useNotes,
+  useToggleTask,
+  useSaveNote,
   calculateSubjectProgress,
-} from "@/lib/storage";
+} from "@/hooks/useApi";
 import { Clock, FileText, BookOpen, ChevronDown, ChevronUp, Save } from "lucide-react";
 
 const subjectColorMap: Record<string, string> = {
@@ -36,43 +36,44 @@ export default function Subject() {
   const subjectId = params.id as SubjectId;
   
   const [, setLocation] = useLocation();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [note, setNote] = useState<string>("");
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
+  const [note, setNote] = useState<string>("");
   const [noteSaved, setNoteSaved] = useState(false);
+
+  const { data: allTasks = [], isLoading: tasksLoading } = useTasks();
+  const { data: notes = [], isLoading: notesLoading } = useNotes();
+  const toggleTask = useToggleTask();
+  const saveNoteMutation = useSaveNote();
 
   const subject = subjects.find((s) => s.id === subjectId);
   const currentWeek = getCurrentWeek();
 
+  const tasks = allTasks.filter((t) => t.subjectId === subjectId);
+
   useEffect(() => {
-    const allTasks = getTasks();
-    setTasks(allTasks.filter((t) => t.subjectId === subjectId));
-    
-    const existingNote = getSubjectNote(subjectId);
+    const existingNote = notes.find(n => n.subjectId === subjectId);
     if (existingNote) {
       setNote(existingNote.content);
     } else {
       setNote("");
     }
-    
-    // Auto-expand current week
     setExpandedWeeks(new Set([currentWeek]));
-  }, [subjectId, currentWeek]);
+  }, [subjectId, currentWeek, notes]);
 
   const handleToggleTask = (taskId: string) => {
-    const updated = toggleTaskCompletion(taskId);
-    setTasks(updated.filter((t) => t.subjectId === subjectId));
+    toggleTask.mutate(taskId);
   };
 
   const handleSaveNote = () => {
-    saveNote({
-      id: `note-${subjectId}`,
-      subjectId,
-      content: note,
-      updatedAt: new Date().toISOString(),
-    });
-    setNoteSaved(true);
-    setTimeout(() => setNoteSaved(false), 2000);
+    saveNoteMutation.mutate(
+      { subjectId, content: note },
+      {
+        onSuccess: () => {
+          setNoteSaved(true);
+          setTimeout(() => setNoteSaved(false), 2000);
+        },
+      }
+    );
   };
 
   const toggleWeekExpanded = (week: number) => {
@@ -93,10 +94,33 @@ export default function Subject() {
     );
   }
 
+  if (tasksLoading || notesLoading) {
+    return (
+      <div className="p-4 md:p-6 space-y-6" data-testid={`subject-page-${subjectId}`}>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-12 w-12 rounded-lg" />
+            <div>
+              <Skeleton className="h-8 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-16 w-32" />
+            <Skeleton className="h-16 w-16 rounded-full" />
+          </div>
+        </div>
+        <Skeleton className="h-12 w-48" />
+        <Skeleton className="h-64" />
+        <Skeleton className="h-64" />
+      </div>
+    );
+  }
+
   const progress = calculateSubjectProgress(tasks.length ? tasks : [], subjectId);
   
   // Group tasks by term then week
-  const tasksByTerm: Record<number, Task[]> = {
+  const tasksByTerm: Record<number, typeof tasks> = {
     1: tasks.filter((t) => t.term === 1),
     2: tasks.filter((t) => t.term === 2),
   };
@@ -298,11 +322,15 @@ export default function Subject() {
               />
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Notes are saved locally in your browser
+                  Notes are saved to your account
                 </p>
-                <Button onClick={handleSaveNote} data-testid="button-save-notes">
+                <Button 
+                  onClick={handleSaveNote} 
+                  disabled={saveNoteMutation.isPending}
+                  data-testid="button-save-notes"
+                >
                   <Save className="h-4 w-4 mr-2" />
-                  {noteSaved ? "Saved!" : "Save Notes"}
+                  {saveNoteMutation.isPending ? "Saving..." : noteSaved ? "Saved!" : "Save Notes"}
                 </Button>
               </div>
             </CardContent>

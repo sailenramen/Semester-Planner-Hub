@@ -1,54 +1,96 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User } from "@shared/schema";
-import { getCurrentUser, loginUser, logoutUser, registerUser, updateUserName } from "@/lib/storage";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface AuthContextType {
-  user: User | null;
+  user: Omit<User, "password"> | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => { success: boolean; error?: string };
-  register: (name: string, email: string, password: string) => { success: boolean; error?: string };
-  logout: () => void;
-  updateName: (name: string) => void;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  updateName: (name: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<Omit<User, "password"> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = getCurrentUser();
-    setUser(storedUser);
-    setIsLoading(false);
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/me", { credentials: "include" });
+        if (res.ok) {
+          const userData = await res.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Failed to check auth:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkAuth();
   }, []);
 
-  const login = (email: string, password: string) => {
-    const result = loginUser(email, password);
-    if (result.success && result.user) {
-      setUser(result.user);
+  const login = async (email: string, password: string) => {
+    try {
+      const res = await apiRequest("POST", "/api/auth/login", { email, password });
+      const userData = await res.json();
+      setUser(userData);
+      queryClient.clear();
+      return { success: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Login failed";
+      const errorText = message.includes(":") ? message.split(":")[1].trim() : message;
+      try {
+        const parsed = JSON.parse(errorText);
+        return { success: false, error: parsed.error || "Login failed" };
+      } catch {
+        return { success: false, error: errorText || "Login failed" };
+      }
     }
-    return { success: result.success, error: result.error };
   };
 
-  const register = (name: string, email: string, password: string) => {
-    const result = registerUser(name, email, password);
-    if (result.success && result.user) {
-      setUser(result.user);
+  const register = async (name: string, email: string, password: string) => {
+    try {
+      const res = await apiRequest("POST", "/api/auth/register", { name, email, password });
+      const userData = await res.json();
+      setUser(userData);
+      queryClient.clear();
+      return { success: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Registration failed";
+      const errorText = message.includes(":") ? message.split(":")[1].trim() : message;
+      try {
+        const parsed = JSON.parse(errorText);
+        return { success: false, error: parsed.error || "Registration failed" };
+      } catch {
+        return { success: false, error: errorText || "Registration failed" };
+      }
     }
-    return { success: result.success, error: result.error };
   };
 
-  const logout = () => {
-    logoutUser();
-    setUser(null);
+  const logout = async () => {
+    try {
+      await apiRequest("POST", "/api/auth/logout", {});
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setUser(null);
+      queryClient.clear();
+    }
   };
 
-  const updateName = (name: string) => {
-    const updated = updateUserName(name);
-    if (updated) {
-      setUser(updated);
+  const updateName = async (name: string) => {
+    try {
+      const res = await apiRequest("PATCH", "/api/user/name", { name });
+      const userData = await res.json();
+      setUser(userData);
+    } catch (error) {
+      console.error("Failed to update name:", error);
     }
   };
 

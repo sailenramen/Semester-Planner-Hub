@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Flame, Snowflake } from "lucide-react";
-import { getStreak } from "@/lib/storage";
+import { useStreak } from "@/hooks/useApi";
 import { Streak } from "@shared/schema";
 
 interface StreakTrackerProps {
@@ -12,17 +12,9 @@ interface StreakTrackerProps {
 }
 
 export function StreakTracker({ streak: propStreak, compact = false }: StreakTrackerProps) {
-  const [streak, setStreak] = useState<Streak | null>(propStreak || null);
-
-  useEffect(() => {
-    if (!propStreak) {
-      setStreak(getStreak());
-    } else {
-      setStreak(propStreak);
-    }
-  }, [propStreak]);
-
-  if (!streak) return null;
+  const { data: fetchedStreak, isLoading } = useStreak();
+  
+  const streak = propStreak || fetchedStreak;
 
   const getFlameSize = (count: number): string => {
     if (count >= 100) return "h-10 w-10";
@@ -40,6 +32,30 @@ export function StreakTracker({ streak: propStreak, compact = false }: StreakTra
     if (count >= 1) return "text-yellow-400";
     return "text-muted-foreground";
   };
+
+  if (isLoading && !propStreak) {
+    if (compact) {
+      return <Skeleton className="h-8 w-16" />;
+    }
+    return (
+      <Card data-testid="streak-tracker">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <div>
+                <Skeleton className="h-6 w-24 mb-1" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            </div>
+            <Skeleton className="h-6 w-12" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!streak) return null;
 
   if (compact) {
     return (

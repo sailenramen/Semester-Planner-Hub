@@ -1,7 +1,7 @@
 import { 
   Task, Note, generateSampleTasks, generateSampleExams, Exam, TERM1_START, Grade,
   Streak, UserStats, BadgeId, badges, POINTS_CONFIG, getLevelFromPoints, subjects,
-  AvatarSettings
+  AvatarSettings, User
 } from "@shared/schema";
 
 const STORAGE_KEYS = {
@@ -15,7 +15,89 @@ const STORAGE_KEYS = {
   STREAK: "study-planner-streak",
   USER_STATS: "study-planner-user-stats",
   AVATAR: "study-planner-avatar",
+  USERS: "study-planner-users",
+  CURRENT_USER: "study-planner-current-user",
 };
+
+// User authentication functions
+export function getUsers(): User[] {
+  const stored = localStorage.getItem(STORAGE_KEYS.USERS);
+  if (!stored) return [];
+  return JSON.parse(stored);
+}
+
+export function saveUsers(users: User[]): void {
+  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+}
+
+export function registerUser(name: string, email: string, password: string): { success: boolean; user?: User; error?: string } {
+  const users = getUsers();
+  
+  if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+    return { success: false, error: "An account with this email already exists" };
+  }
+  
+  const newUser: User = {
+    id: crypto.randomUUID(),
+    name,
+    email: email.toLowerCase(),
+    password,
+    createdAt: new Date().toISOString(),
+  };
+  
+  users.push(newUser);
+  saveUsers(users);
+  setCurrentUser(newUser);
+  
+  return { success: true, user: newUser };
+}
+
+export function loginUser(email: string, password: string): { success: boolean; user?: User; error?: string } {
+  const users = getUsers();
+  const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  
+  if (!user) {
+    return { success: false, error: "No account found with this email" };
+  }
+  
+  if (user.password !== password) {
+    return { success: false, error: "Incorrect password" };
+  }
+  
+  setCurrentUser(user);
+  return { success: true, user };
+}
+
+export function logoutUser(): void {
+  localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+}
+
+export function getCurrentUser(): User | null {
+  const stored = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+  if (!stored) return null;
+  return JSON.parse(stored);
+}
+
+export function setCurrentUser(user: User): void {
+  localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+}
+
+export function updateUserName(newName: string): User | null {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return null;
+  
+  const users = getUsers();
+  const userIndex = users.findIndex(u => u.id === currentUser.id);
+  
+  if (userIndex >= 0) {
+    users[userIndex].name = newName;
+    saveUsers(users);
+    setCurrentUser(users[userIndex]);
+    return users[userIndex];
+  }
+  
+  return null;
+}
 
 // Check if data needs to be regenerated for a new semester
 function checkSemesterVersion(): boolean {

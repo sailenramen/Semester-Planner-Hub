@@ -11,6 +11,7 @@ import { StreakTracker } from "@/components/StreakTracker";
 import { PointsDisplay } from "@/components/PointsDisplay";
 import { BadgeUnlockModal } from "@/components/BadgeUnlockModal";
 import { Confetti } from "@/components/Confetti";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Task,
   Exam,
@@ -57,6 +58,9 @@ const getGreeting = (name: string): string => {
 };
 
 export default function Dashboard() {
+  const { user } = useAuth();
+  const userName = user?.name || "Student";
+  
   const [tasks, setTasks] = useState<Task[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [examMode, setExamModeState] = useState(false);
@@ -172,7 +176,7 @@ export default function Dashboard() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold" data-testid="greeting-text">{getGreeting("Sahil")}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold" data-testid="greeting-text">{getGreeting(userName)}</h1>
           <p className="text-muted-foreground mt-1">
             Track your progress and stay on top of your studies
           </p>

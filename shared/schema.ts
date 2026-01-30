@@ -1,5 +1,27 @@
 import { z } from "zod";
 
+// User schema for authentication
+export const userSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+  email: z.string().email(),
+  password: z.string().min(6),
+  createdAt: z.string(),
+});
+
+export type User = z.infer<typeof userSchema>;
+
+export const userLoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+export const userRegisterSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
 // Subject types
 export type SubjectId = "math" | "science" | "history" | "english";
 
@@ -557,4 +579,4 @@ export const insertUserSchema = createInsertSchema(users).pick({
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type DrizzleUser = typeof users.$inferSelect;

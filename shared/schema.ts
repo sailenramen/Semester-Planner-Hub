@@ -132,112 +132,93 @@ export const assessmentsBySubject: Record<string, Assessment[]> = {
   ],
 };
 
-// Semester structure:
-// Term 1: 9 weeks (Jan 25 - Mar 28)
-// 2 week break
-// Term 2: 8 weeks (Apr 12 - Jun 6), last week is exams
-// Total: 17 weeks of content
+// ===== Term 4, 2026 =====
+// Term 4 runs from Tue 6 Oct 2026 to Thu 3 Dec 2026 and is 9 weeks long.
+// Each teaching week starts on a Monday, so Week 1 starts Mon 5 Oct 2026.
+export const TOTAL_WEEKS = 9;
 
-function getSemesterDates() {
-  const now = new Date();
-  const year = now.getFullYear();
-  
-  // Term 1 starts Jan 25 (Sunday)
-  const term1Start = new Date(year, 0, 25); // January 25
-  const term1End = new Date(year, 2, 28); // March 28 (end of week 9)
-  
-  // Term 2 starts Apr 12
-  const term2Start = new Date(year, 3, 12); // April 12
-  const term2End = new Date(year, 5, 6); // June 6 (end of week 8/17)
-  
-  return { 
-    term1Start, 
-    term1End, 
-    term2Start, 
-    term2End,
-    semesterStart: term1Start,
-    semesterEnd: term2End
-  };
+/** The term students are working through in this build. */
+export const CURRENT_TERM = 4;
+
+/** Monday that Week 1 starts on (the first school day is the next day, Tue 6 Oct). */
+export const TERM1_START = new Date(2026, 9, 5);
+/** Last day of the term. */
+export const TERM1_END = new Date(2026, 11, 3);
+
+// Term 4 is one block of weeks, so the old Term 2 names point at the same range.
+// They are kept so existing imports keep working.
+export const TERM2_START = TERM1_START;
+export const TERM2_END = TERM1_END;
+export const SEMESTER_START = TERM1_START;
+export const SEMESTER_END = TERM1_END;
+
+/** Week 8 (23-26 Nov) is revision week. */
+export const REVISION_WEEK = 8;
+/** Week 9 (30 Nov - 3 Dec) is exam week. */
+export const EXAM_WEEK = 9;
+/** The semester exam period starts on Fri 27 Nov 2026. */
+export const EXAM_PERIOD_START = new Date(2026, 10, 27);
+
+/** Days with no school during Term 4 (YYYY-MM-DD). */
+export const NON_SCHOOL_DAYS: { date: string; label: string }[] = [
+  { date: "2026-11-02", label: "Curriculum Day" },
+  { date: "2026-11-03", label: "Melbourne Cup Day" },
+];
+
+/** Formats a Date as YYYY-MM-DD using local time. */
+export function formatDateKey(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
 }
 
-const dates = getSemesterDates();
-export const TERM1_START = dates.term1Start;
-export const TERM1_END = dates.term1End;
-export const TERM2_START = dates.term2Start;
-export const TERM2_END = dates.term2End;
-export const SEMESTER_START = dates.semesterStart;
-export const SEMESTER_END = dates.semesterEnd;
+/** Returns the non-school day details for a date, if it is one. */
+export function getNonSchoolDay(date: Date | string): { date: string; label: string } | undefined {
+  const key = typeof date === "string" ? date : formatDateKey(date);
+  return NON_SCHOOL_DAYS.find((d) => d.date === key);
+}
 
-export const TOTAL_WEEKS = 17; // 9 weeks Term 1 + 8 weeks Term 2
+/** Short note for a week, e.g. "Revision" or "Exams". */
+export function getWeekNote(week: number): string | null {
+  if (week === REVISION_WEEK) return "Revision";
+  if (week === EXAM_WEEK) return "Exams";
+  return null;
+}
 
-// Helper to get current week (1-17)
+// Helper to get current week (1-9)
 export function getCurrentWeek(): number {
   const now = new Date();
-  
-  // Check if in Term 1
-  if (now >= TERM1_START && now <= TERM1_END) {
-    const diffTime = now.getTime() - TERM1_START.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    return Math.min(Math.floor(diffDays / 7) + 1, 9);
-  }
-  
-  // Check if in break between terms
-  if (now > TERM1_END && now < TERM2_START) {
-    return 9; // Still show as end of Term 1
-  }
-  
-  // Check if in Term 2
-  if (now >= TERM2_START && now <= TERM2_END) {
-    const diffTime = now.getTime() - TERM2_START.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    return Math.min(9 + Math.floor(diffDays / 7) + 1, 17);
-  }
-  
-  // Before Term 1 starts
-  if (now < TERM1_START) {
-    return 1;
-  }
-  
-  // After Term 2 ends
-  return 17;
+
+  // Before the term starts, or after it has finished.
+  if (now < TERM1_START) return 1;
+  if (now > TERM1_END) return TOTAL_WEEKS;
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.floor((today.getTime() - TERM1_START.getTime()) / (1000 * 60 * 60 * 24));
+  const week = Math.floor(diffDays / 7) + 1;
+
+  return Math.min(Math.max(week, 1), TOTAL_WEEKS);
 }
 
-// Get which term we're in (1 or 2)
+// Everyone is working through Term 4 for this build.
 export function getCurrentTerm(): number {
-  const week = getCurrentWeek();
-  return week <= 9 ? 1 : 2;
+  return CURRENT_TERM;
 }
 
-// Get week dates for a given week number (1-17)
+// Get week dates for a given week number (1-9). Weeks run Monday to Sunday.
 export function getWeekDates(week: number): { start: Date; end: Date; term: number } {
-  let start: Date;
-  let term: number;
-  
-  if (week <= 9) {
-    // Term 1
-    term = 1;
-    start = new Date(TERM1_START);
-    start.setDate(start.getDate() + (week - 1) * 7);
-  } else {
-    // Term 2
-    term = 2;
-    start = new Date(TERM2_START);
-    start.setDate(start.getDate() + (week - 10) * 7);
-  }
-  
+  const start = new Date(TERM1_START);
+  start.setDate(start.getDate() + (week - 1) * 7);
+
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
-  
-  return { start, end, term };
+
+  return { start, end, term: CURRENT_TERM };
 }
 
 // Get term label for a week
 export function getTermLabel(week: number): string {
-  if (week <= 9) {
-    return `Term 1, Week ${week}`;
-  } else {
-    return `Term 2, Week ${week - 9}`;
-  }
+  return `Term ${CURRENT_TERM}, Week ${week}`;
 }
 
 // Sample data generator with proper curriculum alignment
@@ -363,41 +344,21 @@ export function generateSampleTasks(): Task[] {
   for (const subjectId of subjectIds) {
     const curriculum = curriculumBySubject[subjectId];
     
-    // Term 1 tasks (weeks 1-9)
-    for (let i = 0; i < 9; i++) {
-      const week = i + 1;
+    // Term 4 is a single 9-week block, so there is one task per teaching week.
+    for (let week = 1; week <= TOTAL_WEEKS; week++) {
       const { start } = getWeekDates(week);
-      const topic = curriculum.term1[i];
-      
+      const topic = curriculum.term1[week - 1];
+
       tasks.push({
         id: `${subjectId}-week${week}`,
         subjectId,
         week,
-        term: 1,
+        term: CURRENT_TERM,
         title: topic.title,
         description: topic.desc,
         estimatedMinutes: Math.floor(Math.random() * 30) + 45,
         completed: false,
-        dueDate: start.toISOString().split('T')[0],
-      });
-    }
-    
-    // Term 2 tasks (weeks 10-17)
-    for (let i = 0; i < 8; i++) {
-      const week = i + 10;
-      const { start } = getWeekDates(week);
-      const topic = curriculum.term2[i];
-      
-      tasks.push({
-        id: `${subjectId}-week${week}`,
-        subjectId,
-        week,
-        term: 2,
-        title: topic.title,
-        description: topic.desc,
-        estimatedMinutes: Math.floor(Math.random() * 30) + 45,
-        completed: false,
-        dueDate: start.toISOString().split('T')[0],
+        dueDate: formatDateKey(start),
       });
     }
   }
@@ -409,21 +370,16 @@ export function generateSampleExams(): Exam[] {
   const getExamDate = (week: number, dayOffset: number = 0): string => {
     const { start } = getWeekDates(week);
     start.setDate(start.getDate() + dayOffset);
-    return start.toISOString().split('T')[0];
+    return formatDateKey(start);
   };
 
   return [
-    // Term 1 Tests (Week 9)
-    { id: "exam-math-1", subjectId: "math", title: "Math Term 1 Test", date: getExamDate(9, 1), week: 9, term: 1, description: "Covers linear equations, graphs, and trigonometry basics" },
-    { id: "exam-science-1", subjectId: "science", title: "Science Term 1 Test", date: getExamDate(9, 2), week: 9, term: 1, description: "Covers cells, genetics, and evolution" },
-    { id: "exam-history-1", subjectId: "history", title: "History Term 1 Test", date: getExamDate(9, 3), week: 9, term: 1, description: "WWI, WWII origins and key events" },
-    { id: "exam-english-1", subjectId: "english", title: "English Term 1 Test", date: getExamDate(9, 4), week: 9, term: 1, description: "Novel study and essay writing" },
-    
-    // Semester Exams (Week 17 - last week of Term 2)
-    { id: "exam-math-2", subjectId: "math", title: "Math Semester Exam", date: getExamDate(17, 0), week: 17, term: 2, description: "Comprehensive exam covering all semester topics" },
-    { id: "exam-science-2", subjectId: "science", title: "Science Semester Exam", date: getExamDate(17, 1), week: 17, term: 2, description: "Comprehensive exam covering all semester topics" },
-    { id: "exam-history-2", subjectId: "history", title: "History Semester Exam", date: getExamDate(17, 2), week: 17, term: 2, description: "Comprehensive exam covering all semester topics" },
-    { id: "exam-english-2", subjectId: "english", title: "English Semester Exam", date: getExamDate(17, 3), week: 17, term: 2, description: "Essay and textual analysis exam" },
+    // Semester 2 exams (Week 9). The dates are placeholders - edit them in the
+    // Calendar by opening the exam day and changing the date.
+    { id: "exam-math-4", subjectId: "math", title: "Maths Semester Exam", date: getExamDate(EXAM_WEEK, 0), week: EXAM_WEEK, term: CURRENT_TERM, description: "Semester 2 exam - date and time TBC" },
+    { id: "exam-science-4", subjectId: "science", title: "Science Semester Exam", date: getExamDate(EXAM_WEEK, 1), week: EXAM_WEEK, term: CURRENT_TERM, description: "Semester 2 exam - date and time TBC" },
+    { id: "exam-history-4", subjectId: "history", title: "Humanities Semester Exam", date: getExamDate(EXAM_WEEK, 2), week: EXAM_WEEK, term: CURRENT_TERM, description: "Semester 2 exam - date and time TBC" },
+    { id: "exam-english-4", subjectId: "english", title: "English Semester Exam", date: getExamDate(EXAM_WEEK, 3), week: EXAM_WEEK, term: CURRENT_TERM, description: "Semester 2 exam - date and time TBC" },
   ];
 }
 

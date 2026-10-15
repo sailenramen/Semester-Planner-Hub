@@ -7,6 +7,7 @@ import { registerQuestionGenerationRoutes } from "./questionGeneration";
 import { generateSampleTasks, generateSampleExams } from "@shared/schema";
 import connectPgSimple from "connect-pg-simple";
 import { Pool } from "pg";
+import { randomUUID } from "crypto";
 
 declare module "express-session" {
   interface SessionData {
@@ -20,17 +21,91 @@ const pool = new Pool({
 
 const PgStore = connectPgSimple(session);
 
-function requireAuth(req: Request, res: Response, next: NextFunction) {
-  if (!req.session.userId) {
-    return res.status(401).json({ error: "Unauthorized" });
+function getSessionSecret(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (secret) return secret;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("SESSION_SECRET must be set in production");
   }
-  next();
+  return "dev-only-session-secret";
+}
+
+// Login is temporarily disabled: every visitor uses one shared default account.
+const DEFAULT_USER_EMAIL = "owner@local";
+let defaultUserIdPromise: Promise<string> | null = null;
+
+async function getDefaultUserId(): Promise<string> {
+  if (!defaultUserIdPromise) {
+    defaultUserIdPromise = (async () => {
+      const existing = await storage.getUserByEmail(DEFAULT_USER_EMAIL);
+      if (existing) return existing.id;
+      const user = await storage.createUser({
+        name: "Student",
+        email: DEFAULT_USER_EMAIL,
+        password: await bcrypt.hash(randomUUID(), 10),
+      });
+      await seedUserData(user.id);
+      return user.id;
+    })();
+    defaultUserIdPromise.catch(() => {
+      defaultUserIdPromise = null;
+    });
+  }
+  return defaultUserIdPromise;
+}
+
+async function ensureSessionUserId(req: Request): Promise<string> {
+  if (!req.session.userId) {
+    req.session.userId = await getDefaultUserId();
+  }
+  return req.session.userId;
+}
+
+async function requireAuth(req: Request, res: Response, next: NextFunction) {
+  try {
+    await ensureSessionUserId(req);
+    next();
+  } catch (error) {
+    console.error("Default user error:", error);
+    res.status(500).json({ error: "Failed to load user" });
+  }
+}
+
+async function seedUserData(userId: string) {
+  const sampleTasks = generateSampleTasks();
+  const tasksToCreate = sampleTasks.map(task => ({
+    subjectId: task.subjectId,
+    week: task.week,
+    term: task.term,
+    title: task.title,
+    description: task.description,
+    estimatedMinutes: task.estimatedMinutes,
+    completed: false,
+    dueDate: task.dueDate,
+  }));
+  await storage.createTasks(userId, tasksToCreate);
+
+  const sampleExams = generateSampleExams();
+  const examsToCreate = sampleExams.map(exam => ({
+    subjectId: exam.subjectId,
+    title: exam.title,
+    date: exam.date,
+    week: exam.week,
+    term: exam.term ?? null,
+    description: exam.description ?? null,
+  }));
+  await storage.createExams(userId, examsToCreate);
 }
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Behind a reverse proxy or load balancer (TLS terminated upstream), trust the
+  // X-Forwarded-* headers so express-session sees the request as HTTPS and can
+  // set the Secure session cookie. Without this the login cookie is never sent.
+  app.set("trust proxy", 1);
+
   app.use(
     session({
       store: new PgStore({
@@ -38,7 +113,7 @@ export async function registerRoutes(
         tableName: "session",
         createTableIfMissing: true,
       }),
-      secret: process.env.SESSION_SECRET || "study-planner-secret-key-change-in-production",
+      secret: getSessionSecret(),
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -72,29 +147,7 @@ export async function registerRoutes(
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await storage.createUser({ name, email, password: hashedPassword });
 
-      const sampleTasks = generateSampleTasks();
-      const tasksToCreate = sampleTasks.map(task => ({
-        subjectId: task.subjectId,
-        week: task.week,
-        term: task.term,
-        title: task.title,
-        description: task.description,
-        estimatedMinutes: task.estimatedMinutes,
-        completed: false,
-        dueDate: task.dueDate,
-      }));
-      await storage.createTasks(user.id, tasksToCreate);
-
-      const sampleExams = generateSampleExams();
-      const examsToCreate = sampleExams.map(exam => ({
-        subjectId: exam.subjectId,
-        title: exam.title,
-        date: exam.date,
-        week: exam.week,
-        term: exam.term ?? null,
-        description: exam.description ?? null,
-      }));
-      await storage.createExams(user.id, examsToCreate);
+      await seedUserData(user.id);
 
       req.session.userId = user.id;
 
@@ -136,11 +189,7 @@ export async function registerRoutes(
 
   app.get("/api/auth/me", async (req, res) => {
     try {
-      if (!req.session.userId) {
-        return res.status(401).json({ error: "Not authenticated" });
-      }
-
-      const user = await storage.getUserById(req.session.userId);
+      const user = await storage.getUserById(await ensureSessionUserId(req));
       if (!user) {
         req.session.destroy(() => {});
         return res.status(401).json({ error: "User not found" });
@@ -231,6 +280,30 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Get exams error:", error);
       res.status(500).json({ error: "Failed to get exams" });
+    }
+  });
+
+  // Edit an exam placeholder (date, title or description).
+  app.put("/api/exams/:id", requireAuth, async (req, res) => {
+    try {
+      const { date, title, description } = req.body ?? {};
+      const patch: { date?: string; title?: string; description?: string } = {};
+      if (typeof date === "string" && date.length > 0) patch.date = date;
+      if (typeof title === "string" && title.trim().length > 0) patch.title = title.trim();
+      if (typeof description === "string") patch.description = description;
+
+      if (Object.keys(patch).length === 0) {
+        return res.status(400).json({ error: "Nothing to update" });
+      }
+
+      const exam = await storage.updateExam(req.session.userId!, req.params.id as string, patch);
+      if (!exam) {
+        return res.status(404).json({ error: "Exam not found" });
+      }
+      res.json(exam);
+    } catch (error) {
+      console.error("Update exam error:", error);
+      res.status(500).json({ error: "Failed to update exam" });
     }
   });
 
@@ -343,7 +416,7 @@ export async function registerRoutes(
     try {
       const { badgeId } = req.body;
       const currentStats = await storage.getUserStats(req.session.userId!);
-      const badgesEarned = currentStats?.badgesEarned || [];
+      const badgesEarned: string[] = [...((currentStats?.badgesEarned as string[] | null) || [])];
       if (!badgesEarned.includes(badgeId)) {
         badgesEarned.push(badgeId);
       }

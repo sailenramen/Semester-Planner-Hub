@@ -61,6 +61,19 @@ export function useExams() {
   });
 }
 
+export function useUpdateExam() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...patch }: { id: string; date?: string; title?: string; description?: string }) => {
+      const res = await apiRequest("PUT", `/api/exams/${id}`, patch);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/exams"] });
+    },
+  });
+}
+
 export function useGrades() {
   return useQuery<Grade[]>({
     queryKey: ["/api/grades"],

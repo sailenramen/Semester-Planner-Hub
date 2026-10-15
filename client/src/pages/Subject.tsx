@@ -12,8 +12,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   subjects,
   SubjectId,
+  CURRENT_TERM,
   getCurrentWeek,
   getTermLabel,
+  TOTAL_WEEKS,
 } from "@shared/schema";
 import {
   useTasks,
@@ -121,8 +123,7 @@ export default function Subject() {
   
   // Group tasks by term then week
   const tasksByTerm: Record<number, typeof tasks> = {
-    1: tasks.filter((t) => t.term === 1),
-    2: tasks.filter((t) => t.term === 2),
+    [CURRENT_TERM]: tasks.filter((t) => t.term === CURRENT_TERM),
   };
 
   return (
@@ -171,8 +172,8 @@ export default function Subject() {
         </TabsList>
 
         <TabsContent value="tasks" className="space-y-4">
-          {/* Term 1 Section */}
-          {[1, 2].map((term) => {
+          {/* Term 4 Section */}
+          {[CURRENT_TERM].map((term) => {
             const termTasks = tasksByTerm[term];
             const termCompleted = termTasks.filter((t) => t.completed).length;
             const termPercentage =
@@ -193,7 +194,7 @@ export default function Subject() {
                         {termCompleted}/{termTasks.length} done
                       </Badge>
                       <Badge variant="secondary" className="text-xs">
-                        {term === 1 ? "9 weeks" : "8 weeks"}
+                        {TOTAL_WEEKS} weeks
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2">

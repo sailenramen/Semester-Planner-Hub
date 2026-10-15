@@ -4,10 +4,8 @@ import multer from "multer";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import mammoth from "mammoth";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.AI_INTEGRATIONS_ANTHROPIC_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_ANTHROPIC_BASE_URL,
-});
+// Reads ANTHROPIC_API_KEY from the environment.
+const anthropic = new Anthropic();
 
 const upload = multer({
   storage: multer.memoryStorage(),

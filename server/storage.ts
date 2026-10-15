@@ -52,6 +52,7 @@ export interface IStorage {
   getExamsByUserId(userId: string): Promise<DbExam[]>;
   createExams(userId: string, exams: Omit<DbExam, "id" | "userId">[]): Promise<DbExam[]>;
   saveExams(userId: string, exams: Omit<DbExam, "id" | "userId">[]): Promise<DbExam[]>;
+  updateExam(userId: string, examId: string, data: Partial<Omit<DbExam, "id" | "userId">>): Promise<DbExam | undefined>;
 
   // Grades
   getGradesByUserId(userId: string): Promise<DbGrade[]>;
@@ -202,6 +203,14 @@ export class DatabaseStorage implements IStorage {
   async saveExams(userId: string, exams: Omit<DbExam, "id" | "userId">[]): Promise<DbExam[]> {
     await db.delete(examsTable).where(eq(examsTable.userId, userId));
     return this.createExams(userId, exams);
+  }
+
+  async updateExam(userId: string, examId: string, data: Partial<Omit<DbExam, "id" | "userId">>): Promise<DbExam | undefined> {
+    const [updated] = await db.update(examsTable)
+      .set(data)
+      .where(and(eq(examsTable.id, examId), eq(examsTable.userId, userId)))
+      .returning();
+    return updated;
   }
 
   // Grades

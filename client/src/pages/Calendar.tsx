@@ -15,11 +15,14 @@ import {
   getWeekDates,
   getCurrentWeek,
   getTermLabel,
+  getNonSchoolDay,
+  getWeekNote,
   TOTAL_WEEKS,
 } from "@shared/schema";
 import {
   useTasks,
   useExams,
+  useUpdateExam,
   useToggleTask,
   useWeeklyGoal,
   useSaveWeeklyGoal,
@@ -59,6 +62,7 @@ export default function CalendarPage() {
   const { data: exams = [], isLoading: examsLoading } = useExams();
   const { data: weeklyGoalData, isLoading: goalLoading } = useWeeklyGoal();
   const toggleTask = useToggleTask();
+  const updateExam = useUpdateExam();
   const saveWeeklyGoal = useSaveWeeklyGoal();
   
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -240,6 +244,11 @@ export default function CalendarPage() {
     const isCurrentSemesterWeek = semesterWeekInfo?.week === currentWeek;
     const uniqueSubjects = Array.from(new Set(dayTasks.map((t) => t.subjectId)));
 
+    // The week marker sits on the Monday cell, since weeks start on a Monday.
+    const weekStartIndex = 1;
+    const weekNote = semesterWeekInfo ? getWeekNote(semesterWeekInfo.week) : null;
+    const nonSchoolDay = getNonSchoolDay(dateStr);
+
     return (
       <button
         key={dayIndex}
@@ -265,14 +274,15 @@ export default function CalendarPage() {
           >
             {format(day, "d")}
           </span>
-          {dayIndex === 0 && semesterWeekInfo && !isMonthView && (
+          {dayIndex === weekStartIndex && semesterWeekInfo && !isMonthView && (
             <Badge variant="outline" className="text-[10px] px-1">
               W{semesterWeekInfo.week}
+              {weekNote ? ` · ${weekNote}` : ""}
             </Badge>
           )}
         </div>
 
-        {dayIndex === 0 && uniqueSubjects.length > 0 && !isMonthView && (
+        {dayIndex === weekStartIndex && uniqueSubjects.length > 0 && !isMonthView && (
           <div className="flex flex-wrap gap-0.5 mt-1">
             {uniqueSubjects.map((subjectId) => (
               <div
@@ -280,6 +290,15 @@ export default function CalendarPage() {
                 className={`h-2 w-2 rounded-full ${subjectColorClasses[subjectId]}`}
               />
             ))}
+          </div>
+        )}
+
+        {nonSchoolDay && (
+          <div
+            className="absolute bottom-1 left-1 truncate rounded bg-muted px-1 text-[10px] font-medium text-muted-foreground"
+            title={nonSchoolDay.label}
+          >
+            No school
           </div>
         )}
 
@@ -308,7 +327,7 @@ export default function CalendarPage() {
           </h1>
           <p className="text-muted-foreground">
             {viewMode === "semester" 
-              ? `${TOTAL_WEEKS}-week overview - Term 1 (9 weeks) + Term 2 (8 weeks)`
+              ? `${TOTAL_WEEKS}-week overview - Term 4, 2026 (6 Oct - 3 Dec)`
               : "Monthly view"}
           </p>
         </div>
@@ -462,8 +481,11 @@ export default function CalendarPage() {
           <div className="space-y-1">
             {calendarWeeks.map((week, weekIndex) => {
               const firstDayOfWeek = week[0];
+              // Grid rows run Sunday to Saturday, but teaching weeks start on a
+              // Monday, so match each row using its Monday.
+              const rowWeekStart = week[1] ?? firstDayOfWeek;
               const semesterWeekInfo = semesterWeeks.find(
-                (sw) => isWithinInterval(firstDayOfWeek, { start: sw.start, end: sw.end })
+                (sw) => isWithinInterval(rowWeekStart, { start: sw.start, end: sw.end })
               );
 
               const weekProgress = semesterWeekInfo 
@@ -589,6 +611,22 @@ export default function CalendarPage() {
                             {exam.description}
                           </p>
                         )}
+                        <div className="mt-2 flex items-center gap-2">
+                          <label
+                            className="text-xs text-muted-foreground"
+                            htmlFor={`exam-date-${exam.id}`}
+                          >
+                            Date
+                          </label>
+                          <Input
+                            id={`exam-date-${exam.id}`}
+                            type="date"
+                            className="h-8"
+                            value={exam.date}
+                            onChange={(e) => updateExam.mutate({ id: exam.id, date: e.target.value })}
+                            data-testid={`input-exam-date-${exam.id}`}
+                          />
+                        </div>
                       </CardContent>
                     </Card>
                   );

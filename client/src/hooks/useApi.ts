@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Task, Note, Exam, Grade, Streak, UserStats, AvatarSettings } from "@shared/schema";
+import { Task, Note, Exam, Grade, Streak, StudyMistake, UserStats, AvatarSettings } from "@shared/schema";
 import { AchievementEvents } from "@shared/achievements";
 import { celebrateAchievements } from "@/lib/celebrations";
 
@@ -140,6 +140,91 @@ export function useUpdateStreak() {
 export function useUserStats() {
   return useQuery<UserStats>({
     queryKey: ["/api/stats"],
+  });
+}
+
+/**
+ * Replaces the stored mistake pile. The whole list is sent because the study
+ * page owns it and the pile is shared across tasks.
+ */
+export function useSaveMistakes() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (mistakes: StudyMistake[]) => {
+      const res = await apiRequest("PUT", "/api/mistakes", { mistakes });
+      return res.json() as Promise<{ mistakes: StudyMistake[] }>;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+    },
+  });
+}
+
+export interface AnswerExplanation {
+  explanation: string;
+  /** "authored" comes from the question's own solution; "ai" from Workers AI. */
+  source: "ai" | "authored";
+  aiEnabled: boolean;
+}
+
+/**
+ * Asks the server to explain a wrong answer. The server always answers with
+ * something usable: the authored solution when no free AI account is set up.
+ */
+export function useExplainAnswer() {
+  return useMutation({
+    mutationFn: async (input: {
+      question: string;
+      options: string[];
+      answer: string;
+      chosen: string;
+      solution?: string;
+    }) => {
+      const res = await apiRequest("POST", "/api/explain", input);
+      return res.json() as Promise<AnswerExplanation>;
+    },
+  });
+}
+
+export interface DailyChallengeStatus {
+  /** Today's date in the school's timezone, as YYYY-MM-DD. */
+  today: string;
+  dates: string[];
+  streak: number;
+  completedToday: boolean;
+  bonus: number;
+}
+
+/** Only the server decides which days count, so the bonus cannot be dodged. */
+export function useDailyChallenge() {
+  return useQuery<DailyChallengeStatus>({
+    queryKey: ["/api/challenge"],
+  });
+}
+
+export function useCompleteChallenge() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (score: { correct: number; total: number }) => {
+      const res = await apiRequest("POST", "/api/challenge/complete", score);
+      return res.json() as Promise<
+        UserStats & {
+          streak: number;
+          dates: string[];
+          completedToday: boolean;
+          alreadyCompleted: boolean;
+          bonus: number;
+          achievements?: AchievementEvents;
+        }
+      >;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/challenge"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/streak"] });
+      // The server decides what was earned; this just plays it.
+      celebrateAchievements(data?.achievements);
+    },
   });
 }
 

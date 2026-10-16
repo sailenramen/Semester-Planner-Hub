@@ -27,6 +27,23 @@ export function zonedMonth(date: Date): number {
 }
 
 /**
+ * The daily-challenge streak, counted back from today. Today counts as soon as
+ * it is finished, and a day that is still open does not break the run, so the
+ * number only drops once a whole day has been missed.
+ */
+export function challengeStreak(dates: string[], now: Date = new Date()): number {
+  const finished = new Set(dates);
+
+  let offset = finished.has(zonedDateKey(now)) ? 0 : -1;
+  let streak = 0;
+  while (finished.has(zonedDateKey(now, offset))) {
+    streak += 1;
+    offset -= 1;
+  }
+  return streak;
+}
+
+/**
  * One place decides what a student has earned. The server evaluates this after
  * every action that can change progress and stores the new badges, so the
  * client never has to guess.

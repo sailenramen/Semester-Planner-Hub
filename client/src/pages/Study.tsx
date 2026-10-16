@@ -7,9 +7,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StudyMusicCard } from "@/components/StudyMusicCard";
+import { ShapeViewer } from "@/components/ShapeViewer";
 import { cn } from "@/lib/utils";
 import { subjects, SubjectId } from "@shared/schema";
-import { useTasks, useRecordPomodoro, useAddStudyMinutes } from "@/hooks/useApi";
+import {
+  useTasks,
+  useRecordPomodoro,
+  useAddStudyMinutes,
+  useUserStats,
+  useSaveMistakes,
+  useExplainAnswer,
+  AnswerExplanation,
+} from "@/hooks/useApi";
 import { getStudyContent, getTaskType, StudyContent, PracticeQuestion, FlashcardQuestion } from "@/lib/studyContent";
 import {
   ArrowLeft,
@@ -24,6 +33,7 @@ import {
   CheckCircle2,
   XCircle,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 
 export default function StudyPage() {
@@ -127,10 +137,92 @@ export default function StudyPage() {
   const progressPercent = totalQuestions > 0 ? (answeredQuestions.size / totalQuestions) * 100 : 0;
   const orderedMistakes = Array.from(mistakes).sort((a, b) => a - b);
 
+  const stats = useUserStats();
+  const saveMistakes = useSaveMistakes();
+
+  // The pile is shared across tasks, so a save replaces only this task's entries
+  // and leaves every other task's mistakes alone.
+  const otherTaskMistakes = (stats.data?.mistakes ?? []).filter(m => m.taskId !== params.taskId);
+  const seededTaskRef = useRef<string | null>(null);
+  const answeredThisVisitRef = useRef(false);
+
+  // Restores this task's mistakes once the stored pile arrives, so the review
+  // list survives a reload. Someone who answers before it lands keeps what they
+  // just did rather than having it overwritten.
+  useEffect(() => {
+    if (!task || !stats.data || seededTaskRef.current === task.id) return;
+    seededTaskRef.current = task.id;
+    if (answeredThisVisitRef.current) return;
+    setMistakes(new Set(
+      (stats.data.mistakes ?? []).filter(m => m.taskId === task.id).map(m => m.index),
+    ));
+  }, [task, stats.data]);
+
+  const persistMistakes = (next: Set<number>) => {
+    if (!task) return;
+    saveMistakes.mutate([
+      ...otherTaskMistakes,
+      ...Array.from(next).map(index => ({ taskId: task.id, index })),
+    ]);
+  };
+
+  const explain = useExplainAnswer();
+  const explanationCacheRef = useRef<Map<string, AnswerExplanation>>(new Map());
+  // Tagged with the task as well as the question: switching tasks re-renders
+  // this page rather than remounting it, so an index alone could show the
+  // previous task's explanation.
+  const [explanation, setExplanation] = useState<
+    { taskId: string; index: number; data: AnswerExplanation } | null
+  >(null);
+  // Only the question on screen shows an explanation, so moving on hides it.
+  const currentExplanation =
+    explanation && explanation.index === currentQuestionIndex && explanation.taskId === task?.id
+      ? explanation.data
+      : null;
+
+  const explainWrongAnswer = (index: number, chosen: string, isCorrect: boolean) => {
+    if (!task) return;
+    if (isCorrect) {
+      setExplanation(null);
+      return;
+    }
+
+    const question = allQuestions[index];
+    if (!question) return;
+
+    // Coming back to the same question must not ask the server twice.
+    const cacheKey = `${task.id}:${index}`;
+    const cached = explanationCacheRef.current.get(cacheKey);
+    if (cached) {
+      setExplanation({ taskId: task.id, index, data: cached });
+      return;
+    }
+
+    setExplanation(null);
+    explain.mutate(
+      {
+        question: question.question,
+        options: question.options ?? [],
+        answer: question.answer,
+        chosen,
+        solution: "solution" in question ? question.solution : undefined,
+      },
+      {
+        onSuccess: (data) => {
+          explanationCacheRef.current.set(cacheKey, data);
+          setExplanation({ taskId: task.id, index, data });
+        },
+      },
+    );
+  };
+
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
     setShowAnswer(true);
     const isCorrect = answer.toLowerCase() === currentQuestion?.answer.toLowerCase();
+    // A wrong answer gets an explanation: authored, and upgraded when a free
+    // Workers AI account is configured.
+    explainWrongAnswer(currentQuestionIndex, answer, isCorrect);
     // Only a first attempt counts towards the score, so redoing a question in
     // review cannot push the accuracy above 100%.
     if (isCorrect && !answeredQuestions.has(currentQuestionIndex)) {
@@ -145,6 +237,8 @@ export default function StudyPage() {
       nextMistakes.add(currentQuestionIndex);
     }
     setMistakes(nextMistakes);
+    answeredThisVisitRef.current = true;
+    persistMistakes(nextMistakes);
     // Nothing left to redo, so leave review without moving the student's view.
     if (reviewMode && isCorrect && nextMistakes.size === 0) {
       setReviewMode(false);
@@ -357,6 +451,11 @@ export default function StudyPage() {
                         <p className="text-lg font-medium">{currentQuestion?.question}</p>
                       </div>
 
+                      {/* Questions about a solid get a drawing they can turn. */}
+                      {"shape" in currentQuestion && currentQuestion.shape && (
+                        <ShapeViewer shape={currentQuestion.shape} />
+                      )}
+
                       {"options" in currentQuestion && currentQuestion.options ? (
                         <div className="space-y-2">
                           {currentQuestion.options.map((option, idx) => {
@@ -457,6 +556,26 @@ export default function StudyPage() {
                           )}
                         </div>
                       )}
+
+                      {showAnswer &&
+                        currentQuestion &&
+                        selectedAnswer &&
+                        selectedAnswer !== currentQuestion.answer && (
+                          <div className="mt-3 p-4 bg-muted/50 rounded-lg" data-testid="answer-explanation">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Sparkles className="h-4 w-4 text-primary" />
+                              <span className="font-medium text-sm">Why that's wrong</span>
+                              {currentExplanation?.source === "ai" && (
+                                <Badge variant="secondary" className="text-xs">
+                                  AI
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {currentExplanation?.explanation ?? "Working out why…"}
+                            </p>
+                          </div>
+                        )}
 
                       <div className="flex items-center justify-between pt-4 border-t">
                         <Button

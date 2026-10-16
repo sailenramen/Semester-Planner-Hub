@@ -14,7 +14,13 @@ import {
   toUserStats,
   touchStreak,
 } from "./achievements";
-import { dailyCompletionCounts } from "@shared/achievements";
+import {
+  challengeStreak,
+  dailyCompletionCounts,
+  emptyAchievementEvents,
+  zonedDateKey,
+} from "@shared/achievements";
+import { aiConfigured, explainAnswer, parseExplainBody } from "./explain";
 import connectPgSimple from "connect-pg-simple";
 import { Pool } from "pg";
 import { randomUUID } from "crypto";
@@ -405,6 +411,8 @@ export async function registerRoutes(
         level: 1,
         lastActiveDate: null,
         showcasedBadges: [],
+        mistakes: [],
+        challengeDates: [],
       });
     } catch (error) {
       console.error("Get stats error:", error);
@@ -452,6 +460,129 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Add study minutes error:", error);
       res.status(500).json({ error: "Failed to add study minutes" });
+    }
+  });
+
+  // ================== ANSWER EXPLANATIONS ==================
+
+  /**
+   * Explains a wrong answer. The guaranteed path uses the question's own
+   * authored solution, so this costs nothing and needs no account; a free
+   * Workers AI account, when configured, makes the explanation specific to the
+   * option the student chose.
+   */
+  app.post("/api/explain", requireAuth, async (req, res) => {
+    try {
+      const input = parseExplainBody(req.body);
+      if (!input) {
+        return res.status(400).json({ error: "question, answer and chosen are required" });
+      }
+
+      const explanation = await explainAnswer(input);
+      res.json(explanation);
+    } catch (error) {
+      console.error("Explain answer error:", error);
+      res.status(500).json({ error: "Failed to explain answer" });
+    }
+  });
+
+  /** Whether the optional AI tier is switched on, so the UI can say so. */
+  app.get("/api/explain/status", requireAuth, (_req, res) => {
+    res.json({ aiEnabled: aiConfigured(), free: true });
+  });
+
+  // ================== MISTAKES AND DAILY CHALLENGE ==================
+
+  // The mistake pile is replaced as a whole: the study page owns the list and
+  // sends it as it changes, which keeps this idempotent and order-free.
+  app.put("/api/mistakes", requireAuth, async (req, res) => {
+    try {
+      const { mistakes } = req.body ?? {};
+      if (!Array.isArray(mistakes)) {
+        return res.status(400).json({ error: "mistakes must be an array" });
+      }
+
+      const cleaned = mistakes
+        .filter((entry) => entry && typeof entry.taskId === "string" && Number.isFinite(Number(entry.index)))
+        .map((entry) => ({ taskId: String(entry.taskId), index: Number(entry.index) }));
+
+      const stats = await storage.saveUserStats(req.session.userId!, { mistakes: cleaned });
+      res.json({ mistakes: toUserStats(stats).mistakes });
+    } catch (error) {
+      console.error("Save mistakes error:", error);
+      res.status(500).json({ error: "Failed to save mistakes" });
+    }
+  });
+
+  app.get("/api/challenge", requireAuth, async (req, res) => {
+    try {
+      const row = await storage.getUserStats(req.session.userId!);
+      const stats = row ? toUserStats(row) : defaultUserStats();
+      const today = zonedDateKey(new Date());
+
+      res.json({
+        today,
+        dates: stats.challengeDates,
+        streak: challengeStreak(stats.challengeDates),
+        completedToday: stats.challengeDates.includes(today),
+        bonus: POINTS_CONFIG.DAILY_CHALLENGE,
+      });
+    } catch (error) {
+      console.error("Get challenge error:", error);
+      res.status(500).json({ error: "Failed to get challenge" });
+    }
+  });
+
+  // The bonus is paid once per school day: finishing again on the same day
+  // returns the day's state without paying twice.
+  app.post("/api/challenge/complete", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const row = await storage.getUserStats(userId);
+      const current = row ? toUserStats(row) : defaultUserStats();
+      const today = zonedDateKey(new Date());
+
+      const { correct, total } = req.body ?? {};
+      const correctCount = Math.max(0, Number(correct) || 0);
+      const totalCount = Number(total);
+      const score = Number.isFinite(totalCount) && totalCount > 0
+        ? { correct: Math.min(correctCount, totalCount), total: totalCount }
+        : null;
+
+      if (current.challengeDates.includes(today)) {
+        return res.json({
+          ...current,
+          today,
+          completedToday: true,
+          alreadyCompleted: true,
+          streak: challengeStreak(current.challengeDates),
+          bonus: 0,
+          score,
+          achievements: emptyAchievementEvents(),
+        });
+      }
+
+      const dates = [...current.challengeDates, today];
+      await storage.saveUserStats(userId, {
+        challengeDates: dates,
+        totalPoints: current.totalPoints + POINTS_CONFIG.DAILY_CHALLENGE,
+      });
+      await touchStreak(userId);
+      const result = await syncAchievements(userId);
+
+      res.json({
+        ...result.stats,
+        today,
+        completedToday: true,
+        alreadyCompleted: false,
+        streak: challengeStreak(dates),
+        bonus: POINTS_CONFIG.DAILY_CHALLENGE,
+        score,
+        achievements: achievementEvents(result, { pointsEarned: POINTS_CONFIG.DAILY_CHALLENGE }),
+      });
+    } catch (error) {
+      console.error("Complete challenge error:", error);
+      res.status(500).json({ error: "Failed to complete challenge" });
     }
   });
 

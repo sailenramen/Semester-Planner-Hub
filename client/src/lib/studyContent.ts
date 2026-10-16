@@ -12,6 +12,21 @@ export interface VocabularyTerm {
   definition: string;
 }
 
+/**
+ * A solid a question is about, so the study page can draw it and let the
+ * student turn it. Dimensions are in the units the question itself uses, so the
+ * drawing always agrees with the numbers in the wording.
+ */
+export interface SolidShape {
+  kind: "cube" | "cuboid" | "prism" | "cylinder" | "sphere";
+  width?: number;
+  depth?: number;
+  height?: number;
+  radius?: number;
+  /** Shown under the shape, echoing the question's own numbers. */
+  caption?: string;
+}
+
 export interface PracticeQuestion {
   id: string;
   question: string;
@@ -20,6 +35,8 @@ export interface PracticeQuestion {
   solution?: string;
   options?: string[];
   type: "short" | "multiple-choice";
+  /** Present when the question is about a solid that helps to see. */
+  shape?: SolidShape;
 }
 
 export interface WritingPrompt {
@@ -127,6 +144,7 @@ const mathQuestions: PracticeQuestion[] = [
     answer: "54 cm²",
     solution: "A cube has 6 identical square faces: 6 × (3 × 3) = 54 cm².",
     type: "multiple-choice",
+    shape: { kind: "cube", width: 3, depth: 3, height: 3, caption: "A cube, 3 cm on every edge" },
   },
   {
     id: "m7",
@@ -135,6 +153,7 @@ const mathQuestions: PracticeQuestion[] = [
     answer: "60 cm³",
     solution: "Volume = length × width × height = 4 × 3 × 5 = 60 cm³.",
     type: "multiple-choice",
+    shape: { kind: "cuboid", width: 4, depth: 3, height: 5, caption: "A rectangular prism, 4 cm × 3 cm × 5 cm" },
   },
   {
     id: "m8",
@@ -143,6 +162,7 @@ const mathQuestions: PracticeQuestion[] = [
     answer: "40π cm³",
     solution: "V = πr²h = π × 2² × 10 = 40π cm³.",
     type: "multiple-choice",
+    shape: { kind: "cylinder", radius: 2, height: 10, caption: "A cylinder, radius 2 cm and height 10 cm" },
   },
   {
     id: "m9",
@@ -151,6 +171,7 @@ const mathQuestions: PracticeQuestion[] = [
     answer: "36π cm²",
     solution: "SA = 4πr² = 4π × 9 = 36π cm².",
     type: "multiple-choice",
+    shape: { kind: "sphere", radius: 3, caption: "A sphere, radius 3 cm" },
   },
   {
     id: "m10",
@@ -159,6 +180,7 @@ const mathQuestions: PracticeQuestion[] = [
     answer: "Area of the base × height",
     solution: "A prism has a constant cross-section, so volume is the cross-sectional area multiplied by the length or height.",
     type: "multiple-choice",
+    shape: { kind: "prism", width: 3, depth: 3, height: 4, caption: "A prism: the same cross-section all the way through" },
   },
   {
     id: "m11",
@@ -311,6 +333,7 @@ const mathQuestions: PracticeQuestion[] = [
     answer: "100π cm³",
     solution: "V = πr²h = π × 25 × 4 = 100π cm³.",
     type: "multiple-choice",
+    shape: { kind: "cylinder", radius: 5, height: 4, caption: "A cylinder, radius 5 cm and height 4 cm" },
   },
   {
     id: "m30",

@@ -371,6 +371,16 @@ export const streakSchema = z.object({
 
 export type Streak = z.infer<typeof streakSchema>;
 
+// A question a student got wrong, kept so it can be redone later. The index is
+// into the same practice-then-flashcard list the study page builds, which is
+// deterministic for a given task.
+export const studyMistakeSchema = z.object({
+  taskId: z.string(),
+  index: z.number(),
+});
+
+export type StudyMistake = z.infer<typeof studyMistakeSchema>;
+
 export const userStatsSchema = z.object({
   totalPoints: z.number().default(0),
   totalStudyMinutes: z.number().default(0),
@@ -383,6 +393,10 @@ export const userStatsSchema = z.object({
   level: z.number().default(1),
   lastActiveDate: z.string().nullable().default(null),
   showcasedBadges: z.array(z.string()).default([]),
+  mistakes: z.array(studyMistakeSchema).default([]),
+  // One entry per day the daily challenge was finished, as YYYY-MM-DD. The
+  // challenge streak is derived from these, so it cannot drift out of sync.
+  challengeDates: z.array(z.string()).default([]),
 });
 
 export const avatarSettingsSchema = z.object({
@@ -425,6 +439,7 @@ export const POINTS_CONFIG = {
   TASK_WITH_QUESTIONS: 25,
   DAILY_STREAK: 5,
   POMODORO_SESSION: 15,
+  DAILY_CHALLENGE: 40,
   GRADE_A: 100,
   GRADE_B: 75,
   GRADE_IMPROVEMENT: 50,
@@ -525,6 +540,8 @@ export const userStatsTable = pgTable("user_stats", {
   subjectStudyMinutes: jsonb("subject_study_minutes").default({}).notNull(),
   lastActiveDate: text("last_active_date"),
   showcasedBadges: jsonb("showcased_badges").default([]).notNull(),
+  mistakes: jsonb("mistakes").default([]).notNull(),
+  challengeDates: jsonb("challenge_dates").default([]).notNull(),
 });
 
 // Streaks table

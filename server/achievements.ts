@@ -6,6 +6,7 @@ import {
   DbUserStats,
   Grade,
   Streak,
+  StudyMistake,
   Task,
   UserStats,
   getLevelFromPoints,
@@ -41,6 +42,24 @@ function asNumberRecord(value: unknown): Record<string, number> {
   return result;
 }
 
+/**
+ * The stored mistake pile is a jsonb column, so each entry is checked rather
+ * than trusted: one malformed row must not take the study page down.
+ */
+function asMistakes(value: unknown): StudyMistake[] {
+  if (!Array.isArray(value)) return [];
+
+  const mistakes: StudyMistake[] = [];
+  for (const entry of value) {
+    if (!entry || typeof entry !== "object") continue;
+    const { taskId, index } = entry as { taskId?: unknown; index?: unknown };
+    const parsedIndex = typeof index === "number" ? index : Number(index);
+    if (typeof taskId !== "string" || !Number.isFinite(parsedIndex)) continue;
+    mistakes.push({ taskId, index: parsedIndex });
+  }
+  return mistakes;
+}
+
 /** A stored stats row, with every jsonb field normalised. */
 export function toUserStats(row: DbUserStats): UserStats {
   return {
@@ -55,6 +74,8 @@ export function toUserStats(row: DbUserStats): UserStats {
     level: row.level ?? 1,
     lastActiveDate: row.lastActiveDate ?? null,
     showcasedBadges: asStringArray(row.showcasedBadges),
+    mistakes: asMistakes(row.mistakes),
+    challengeDates: asStringArray(row.challengeDates),
   };
 }
 
@@ -197,6 +218,8 @@ export function defaultUserStats(): UserStats {
     level: 1,
     lastActiveDate: null,
     showcasedBadges: [],
+    mistakes: [],
+    challengeDates: [],
   };
 }
 

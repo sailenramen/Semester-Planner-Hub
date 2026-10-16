@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AchievementCelebrations } from "@/components/AchievementCelebrations";
+import { StudyMusicProvider } from "@/components/StudyMusicPlayer";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Subject from "@/pages/Subject";
@@ -41,7 +42,9 @@ function AppLayout() {
   };
 
   return (
-    <>
+    // The music player is mounted here, outside the routes, so the iframe is
+    // never unmounted and the music survives moving between pages.
+    <StudyMusicProvider>
     <SidebarProvider style={style as React.CSSProperties}>
       <div className="flex h-screen w-full">
         <AppSidebar />
@@ -82,7 +85,7 @@ function AppLayout() {
     {/* Mounted for signed-in pages only, so milestones are celebrated
         wherever the student happens to be in the app. */}
     <AchievementCelebrations />
-    </>
+    </StudyMusicProvider>
   );
 }
 

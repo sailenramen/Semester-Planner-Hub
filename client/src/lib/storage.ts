@@ -426,6 +426,8 @@ export function getUserStats(): UserStats {
       level: 1,
       lastActiveDate: null,
       showcasedBadges: [],
+      mistakes: [],
+      challengeDates: [],
     };
     saveUserStats(defaultStats);
     return defaultStats;

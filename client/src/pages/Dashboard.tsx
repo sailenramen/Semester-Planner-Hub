@@ -8,6 +8,7 @@ import { ExamAlert } from "@/components/ExamAlert";
 import { ExamModeToggle } from "@/components/ExamModeToggle";
 import { SubjectProgressChart } from "@/components/SubjectProgressChart";
 import { StudyMusicCard } from "@/components/StudyMusicCard";
+import { DailyChallengeCard } from "@/components/DailyChallengeCard";
 import { StreakTracker } from "@/components/StreakTracker";
 import { PointsDisplay } from "@/components/PointsDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -452,9 +453,10 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Progress Chart and study music */}
+        {/* Progress Chart, daily challenge and study music */}
         <div className="space-y-4">
           <SubjectProgressChart tasks={tasks} />
+          <DailyChallengeCard />
           <StudyMusicCard />
         </div>
       </div>

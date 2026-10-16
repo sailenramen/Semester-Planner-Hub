@@ -99,7 +99,7 @@ export default function Profile() {
     updateShowcasedBadges.mutate(badges);
   };
 
-  const userName = user?.name || "Student";
+  const userName = user?.name || "Sahil";
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">

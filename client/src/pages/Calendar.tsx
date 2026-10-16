@@ -30,6 +30,7 @@ import {
   useSaveStudyTime,
   useDayNote,
   useSaveDayNote,
+  useStudyTimeSummary,
   calculateWeekProgress,
 } from "@/hooks/useApi";
 import {
@@ -194,11 +195,15 @@ export default function CalendarPage() {
     window.print();
   };
 
-  const getWeeklyStudyTime = (weekNumber: number): number => {
-    return 0;
-  };
+  // Study hours logged for the current teaching week, summed by the server so
+  // the goal bar reflects what is actually stored.
+  const currentWeekDates = getWeekDates(currentWeek);
+  const { data: studyTimeSummary } = useStudyTimeSummary(
+    format(currentWeekDates.start, "yyyy-MM-dd"),
+    format(currentWeekDates.end, "yyyy-MM-dd")
+  );
 
-  const weeklyStudyTotal = getWeeklyStudyTime(currentWeek);
+  const weeklyStudyTotal = studyTimeSummary?.totalHours ?? 0;
   const goalProgress = weeklyGoal > 0 ? Math.min((weeklyStudyTotal / weeklyGoal) * 100, 100) : 0;
 
   const isLoading = tasksLoading || examsLoading || goalLoading;

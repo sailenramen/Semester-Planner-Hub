@@ -32,15 +32,26 @@ function getSessionSecret(): string {
 
 // Login is temporarily disabled: every visitor uses one shared default account.
 const DEFAULT_USER_EMAIL = "owner@local";
+const DEFAULT_USER_NAME = "Sahil";
 let defaultUserIdPromise: Promise<string> | null = null;
+
+// Accounts created by an earlier build of this app were named "Student".
+const LEGACY_DEFAULT_USER_NAME = "Student";
 
 async function getDefaultUserId(): Promise<string> {
   if (!defaultUserIdPromise) {
     defaultUserIdPromise = (async () => {
       const existing = await storage.getUserByEmail(DEFAULT_USER_EMAIL);
-      if (existing) return existing.id;
+      if (existing) {
+        // Rename it once so the greeting says Sahil without a manual DB edit.
+        if (existing.name === LEGACY_DEFAULT_USER_NAME) {
+          const renamed = await storage.updateUser(existing.id, { name: DEFAULT_USER_NAME });
+          if (renamed) return renamed.id;
+        }
+        return existing.id;
+      }
       const user = await storage.createUser({
-        name: "Student",
+        name: DEFAULT_USER_NAME,
         email: DEFAULT_USER_EMAIL,
         password: await bcrypt.hash(randomUUID(), 10),
       });
@@ -211,6 +222,28 @@ export async function registerRoutes(
       res.clearCookie("connect.sid");
       res.json({ message: "Logged out successfully" });
     });
+  });
+
+  // Rename the signed-in user. The client sends the new name here and stores
+  // the returned user, so the greeting no longer needs a hard-coded fallback.
+  app.patch("/api/user/name", requireAuth, async (req, res) => {
+    try {
+      const { name } = req.body ?? {};
+      if (typeof name !== "string" || name.trim().length === 0) {
+        return res.status(400).json({ error: "Name is required" });
+      }
+
+      const user = await storage.updateUser(req.session.userId!, { name: name.trim() });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const { password: _, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Update user name error:", error);
+      res.status(500).json({ error: "Failed to update name" });
+    }
   });
 
   // ================== TASKS ROUTES ==================
@@ -579,6 +612,22 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Save study time error:", error);
       res.status(500).json({ error: "Failed to save study time" });
+    }
+  });
+
+  // Total logged study time across a date range, used for the weekly goal bar.
+  app.get("/api/calendar/study-time-summary/:from/:to", requireAuth, async (req, res) => {
+    try {
+      const rows = await storage.getStudyTimeRange(
+        req.session.userId!,
+        req.params.from as string,
+        req.params.to as string
+      );
+      const totalHours = rows.reduce((sum, row) => sum + (row.hours || 0), 0);
+      res.json({ totalHours, days: rows.length });
+    } catch (error) {
+      console.error("Get study time summary error:", error);
+      res.status(500).json({ error: "Failed to get study time summary" });
     }
   });
 

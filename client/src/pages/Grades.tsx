@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { subjects, assessmentsBySubject, Assessment, SubjectId } from "@shared/schema";
 import { useGrades, useSaveGrade } from "@/hooks/useApi";
-import { Calculator, TrendingUp, CheckCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Calculator, TrendingUp, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 
 interface SubjectGradeData {
   subjectId: SubjectId;
@@ -61,13 +62,34 @@ const subjectBgClasses: Record<string, string> = {
 export default function GradesPage() {
   const { data: grades = [], isLoading } = useGrades();
   const saveGrade = useSaveGrade();
+  const { toast } = useToast();
   const [subjectData, setSubjectData] = useState<SubjectGradeData[]>([]);
+
+  // What you are typing, held locally so a keystroke appears immediately
+  // instead of depending on the server round-trip.
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const pendingSaves = useRef<
+    Record<string, { timer: ReturnType<typeof setTimeout>; save: () => void }>
+  >({});
+
+  const draftKey = (subjectId: string, assessmentId: string) => `${subjectId}:${assessmentId}`;
 
   useEffect(() => {
     if (!isLoading) {
       loadGradeData();
     }
   }, [grades, isLoading]);
+
+  // If you leave the page while an edit is still waiting out its typing pause,
+  // send it rather than dropping it.
+  useEffect(() => () => {
+    Object.values(pendingSaves.current).forEach(({ timer, save }) => {
+      clearTimeout(timer);
+      save();
+    });
+  }, []);
 
   const loadGradeData = () => {
     const data: SubjectGradeData[] = subjects.map((subject) => {
@@ -97,14 +119,57 @@ export default function GradesPage() {
     setSubjectData(data);
   };
 
+  // Shows the draft while you type, otherwise the value stored on the server.
+  const scoreValue = (subjectId: string, assessmentId: string, stored: number | null): string => {
+    const draft = drafts[draftKey(subjectId, assessmentId)];
+    if (draft !== undefined) return draft;
+    return stored === null ? "" : String(stored);
+  };
+
   const handleScoreChange = (subjectId: SubjectId, assessmentId: string, value: string) => {
-    const numValue = value === "" ? null : Math.min(100, Math.max(0, parseInt(value) || 0));
-    
-    saveGrade.mutate({
-      subjectId,
-      assessmentId,
-      score: numValue,
-    });
+    const key = draftKey(subjectId, assessmentId);
+    setDrafts((prev) => ({ ...prev, [key]: value }));
+
+    // Wait for a pause in typing so "85" is one save, not one per digit.
+    const pending = pendingSaves.current[key];
+    if (pending) clearTimeout(pending.timer);
+
+    const save = () => {
+      delete pendingSaves.current[key];
+
+      const trimmed = value.trim();
+      const numValue = trimmed === "" ? null : Math.min(100, Math.max(0, parseInt(trimmed, 10) || 0));
+
+      setSaveState("saving");
+      saveGrade.mutate(
+        { subjectId, assessmentId, score: numValue },
+        {
+          onSuccess: (saved) => {
+            setSaveState("saved");
+            setSaveError(null);
+            // Hold the value the server actually stored, so the field never
+            // flickers back to the previous score while the list refetches.
+            const stored = (saved as { score?: number | null } | undefined)?.score;
+            setDrafts((prev) => ({
+              ...prev,
+              [key]: stored === null || stored === undefined ? "" : String(stored),
+            }));
+          },
+          onError: (error) => {
+            const message = error instanceof Error ? error.message : "Could not save this score";
+            setSaveState("error");
+            setSaveError(message);
+            toast({
+              variant: "destructive",
+              title: "Grade not saved",
+              description: message,
+            });
+          },
+        }
+      );
+    };
+
+    pendingSaves.current[key] = { timer: setTimeout(save, 600), save };
   };
 
   if (isLoading) {
@@ -143,9 +208,33 @@ export default function GradesPage() {
 
   return (
     <div className="p-4 md:p-6 space-y-6" data-testid="grades-page">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Grade Calculator</h1>
-        <p className="text-muted-foreground">Track your assessment scores and calculate averages</p>
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold">Grade Calculator</h1>
+          <p className="text-muted-foreground">Track your assessment scores and calculate averages</p>
+        </div>
+        {saveState !== "idle" && (
+          <div className="flex items-center gap-2 text-sm" data-testid="grade-save-status">
+            {saveState === "saving" && (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                <span className="text-muted-foreground">Saving…</span>
+              </>
+            )}
+            {saveState === "saved" && (
+              <>
+                <CheckCircle className="h-4 w-4 text-green-500" />
+                <span className="text-muted-foreground">Saved</span>
+              </>
+            )}
+            {saveState === "error" && (
+              <>
+                <AlertCircle className="h-4 w-4 text-destructive" />
+                <span className="text-destructive">{saveError ?? "Save failed"}</span>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -252,7 +341,7 @@ export default function GradesPage() {
                               min="0"
                               max="100"
                               placeholder="-"
-                              value={data.scores[assessment.id] ?? ""}
+                              value={scoreValue(data.subjectId, assessment.id, data.scores[assessment.id])}
                               onChange={(e) => handleScoreChange(data.subjectId, assessment.id, e.target.value)}
                               className="w-16 h-8 text-center text-sm"
                               data-testid={`input-grade-${assessment.id}`}
@@ -285,7 +374,7 @@ export default function GradesPage() {
                               min="0"
                               max="100"
                               placeholder="-"
-                              value={data.scores[assessment.id] ?? ""}
+                              value={scoreValue(data.subjectId, assessment.id, data.scores[assessment.id])}
                               onChange={(e) => handleScoreChange(data.subjectId, assessment.id, e.target.value)}
                               className="w-16 h-8 text-center text-sm"
                               data-testid={`input-grade-${assessment.id}`}

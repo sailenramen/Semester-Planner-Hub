@@ -53,7 +53,7 @@ const getGreeting = (name: string): string => {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const userName = user?.name || "Student";
+  const userName = user?.name || "Sahil";
   
   const { data: tasks = [], isLoading: tasksLoading } = useTasks();
   const { data: exams = [], isLoading: examsLoading } = useExams();

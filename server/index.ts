@@ -62,6 +62,14 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
+  // Any /api path that no route matched is a bug in the caller, not a page
+  // request. Without this the SPA catch-all below answers with index.html and
+  // status 200, so a client calling the wrong URL or method looks successful
+  // and the failure is invisible (the response just fails to parse as JSON).
+  app.use("/api", (_req, res) => {
+    res.status(404).json({ error: "Unknown API route" });
+  });
+
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";

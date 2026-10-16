@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Task, Note, Exam, Grade, Streak, UserStats, AvatarSettings } from "@shared/schema";
+
+export function saveErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return "Please try again";
+}
 
 export function useTasks() {
   return useQuery<Task[]>({
@@ -63,6 +69,7 @@ export function useExams() {
 
 export function useUpdateExam() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   return useMutation({
     mutationFn: async ({ id, ...patch }: { id: string; date?: string; title?: string; description?: string }) => {
       const res = await apiRequest("PUT", `/api/exams/${id}`, patch);
@@ -70,6 +77,14 @@ export function useUpdateExam() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/exams"] });
+      toast({ title: "Exam updated" });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Exam not updated",
+        description: saveErrorMessage(error),
+      });
     },
   });
 }
@@ -83,8 +98,10 @@ export function useGrades() {
 export function useSaveGrade() {
   const queryClient = useQueryClient();
   return useMutation({
+    // The server exposes this as PUT /api/grades; a POST here fell through to
+    // the SPA catch-all, so grades were never stored.
     mutationFn: async (grade: Omit<Grade, "id" | "userId">) => {
-      const res = await apiRequest("POST", "/api/grades", grade);
+      const res = await apiRequest("PUT", "/api/grades", grade);
       return res.json();
     },
     onSuccess: () => {
@@ -102,8 +119,9 @@ export function useStreak() {
 export function useUpdateStreak() {
   const queryClient = useQueryClient();
   return useMutation({
+    // Server route is PUT /api/streak (there is no /api/streak/update).
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/streak/update", {});
+      const res = await apiRequest("PUT", "/api/streak", {});
       return res.json();
     },
     onSuccess: () => {
@@ -220,6 +238,7 @@ export function useCustomTodos(date: string) {
 
 export function useCreateCustomTodo() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   return useMutation({
     mutationFn: async ({ date, title }: { date: string; title: string }) => {
       const res = await apiRequest("POST", "/api/calendar/todos", { date, title });
@@ -227,12 +246,21 @@ export function useCreateCustomTodo() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/calendar/todos", variables.date] });
+      toast({ title: "To-do added" });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "To-do not saved",
+        description: saveErrorMessage(error),
+      });
     },
   });
 }
 
 export function useToggleCustomTodo() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   return useMutation({
     mutationFn: async ({ id, date }: { id: string; date: string }) => {
       const res = await apiRequest("PATCH", `/api/calendar/todos/${id}/toggle`, {});
@@ -241,17 +269,32 @@ export function useToggleCustomTodo() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/calendar/todos", variables.date] });
     },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "To-do not updated",
+        description: saveErrorMessage(error),
+      });
+    },
   });
 }
 
 export function useDeleteCustomTodo() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   return useMutation({
     mutationFn: async ({ id, date }: { id: string; date: string }) => {
       await apiRequest("DELETE", `/api/calendar/todos/${id}`, {});
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/calendar/todos", variables.date] });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "To-do not deleted",
+        description: saveErrorMessage(error),
+      });
     },
   });
 }
@@ -269,6 +312,7 @@ export function useStudyTime(date: string) {
 
 export function useSaveStudyTime() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   return useMutation({
     mutationFn: async ({ date, hours }: { date: string; hours: number }) => {
       const res = await apiRequest("PUT", `/api/calendar/study-time/${date}`, { hours });
@@ -276,7 +320,30 @@ export function useSaveStudyTime() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/calendar/study-time", variables.date] });
+      // The calendar's weekly goal bar is fed by the range summary.
+      queryClient.invalidateQueries({ queryKey: ["/api/calendar/study-time-summary"] });
+      toast({ title: `Logged ${variables.hours}h on ${variables.date}` });
     },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Study time not saved",
+        description: saveErrorMessage(error),
+      });
+    },
+  });
+}
+
+export interface StudyTimeSummary {
+  totalHours: number;
+  days: number;
+}
+
+// Total logged hours between two yyyy-MM-dd dates (inclusive).
+export function useStudyTimeSummary(from: string, to: string) {
+  return useQuery<StudyTimeSummary>({
+    queryKey: ["/api/calendar/study-time-summary", from, to],
+    enabled: !!from && !!to,
   });
 }
 
@@ -293,6 +360,7 @@ export function useDayNote(date: string) {
 
 export function useSaveDayNote() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   return useMutation({
     mutationFn: async ({ date, content }: { date: string; content: string }) => {
       const res = await apiRequest("PUT", `/api/calendar/day-notes/${date}`, { content });
@@ -300,6 +368,14 @@ export function useSaveDayNote() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/calendar/day-notes", variables.date] });
+      toast({ title: "Note saved" });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Note not saved",
+        description: saveErrorMessage(error),
+      });
     },
   });
 }
@@ -316,6 +392,7 @@ export function useWeeklyGoal() {
 
 export function useSaveWeeklyGoal() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   return useMutation({
     mutationFn: async (hours: number) => {
       const res = await apiRequest("PUT", "/api/calendar/weekly-goal", { hours });
@@ -323,6 +400,14 @@ export function useSaveWeeklyGoal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/calendar/weekly-goal"] });
+      toast({ title: "Weekly goal updated" });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Weekly goal not saved",
+        description: saveErrorMessage(error),
+      });
     },
   });
 }

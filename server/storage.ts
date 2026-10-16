@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, gte, lte } from "drizzle-orm";
 import { db } from "./db";
 import {
   usersTable,
@@ -79,6 +79,7 @@ export interface IStorage {
 
   // Study Time
   getStudyTime(userId: string, date: string): Promise<DbStudyTime | undefined>;
+  getStudyTimeRange(userId: string, from: string, to: string): Promise<DbStudyTime[]>;
   saveStudyTime(userId: string, date: string, hours: number): Promise<DbStudyTime>;
 
   // Day Notes
@@ -346,6 +347,18 @@ export class DatabaseStorage implements IStorage {
       and(eq(studyTimeTable.userId, userId), eq(studyTimeTable.date, date))
     );
     return studyTime;
+  }
+
+  // Dates are stored as yyyy-MM-dd text, so a range is a plain string
+  // comparison and needs no date parsing.
+  async getStudyTimeRange(userId: string, from: string, to: string): Promise<DbStudyTime[]> {
+    return db.select().from(studyTimeTable).where(
+      and(
+        eq(studyTimeTable.userId, userId),
+        gte(studyTimeTable.date, from),
+        lte(studyTimeTable.date, to)
+      )
+    );
   }
 
   async saveStudyTime(userId: string, date: string, hours: number): Promise<DbStudyTime> {

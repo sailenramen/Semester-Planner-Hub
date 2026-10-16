@@ -98,37 +98,27 @@ export interface Assessment {
 }
 
 export const assessmentsBySubject: Record<string, Assessment[]> = {
+  // Science is taught as Psychology this term.
   science: [
-    { id: "sci-t1-atomic", name: "Atomic Model Project", term: 1, category: "Chemistry" },
-    { id: "sci-t1-reactions", name: "Chemical Reactions Practical Report", term: 1, category: "Chemistry" },
-    { id: "sci-t1-exam", name: "Semester Exam", term: 1, category: "Chemistry" },
-    { id: "sci-t2-homeostasis", name: "Homeostasis Project", term: 2, category: "Biology" },
-    { id: "sci-t2-exam", name: "Semester Exam", term: 2, category: "Biology" },
+    { id: "sci-t4-sba1", name: "SBA 1: Reaction Time Practical", term: 4, category: "Psychology" },
+    { id: "sci-t4-sba2", name: "SBA 2: Recall Practical", term: 4, category: "Psychology" },
+    { id: "sci-t4-exam", name: "Semester 2 Examination", term: 4, category: "Psychology" },
   ],
   math: [
-    { id: "math-t1-investigation", name: "Investigation", term: 1 },
-    { id: "math-t1-test", name: "Topic Test", term: 1 },
-    { id: "math-t1-exam", name: "Semester Exam", term: 1 },
-    { id: "math-t2-test", name: "Topic Test", term: 2 },
-    { id: "math-t2-project", name: "Project", term: 2 },
+    { id: "math-t4-test", name: "Summative Topic Test", term: 4 },
+    { id: "math-t4-project", name: "Measurement Project", term: 4 },
+    { id: "math-t4-exam", name: "Semester 2 Exam", term: 4 },
   ],
+  // History/Humanities is taught as Legal Studies this term.
   history: [
-    { id: "hist-t1-inquiry", name: "Historical Inquiry Project", term: 1, category: "History" },
-    { id: "hist-t1-source", name: "Source Analysis", term: 1, category: "History" },
-    { id: "hist-t1-exam", name: "Semester Exam", term: 1, category: "History" },
-    { id: "hist-t2-citizenship", name: "Global Citizenship Project", term: 2, category: "Politics" },
-    { id: "hist-t2-test", name: "Politics Topic Test", term: 2, category: "Politics" },
-    { id: "hist-t2-exam", name: "SAP Semester Exam", term: 2, category: "Politics" },
+    { id: "hist-t4-test", name: "SBA 1: Legal Studies Topic Test", term: 4, category: "Legal Studies" },
+    { id: "hist-t4-report", name: "SBA 2: Contemporary Legal Issues Report & Podcast", term: 4, category: "Legal Studies" },
+    { id: "hist-t4-exam", name: "Semester 2 Exam", term: 4, category: "Legal Studies" },
   ],
   english: [
-    { id: "eng-t1-news", name: "News Article Analysis", term: 1 },
-    { id: "eng-t1-content", name: "Content Test", term: 1 },
-    { id: "eng-t1-campaign", name: "Campaign Presentation", term: 1 },
-    { id: "eng-t1-exam-a", name: "Exam Section A", term: 1 },
-    { id: "eng-t1-exam-b", name: "Exam Section B", term: 1 },
-    { id: "eng-t2-animal", name: "Animal Farm Response", term: 2 },
-    { id: "eng-t2-conventions", name: "Conventions Test", term: 2 },
-    { id: "eng-t2-exam", name: "Semester Exam", term: 2 },
+    { id: "eng-t4-test", name: "Poetry Analysis Topic Test", term: 4 },
+    { id: "eng-t4-sba3", name: "SBA 3: Analytical Response to War Poetry", term: 4 },
+    { id: "eng-t4-exam", name: "Semester 2 Exam", term: 4 },
   ],
 };
 
@@ -226,119 +216,63 @@ export function generateSampleTasks(): Task[] {
   const tasks: Task[] = [];
   const subjectIds: SubjectId[] = ["math", "science", "history", "english"];
   
-  // Math curriculum - Term 1 (weeks 1-9)
-  // Matches reading: Problem solving, exponents, units, surds, absolute value, patterns, coordinate geometry, linear equations
-  const mathTerm1 = [
-    { title: "Problem Solving & Real Numbers", desc: "Polya's problem solving steps and the real number system" },
-    { title: "Laws of Exponents", desc: "Index laws for multiplying, dividing, and raising powers" },
-    { title: "Units & Measurements", desc: "Metric conversions and compound measures" },
-    { title: "Surds & Radicals", desc: "Simplifying surds and rationalising denominators" },
-    { title: "Absolute Value", desc: "Solving absolute value equations and inequalities" },
-    { title: "Patterns & Generalisations", desc: "Finding patterns and writing algebraic rules" },
-    { title: "NAPLAN Preparation", desc: "Review of number, algebra, measurement, and statistics" },
-    { title: "Coordinate Geometry", desc: "Distance, midpoint, and gradient formulas" },
-    { title: "Linear Equations & Systems", desc: "Solving linear equations and simultaneous equations" },
+  // Term 4 curriculum, one entry per teaching week (Weeks 1-9). Titles and
+  // descriptions follow the Year 9 SAP Semester 2 Student Weekly Outline
+  // (SWO) week by week. Science is taught as Psychology and History/Humanities
+  // as Legal Studies this term.
+  const mathTerm4 = [
+    { title: "Sampling Technique & Bivariate Data", desc: "Chapter 9: understanding and interpreting the correlation between two sets of data" },
+    { title: "Surface Area & Volume", desc: "Chapter 5: finding the surface area and volume of any 3D shape" },
+    { title: "Geometric Transformation", desc: "Chapter 5: transforming 2D shapes by translation, rotation, reflection and enlargement; regular and semi-regular tessellation" },
+    { title: "The Right-Angle Triangle", desc: "Chapter 7: trigonometric ratios, angles of elevation and depression, and bearings. Summative: Measurement project" },
+    { title: "Properties of Circles & Circle Theorem 1", desc: "Chapter 7: arc length, sector perimeter and area, chord length and circle theorems" },
+    { title: "Circle Theorem 2", desc: "Chapter 7: using circle theorems to find chord lengths; intersecting chord theorem. Summative: Topic test" },
+    { title: "Revision", desc: "Revision of all Term 4 chapters before the examinations" },
+    { title: "Revision Week", desc: "End of semester examinations - revision week (Mon 23 Nov - Thu 26 Nov)" },
+    { title: "End of Semester Exams", desc: "Exam period (Fri 27 Nov - Thu 3 Dec)" },
   ];
-  
-  // Math curriculum - Term 2 (weeks 10-17)
-  // Matches reading: Algebra review, relations/functions, quadratics, sequences, formulas, proportion
-  const mathTerm2 = [
-    { title: "Algebra Review", desc: "Consolidating algebraic skills and techniques" },
-    { title: "Relations & Functions", desc: "Understanding domain, range, and function notation" },
-    { title: "Quadratic Expressions", desc: "Expanding, factorising, and completing the square" },
-    { title: "Quadratic Graphs", desc: "Graphing parabolas and key features in different forms" },
-    { title: "Quadratic Equations", desc: "Solving using factorisation and the quadratic formula" },
-    { title: "Sequences", desc: "Arithmetic and geometric sequences" },
-    { title: "Formulas & Proportion", desc: "Rearranging formulas and direct/inverse proportion" },
-    { title: "Semester Exam Preparation", desc: "Comprehensive revision for semester exams" },
+
+  const psychologyTerm4 = [
+    { title: "Intro to Psychology, Variables & Hypothesis", desc: "Branches of psychology; IV, DV, controlled and extraneous variables; hypothesis; correlation vs causation" },
+    { title: "Regions of the Brain & Nervous Systems", desc: "Three brain regions and four cortical lobes; somatic and autonomic nervous systems" },
+    { title: "Neurons & Neurotransmission", desc: "Neuron structure; neurotransmission; excitatory and inhibitory neurotransmitters. SBA 1: Reaction Time practical" },
+    { title: "Memory, Schema & Sampling Methods", desc: "Atkinson-Shiffrin model; factors affecting recall; schema; convenience, random and stratified sampling" },
+    { title: "Research Design & Ethics", desc: "Within- and between-subject designs; the seven ethical principles; historical unethical studies" },
+    { title: "Biopsychosocial Model & First Nations Perspectives", desc: "Biopsychosocial model; wellbeing for Aboriginal and Torres Strait Islander peoples" },
+    { title: "Memory & Biopsychosocial Assessment", desc: "Rehearsal practical and application questions. SBA 2: Rehearsal practical" },
+    { title: "Revision Week", desc: "End of semester examinations - revision week (Mon 23 Nov - Thu 26 Nov)" },
+    { title: "End of Semester Exams", desc: "Exam period (Fri 27 Nov - Thu 3 Dec)" },
   ];
-  
-  // Science curriculum - Term 1 (Chemistry focus)
-  // Matches reading: Atomic structure, isotopes, radioactivity, chemical reactions
-  const scienceTerm1 = [
-    { title: "Atomic Structure", desc: "History of atomic theory and parts of the atom" },
-    { title: "Isotopes & Radioactivity", desc: "Isotopes, radioactive decay, and types of radiation" },
-    { title: "Half-Life & Applications", desc: "Calculating half-life and uses of radioisotopes" },
-    { title: "Atomic Model Project", desc: "Consolidating atomic structure understanding" },
-    { title: "Chemical Reactions", desc: "Signs of reactions and balancing equations" },
-    { title: "Types of Reactions", desc: "Synthesis, decomposition, combustion, neutralisation" },
-    { title: "Electrolysis", desc: "Using electricity to decompose compounds" },
-    { title: "Green Chemistry", desc: "Environmental impact and sustainable chemistry" },
-    { title: "Chemistry Review", desc: "Review of all chemistry topics" },
+
+  const legalStudiesTerm4 = [
+    { title: "The Commonwealth Parliament", desc: "Constitutional monarchy, House of Representatives and Senate, specific, residual, exclusive and concurrent powers, rule of law (pp. 548-551)" },
+    { title: "How Laws Are Made in Australia", desc: "Legislation, statutory authorities, common law and precedent (pp. 574-575)" },
+    { title: "Principles of Australia's Legal System", desc: "Equality before the law, judicial independence, access to justice and Legal Aid (pp. 576-579). Report and podcast project launched" },
+    { title: "Participants in the Legal System and Types of Legal Disputes", desc: "Roles of judges, lawyers, juries and police; criminal vs civil law; sanctions vs remedies (pp. 580-585). Topic test" },
+    { title: "Court Jurisdictions and Court Hierarchy", desc: "Magistrates to the High Court, specialist courts and tribunals, appeals process (pp. 582-592). Project research week" },
+    { title: "Courts and Tribunals and the Role of Courts in Making Laws", desc: "Precedent, statutory interpretation and judicial reasoning (pp. 592-596). Project drafting week" },
+    { title: "Indigenous Rights and Comparative Legal Systems", desc: "Mabo v Queensland, Wik, Delgamuukw and the Waitangi Tribunal; mock trial. Report and podcast due Fri 13 Nov" },
+    { title: "Revision Week", desc: "End of semester examinations - revision week (Mon 23 Nov - Thu 26 Nov)" },
+    { title: "End of Semester Exams", desc: "Exam period (Fri 27 Nov - Thu 3 Dec)" },
   ];
-  
-  // Science curriculum - Term 2 (Biology focus)
-  // Matches reading: Homeostasis, endocrine system, diseases, immune system
-  const scienceTerm2 = [
-    { title: "Endocrine System", desc: "Hormones, glands, and chemical regulation" },
-    { title: "Homeostasis", desc: "Maintaining stable internal environment" },
-    { title: "Blood Glucose Regulation", desc: "Insulin, glucagon, and diabetes" },
-    { title: "Infectious Diseases", desc: "Pathogens and how diseases spread" },
-    { title: "The Immune System", desc: "Defence mechanisms and immune response" },
-    { title: "Vaccines & Immunity", desc: "How vaccines work and herd immunity" },
-    { title: "Term 2 Revision", desc: "Review of all biology topics" },
-    { title: "Semester Exam Preparation", desc: "Comprehensive revision for semester exams" },
+
+  const englishTerm4 = [
+    { title: "Close Analysis: Symbolism & Form", desc: "Analysing symbolism, structure and poetic form in war poetry" },
+    { title: "Comparative Study I", desc: "Comparing power, patriotism and resistance across poems" },
+    { title: "Comparative Study II", desc: "Contrasting perspectives on trauma, memory and moral responsibility" },
+    { title: "Developing Analytical Skills", desc: "Thesis development, integrating quotations, structuring comparative paragraphs" },
+    { title: "Exam-Style Writing & Topic Test", desc: "Timed responses to prompts. Poetry analysis topic test" },
+    { title: "Drafting & Feedback", desc: "Drafting a full analytical response with teacher feedback. SBA 3" },
+    { title: "Refining the Analytical Response", desc: "Completing the War Poetry analytical response. SBA 3" },
+    { title: "Revision Week", desc: "Revision for the end of semester examinations" },
+    { title: "End of Semester Exams", desc: "Exam period (Fri 27 Nov - Thu 3 Dec)" },
   ];
-  
-  // History curriculum - Term 1 (Australians at War)
-  // Matches reading: WWI causes, Gallipoli, Western Front, interwar period, WWII
-  const historyTerm1 = [
-    { title: "WWI Causes & Outbreak", desc: "MAIN causes and the assassination of Franz Ferdinand" },
-    { title: "Gallipoli & ANZAC Legend", desc: "The campaign and birth of Australian national identity" },
-    { title: "Western Front", desc: "Trench warfare and Australian battles in France" },
-    { title: "Interwar Period", desc: "Treaty of Versailles, Great Depression, rise of fascism" },
-    { title: "WWII Outbreak", desc: "Hitler's aggression and Australia's early involvement" },
-    { title: "Australian Home Front", desc: "Rationing, women's roles, and Indigenous service" },
-    { title: "The Holocaust", desc: "Persecution, genocide, and human rights" },
-    { title: "Source Analysis Skills", desc: "OPCL method and evaluating historical sources" },
-    { title: "Legacy & Remembrance", desc: "ANZAC Day, Remembrance Day, and reflection" },
-  ];
-  
-  // History curriculum - Term 2 (Politics/Civics)
-  // Matches reading: Australian democracy, Constitution, Parliament, parties, citizenship, global
-  const historyTerm2 = [
-    { title: "Australian Democracy", desc: "Federation, Constitution, and division of powers" },
-    { title: "Parliament & Law-Making", desc: "How Parliament works and laws are made" },
-    { title: "Political Parties & Media", desc: "Parties, interest groups, and media influence" },
-    { title: "Citizenship & Rights", desc: "Citizen rights, responsibilities, and values" },
-    { title: "Influencing Decisions", desc: "Citizen action and global citizenship" },
-    { title: "International Relationships", desc: "Australia's alliances and global engagement" },
-    { title: "Contemporary Issues", desc: "Analysing current political issues" },
-    { title: "Semester Exam Preparation", desc: "Review and exam preparation" },
-  ];
-  
-  // English curriculum - Term 1 (News Article Analysis)
-  // Matches reading: News analysis, rationale, message, persuasive techniques
-  const englishTerm1 = [
-    { title: "Introduction to News Analysis", desc: "Understanding news articles and their structure" },
-    { title: "Rationale & Message", desc: "Identifying purpose and main argument in news" },
-    { title: "Persuasive Techniques", desc: "Ethos, pathos, logos in news writing" },
-    { title: "Visual Elements in News", desc: "Analysing headlines, images, and layout" },
-    { title: "Comparing News Coverage", desc: "How different sources cover the same story" },
-    { title: "News Analysis Assessment", desc: "Preparing for the news article analysis task" },
-    { title: "Political Campaign Presentation", desc: "Creating and delivering persuasive presentations" },
-    { title: "Presentation & Feedback", desc: "Delivering presentations and peer feedback" },
-    { title: "Term 1 Review", desc: "Consolidating news analysis skills" },
-  ];
-  
-  // English curriculum - Term 2 (1984 Novel Study)
-  // Matches reading: 1984 by George Orwell - dystopia, power, control
-  const englishTerm2 = [
-    { title: "1984: Dystopia & Context", desc: "Introduction to Orwell and dystopian genre" },
-    { title: "1984: Oceania & the Party", desc: "The setting, Party structure, and Winston" },
-    { title: "1984: Propaganda & Rebellion", desc: "Two Minutes Hate, Newspeak, and Winston's rebellion" },
-    { title: "1984: Love & Betrayal", desc: "Winston and Julia, O'Brien, and the Brotherhood" },
-    { title: "1984: Room 101 & Ending", desc: "Winston's defeat and the novel's conclusion" },
-    { title: "Themes & Techniques", desc: "Analysing Orwell's major themes and literary techniques" },
-    { title: "Term 2 Revision", desc: "Review of 1984 and essay writing skills" },
-    { title: "Semester Exam Preparation", desc: "Practice essays and revision strategies" },
-  ];
-  
-  const curriculumBySubject: Record<SubjectId, { term1: typeof mathTerm1; term2: typeof mathTerm2 }> = {
-    math: { term1: mathTerm1, term2: mathTerm2 },
-    science: { term1: scienceTerm1, term2: scienceTerm2 },
-    history: { term1: historyTerm1, term2: historyTerm2 },
-    english: { term1: englishTerm1, term2: englishTerm2 },
+
+  const curriculumBySubject: Record<SubjectId, { term4: { title: string; desc: string }[] }> = {
+    math: { term4: mathTerm4 },
+    science: { term4: psychologyTerm4 },
+    history: { term4: legalStudiesTerm4 },
+    english: { term4: englishTerm4 },
   };
 
   for (const subjectId of subjectIds) {
@@ -347,7 +281,7 @@ export function generateSampleTasks(): Task[] {
     // Term 4 is a single 9-week block, so there is one task per teaching week.
     for (let week = 1; week <= TOTAL_WEEKS; week++) {
       const { start } = getWeekDates(week);
-      const topic = curriculum.term1[week - 1];
+      const topic = curriculum.term4[week - 1];
 
       tasks.push({
         id: `${subjectId}-week${week}`,

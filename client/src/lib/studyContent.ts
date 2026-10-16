@@ -1,4 +1,4 @@
-import { SubjectId } from "@shared/schema";
+import { SubjectId, TOTAL_WEEKS } from "@shared/schema";
 
 export type TaskType = "reading" | "practice" | "writing" | "review";
 
@@ -15,6 +15,7 @@ export interface VocabularyTerm {
 export interface PracticeQuestion {
   id: string;
   question: string;
+  /** For a multiple-choice question this is the exact text of one of `options`. */
   answer: string;
   solution?: string;
   options?: string[];
@@ -65,3357 +66,1635 @@ export function getTaskType(taskTitle: string): TaskType {
   return "review";
 }
 
+// ===== Maths (Term 4) =====
+// Every question is multiple choice: `answer` is the exact text of the correct
+// option, so the study page can mark it without a second lookup.
 const mathQuestions: PracticeQuestion[] = [
-  { id: "m1", question: "Simplify: 2³ × 2⁴", answer: "2⁷ = 128", solution: "When multiplying same base, add indices: 2³⁺⁴ = 2⁷ = 128", type: "short" },
-  { id: "m2", question: "Simplify: (3²)⁴", answer: "3⁸ = 6561", solution: "When raising a power to a power, multiply indices: 3²×⁴ = 3⁸", type: "short" },
-  { id: "m3", question: "Evaluate: 5⁰", answer: "1", solution: "Any non-zero number raised to the power of 0 equals 1", type: "short" },
-  { id: "m4", question: "Simplify: 4⁻²", answer: "1/16", solution: "Negative exponent means reciprocal: 4⁻² = 1/4² = 1/16", type: "short" },
-  { id: "m5", question: "Convert 2.5 km to metres", answer: "2500 m", solution: "1 km = 1000 m, so 2.5 × 1000 = 2500 m", type: "short" },
-  { id: "m6", question: "Simplify: √72", answer: "6√2", solution: "√72 = √(36 × 2) = √36 × √2 = 6√2", type: "short" },
-  { id: "m7", question: "Simplify: √50 + √18", answer: "8√2", solution: "√50 = 5√2, √18 = 3√2, so 5√2 + 3√2 = 8√2", type: "short" },
-  { id: "m8", question: "Evaluate: |−7|", answer: "7", solution: "Absolute value gives the distance from zero, always positive", type: "short" },
-  { id: "m9", question: "Solve: |x| = 5", answer: "x = 5 or x = −5", solution: "If |x| = 5, then x is 5 units from zero, so x = 5 or x = −5", type: "short" },
-  { id: "m10", question: "Find the distance between points (2, 3) and (5, 7)", answer: "5", solution: "d = √[(5-2)² + (7-3)²] = √[9 + 16] = √25 = 5", type: "short" },
-  { id: "m11", question: "Find the midpoint of (1, 4) and (5, 8)", answer: "(3, 6)", solution: "Midpoint = ((1+5)/2, (4+8)/2) = (3, 6)", type: "short" },
-  { id: "m12", question: "Find the gradient between (2, 1) and (6, 9)", answer: "2", solution: "Gradient = (9-1)/(6-2) = 8/4 = 2", type: "short" },
-  { id: "m13", question: "What is the equation of a line with gradient 3 passing through (0, 2)?", answer: "y = 3x + 2", solution: "Using y = mx + c, m = 3 and c = 2", type: "short" },
-  { id: "m14", question: "Solve: 3x + 7 = 16", answer: "x = 3", solution: "3x = 16 - 7 = 9, so x = 9/3 = 3", type: "short" },
-  { id: "m15", question: "Solve the system: x + y = 10, x - y = 4", answer: "x = 7, y = 3", solution: "Add equations: 2x = 14, x = 7. Substitute: 7 + y = 10, y = 3", type: "short" },
-  { id: "m16", question: "Expand: (x + 3)(x + 5)", answer: "x² + 8x + 15", solution: "FOIL: x² + 5x + 3x + 15 = x² + 8x + 15", type: "short" },
-  { id: "m17", question: "Factorise: x² + 7x + 12", answer: "(x + 3)(x + 4)", solution: "Find two numbers that multiply to 12 and add to 7: 3 and 4", type: "short" },
-  { id: "m18", question: "Find the axis of symmetry of y = x² - 6x + 8", answer: "x = 3", solution: "Axis of symmetry = -b/2a = -(-6)/2(1) = 6/2 = 3", type: "short" },
-  { id: "m19", question: "Solve: x² - 5x + 6 = 0", answer: "x = 2 or x = 3", solution: "Factorise: (x-2)(x-3) = 0, so x = 2 or x = 3", type: "short" },
-  { id: "m20", question: "Find the next term: 2, 5, 8, 11, ...", answer: "14", solution: "Arithmetic sequence with common difference 3: 11 + 3 = 14", type: "short" },
-  { id: "m21", question: "Write the explicit formula for: 3, 7, 11, 15, ...", answer: "aₙ = 4n - 1", solution: "First term a₁ = 3, common difference d = 4, so aₙ = 3 + (n-1)×4 = 4n - 1", type: "short" },
-  { id: "m22", question: "If y is directly proportional to x and y = 12 when x = 4, find y when x = 7", answer: "21", solution: "y = kx, so 12 = k(4), k = 3. When x = 7, y = 3(7) = 21", type: "short" },
-  { id: "m23", question: "Rearrange v = u + at to make t the subject", answer: "t = (v - u)/a", solution: "Subtract u: v - u = at. Divide by a: t = (v - u)/a", type: "short" },
-  { id: "m24", question: "Express the quadratic y = x² - 4x + 3 in vertex form", answer: "y = (x - 2)² - 1", solution: "Complete the square: (x² - 4x + 4) - 4 + 3 = (x - 2)² - 1", type: "short" },
-  { id: "m25", question: "What is the discriminant of x² + 4x + 5?", answer: "-4", solution: "b² - 4ac = 16 - 20 = -4 (no real solutions)", type: "short" },
+  {
+    id: "m1",
+    question: "A scatter plot shows the points rising from left to right. What type of correlation does this show?",
+    options: ["Positive correlation", "Negative correlation", "No correlation", "Perfect causation"],
+    answer: "Positive correlation",
+    solution: "As one variable increases the other tends to increase, which is a positive correlation.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m2",
+    question: "A set of bivariate data has a correlation coefficient of r = -0.9. How would you describe it?",
+    options: ["Strong negative correlation", "Weak negative correlation", "Strong positive correlation", "No correlation"],
+    answer: "Strong negative correlation",
+    solution: "The sign gives the direction (negative) and a value near -1 means the relationship is strong.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m3",
+    question: "A study finds a strong correlation between hours studied and test marks. What can you correctly conclude?",
+    options: [
+      "The two variables are related, but more evidence is needed before claiming one causes the other",
+      "Studying more definitely causes higher marks",
+      "The results must be wrong because correlation is meaningless",
+      "Marks cause students to study more, and that is proven",
+    ],
+    answer: "The two variables are related, but more evidence is needed before claiming one causes the other",
+    solution: "Correlation describes a relationship between two variables; only a controlled experiment can show causation.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m4",
+    question: "Why is a line of best fit drawn by eye onto a scatter plot?",
+    options: [
+      "To describe the overall trend of the data",
+      "To join up every data point exactly",
+      "To prove that the variables are causally related",
+      "To remove outliers from the data set",
+    ],
+    answer: "To describe the overall trend of the data",
+    solution: "The line of best fit summarises the trend so predictions and comparisons can be made.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m5",
+    question: "A survey is sent to 60 people and 45 reply. What is the response rate?",
+    options: ["75%", "45%", "60%", "80%"],
+    answer: "75%",
+    solution: "45 ÷ 60 × 100 = 75%.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m6",
+    question: "What is the surface area of a cube with side length 3 cm?",
+    options: ["54 cm²", "27 cm²", "36 cm²", "18 cm²"],
+    answer: "54 cm²",
+    solution: "A cube has 6 identical square faces: 6 × (3 × 3) = 54 cm².",
+    type: "multiple-choice",
+  },
+  {
+    id: "m7",
+    question: "What is the volume of a rectangular prism measuring 4 cm × 3 cm × 5 cm?",
+    options: ["60 cm³", "47 cm³", "12 cm³", "120 cm³"],
+    answer: "60 cm³",
+    solution: "Volume = length × width × height = 4 × 3 × 5 = 60 cm³.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m8",
+    question: "What is the volume of a cylinder with radius 2 cm and height 10 cm, in terms of π?",
+    options: ["40π cm³", "20π cm³", "80π cm³", "10π cm³"],
+    answer: "40π cm³",
+    solution: "V = πr²h = π × 2² × 10 = 40π cm³.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m9",
+    question: "What is the surface area of a sphere with radius 3 cm, in terms of π?",
+    options: ["36π cm²", "9π cm²", "18π cm²", "27π cm²"],
+    answer: "36π cm²",
+    solution: "SA = 4πr² = 4π × 9 = 36π cm².",
+    type: "multiple-choice",
+  },
+  {
+    id: "m10",
+    question: "Which rule finds the volume of any prism?",
+    options: ["Area of the base × height", "2πr", "4/3 πr³", "πr²"],
+    answer: "Area of the base × height",
+    solution: "A prism has a constant cross-section, so volume is the cross-sectional area multiplied by the length or height.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m11",
+    question: "The point (3, 1) is translated by the vector (2, -4). What are its new coordinates?",
+    options: ["(5, -3)", "(1, 5)", "(5, 3)", "(-1, -3)"],
+    answer: "(5, -3)",
+    solution: "Add the vector to each coordinate: (3 + 2, 1 - 4) = (5, -3).",
+    type: "multiple-choice",
+  },
+  {
+    id: "m12",
+    question: "The point (4, -2) is reflected in the y-axis. What are its new coordinates?",
+    options: ["(-4, -2)", "(4, 2)", "(-4, 2)", "(2, -4)"],
+    answer: "(-4, -2)",
+    solution: "A reflection in the y-axis changes the sign of the x-coordinate only.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m13",
+    question: "The point (1, 0) is rotated 90° anticlockwise about the origin. Where does it land?",
+    options: ["(0, 1)", "(0, -1)", "(-1, 0)", "(1, 1)"],
+    answer: "(0, 1)",
+    solution: "A 90° anticlockwise rotation maps (x, y) to (-y, x), so (1, 0) becomes (0, 1).",
+    type: "multiple-choice",
+  },
+  {
+    id: "m14",
+    question: "A 2D shape is enlarged by a scale factor of 3. Its area is multiplied by what?",
+    options: ["9", "3", "6", "27"],
+    answer: "9",
+    solution: "Area scales by the square of the scale factor: 3² = 9. (Volume would scale by 3³ = 27.)",
+    type: "multiple-choice",
+  },
+  {
+    id: "m15",
+    question: "Which regular polygon tessellates on its own?",
+    options: ["Regular hexagon", "Regular pentagon", "Regular octagon", "Regular decagon"],
+    answer: "Regular hexagon",
+    solution: "A regular hexagon has interior angles of 120° and 3 × 120° = 360°, so the tiles meet exactly at a point. A pentagon's 108°, octagon's 135° and decagon's 144° do not divide 360°.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m16",
+    question: "What is the size of each interior angle of a regular hexagon?",
+    options: ["120°", "60°", "108°", "135°"],
+    answer: "120°",
+    solution: "Interior angle = (6 - 2) × 180° ÷ 6 = 120°.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m17",
+    question: "In a right-angled triangle the hypotenuse is 10 cm and one angle is 30°. How long is the side opposite that angle?",
+    options: ["5 cm", "8.66 cm", "10 cm", "20 cm"],
+    answer: "5 cm",
+    solution: "sin 30° = opposite ÷ hypotenuse, so opposite = 10 × 0.5 = 5 cm.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m18",
+    question: "Using tan 40° = x ÷ 8, find x correct to 2 decimal places.",
+    options: ["6.71", "5.14", "9.53", "4.20"],
+    answer: "6.71",
+    solution: "x = 8 × tan 40° ≈ 8 × 0.8391 ≈ 6.71.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m19",
+    question: "A 15 m tower is viewed from a point 20 m from its base. What is the angle of elevation of the top, to 1 decimal place?",
+    options: ["36.9°", "48.6°", "53.1°", "41.4°"],
+    answer: "36.9°",
+    solution: "tan θ = 15 ÷ 20 = 0.75, so θ = tan⁻¹(0.75) ≈ 36.9°.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m20",
+    question: "What is the bearing of east?",
+    options: ["090°", "000°", "180°", "270°"],
+    answer: "090°",
+    solution: "Bearings are measured clockwise from north, so east is 090°.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m21",
+    question: "A boat is 50 m from the base of a 30 m cliff. What is the angle of depression from the top of the cliff to the boat, to 1 decimal place?",
+    options: ["31.0°", "59.0°", "36.9°", "53.1°"],
+    answer: "31.0°",
+    solution: "The angle of depression equals the angle of elevation from the boat: tan θ = 30 ÷ 50, so θ ≈ 31.0°.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m22",
+    question: "What is the length of an arc with radius 6 cm and angle at the centre 60°, in terms of π?",
+    options: ["2π cm", "6π cm", "π cm", "3π cm"],
+    answer: "2π cm",
+    solution: "Arc length = (60 ÷ 360) × 2πr = (1/6) × 12π = 2π cm.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m23",
+    question: "What is the area of a sector with radius 4 cm and angle at the centre 90°, in terms of π?",
+    options: ["4π cm²", "2π cm²", "8π cm²", "16π cm²"],
+    answer: "4π cm²",
+    solution: "Sector area = (90 ÷ 360) × πr² = (1/4) × 16π = 4π cm².",
+    type: "multiple-choice",
+  },
+  {
+    id: "m24",
+    question: "An angle at the circumference is 35°. What is the angle at the centre standing on the same arc?",
+    options: ["70°", "35°", "17.5°", "145°"],
+    answer: "70°",
+    solution: "The angle at the centre is twice the angle at the circumference: 2 × 35° = 70°.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m25",
+    question: "What is the size of the angle in a semicircle?",
+    options: ["90°", "180°", "60°", "45°"],
+    answer: "90°",
+    solution: "The angle in a semicircle is always a right angle (90°).",
+    type: "multiple-choice",
+  },
+  {
+    id: "m26",
+    question: "A tangent touches a circle at the point of contact with a radius. What angle do they make?",
+    options: ["90°", "180°", "45°", "60°"],
+    answer: "90°",
+    solution: "A tangent is perpendicular to the radius at the point of contact.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m27",
+    question: "Two chords intersect inside a circle. AP = 4 cm, PB = 9 cm and CP = 6 cm. Using AP × PB = CP × PD, find PD.",
+    options: ["6 cm", "9 cm", "4 cm", "13.5 cm"],
+    answer: "6 cm",
+    solution: "4 × 9 = 36, so 6 × PD = 36 and PD = 6 cm.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m28",
+    question: "What do the opposite angles of a cyclic quadrilateral add up to?",
+    options: ["180°", "360°", "90°", "270°"],
+    answer: "180°",
+    solution: "Opposite angles in a cyclic quadrilateral are supplementary: they add to 180°.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m29",
+    question: "What is the volume of a cylinder with radius 5 cm and height 4 cm, in terms of π?",
+    options: ["100π cm³", "40π cm³", "25π cm³", "20π cm³"],
+    answer: "100π cm³",
+    solution: "V = πr²h = π × 25 × 4 = 100π cm³.",
+    type: "multiple-choice",
+  },
+  {
+    id: "m30",
+    question: "Two transformations are applied to a shape. What does 'replacing transformations' mean?",
+    options: [
+      "Finding a single transformation that has the same effect as the two together",
+      "Drawing the shape again in the same place",
+      "Removing the shape from the grid",
+      "Changing the scale factor only",
+    ],
+    answer: "Finding a single transformation that has the same effect as the two together",
+    solution: "For example, two reflections can be replaced by a translation or a rotation.",
+    type: "multiple-choice",
+  },
 ];
-
-const scienceQuestions: PracticeQuestion[] = [
-  { id: "s1", question: "What subatomic particle determines the element?", answer: "Proton", options: ["Electron", "Proton", "Neutron", "Photon"], type: "multiple-choice" },
-  { id: "s2", question: "What is an isotope?", answer: "Atoms of the same element with different numbers of neutrons", type: "short" },
-  { id: "s3", question: "What is half-life?", answer: "The time it takes for half of a radioactive sample to decay", type: "short" },
-  { id: "s4", question: "What type of radiation can be stopped by paper?", answer: "Alpha particles", options: ["Alpha", "Beta", "Gamma", "X-rays"], type: "multiple-choice" },
-  { id: "s5", question: "Balance this equation: H₂ + O₂ → H₂O", answer: "2H₂ + O₂ → 2H₂O", solution: "Need 4 H on each side and 2 O on each side", type: "short" },
-  { id: "s6", question: "What type of reaction is: HCl + NaOH → NaCl + H₂O?", answer: "Neutralisation reaction", type: "short" },
-  { id: "s7", question: "What is electrolysis?", answer: "Using electricity to break down a compound into its elements", type: "short" },
-  { id: "s8", question: "What is produced at the cathode during electrolysis of water?", answer: "Hydrogen gas", type: "short" },
-  { id: "s9", question: "What is the law of conservation of mass?", answer: "Mass cannot be created or destroyed in a chemical reaction", type: "short" },
-  { id: "s10", question: "What type of reaction releases energy?", answer: "Exothermic", options: ["Endothermic", "Exothermic", "Synthesis", "Decomposition"], type: "multiple-choice" },
-  { id: "s11", question: "What is homeostasis?", answer: "The maintenance of a stable internal environment", type: "short" },
-  { id: "s12", question: "Which system controls long-lasting effects through hormones?", answer: "Endocrine system", type: "short" },
-  { id: "s13", question: "What hormone regulates blood glucose levels?", answer: "Insulin", type: "short" },
-  { id: "s14", question: "What type of feedback loop maintains homeostasis?", answer: "Negative feedback loop", type: "short" },
-  { id: "s15", question: "Name the 'fight or flight' hormones", answer: "Adrenaline and noradrenaline", type: "short" },
-  { id: "s16", question: "What is a pathogen?", answer: "A microorganism that causes disease", type: "short" },
-  { id: "s17", question: "Name the four types of pathogens", answer: "Bacteria, viruses, fungi, parasites", type: "short" },
-  { id: "s18", question: "What is the first line of defence against pathogens?", answer: "Physical barriers (skin, mucous membranes)", type: "short" },
-  { id: "s19", question: "What cells produce antibodies?", answer: "B lymphocytes (B cells)", type: "short" },
-  { id: "s20", question: "What is immunological memory?", answer: "The immune system's ability to remember and respond faster to previously encountered pathogens", type: "short" },
-  { id: "s21", question: "What is an autoimmune disease?", answer: "When the immune system attacks the body's own cells", type: "short" },
-  { id: "s22", question: "How do vaccines work?", answer: "They expose the body to weakened/inactive pathogens to build immunity", type: "short" },
-  { id: "s23", question: "What is the difference between infectious and non-infectious diseases?", answer: "Infectious diseases are caused by pathogens and can spread; non-infectious cannot spread between people", type: "short" },
-  { id: "s24", question: "What gland is known as the 'master gland'?", answer: "Pituitary gland", type: "short" },
-  { id: "s25", question: "What is Type 1 diabetes caused by?", answer: "The body's inability to produce insulin", type: "short" },
-];
-
-const historyQuestions: PracticeQuestion[] = [
-  { id: "h1", question: "What event triggered the start of World War I?", answer: "Assassination of Archduke Franz Ferdinand", type: "short" },
-  { id: "h2", question: "Name the four main causes of WWI (MAIN)", answer: "Militarism, Alliances, Imperialism, Nationalism", type: "short" },
-  { id: "h3", question: "When did the Gallipoli campaign take place?", answer: "1915", options: ["1914", "1915", "1916", "1918"], type: "multiple-choice" },
-  { id: "h4", question: "What is ANZAC Day commemorating?", answer: "Australian and New Zealand soldiers who served at Gallipoli and all wars", type: "short" },
-  { id: "h5", question: "Name three battles on the Western Front involving Australians", answer: "Somme, Fromelles, Passchendaele", type: "short" },
-  { id: "h6", question: "What treaty ended WWI?", answer: "Treaty of Versailles", type: "short" },
-  { id: "h7", question: "Which country was blamed for WWI in the Treaty of Versailles?", answer: "Germany", type: "short" },
-  { id: "h8", question: "What was the Great Depression?", answer: "A severe worldwide economic downturn in the 1930s", type: "short" },
-  { id: "h9", question: "What event started WWII in Europe?", answer: "Germany's invasion of Poland in 1939", type: "short" },
-  { id: "h10", question: "What was the Holocaust?", answer: "The systematic genocide of six million Jews by Nazi Germany", type: "short" },
-  { id: "h11", question: "What was the significance of the Fall of Singapore?", answer: "Britain's worst military defeat; 15,000 Australians captured", type: "short" },
-  { id: "h12", question: "Why was the Kokoda Track campaign significant?", answer: "First time Australians defended their homeland; stopped Japanese advance", type: "short" },
-  { id: "h13", question: "What is a primary source?", answer: "An original document or object created at the time being studied", type: "short" },
-  { id: "h14", question: "What is the Australian Constitution?", answer: "The set of rules establishing Australia's federal system of government", type: "short" },
-  { id: "h15", question: "What is the role of the House of Representatives?", answer: "The lower house where government is formed and laws are debated", type: "short" },
-  { id: "h16", question: "What is a referendum?", answer: "A vote by citizens to change the Constitution", type: "short" },
-  { id: "h17", question: "What is the role of the Governor-General?", answer: "The Queen's representative who gives royal assent to laws", type: "short" },
-  { id: "h18", question: "What is the difference between federal and state powers?", answer: "Federal powers apply nationally; state powers apply within each state", type: "short" },
-  { id: "h19", question: "What is civic participation?", answer: "Ways citizens engage in their community and government (voting, volunteering, activism)", type: "short" },
-  { id: "h20", question: "Name three international organisations Australia belongs to", answer: "United Nations, ASEAN, Pacific Islands Forum", type: "short" },
-  { id: "h21", question: "What does OPCL stand for in source analysis?", answer: "Origin, Purpose, Content, Limitation", type: "short" },
-  { id: "h22", question: "What is historical bias?", answer: "A one-sided or prejudiced perspective in historical sources", type: "short" },
-  { id: "h23", question: "Why is it important to use multiple sources?", answer: "To get a balanced view and verify information through corroboration", type: "short" },
-  { id: "h24", question: "What does 'Lest We Forget' mean?", answer: "A phrase of remembrance for those who died in war", type: "short" },
-  { id: "h25", question: "What is the ANZAC legend?", answer: "The idea that Australian soldiers showed courage, mateship, and endurance at Gallipoli", type: "short" },
-];
-
-const englishQuestions: PracticeQuestion[] = [
-  { id: "e1", question: "What is ethos in persuasive writing?", answer: "Appeal to credibility or character", options: ["Appeal to emotion", "Appeal to credibility", "Appeal to logic", "Appeal to fear"], type: "multiple-choice" },
-  { id: "e2", question: "What is pathos?", answer: "Appeal to emotion", type: "short" },
-  { id: "e3", question: "What is logos?", answer: "Appeal to logic and reason", type: "short" },
-  { id: "e4", question: "What is a rhetorical question?", answer: "A question asked for effect, not requiring an answer", type: "short" },
-  { id: "e5", question: "What is an anecdote?", answer: "A short personal story used to make a point", type: "short" },
-  { id: "e6", question: "What is emotive language?", answer: "Words chosen to trigger an emotional response", type: "short" },
-  { id: "e7", question: "What is the purpose of a news article?", answer: "To inform readers about current events", type: "short" },
-  { id: "e8", question: "What makes writing 'persuasive'?", answer: "It aims to convince the reader to accept a viewpoint or take action", type: "short" },
-  { id: "e9", question: "What is tone in writing?", answer: "The author's attitude toward the subject matter", type: "short" },
-  { id: "e10", question: "What is a contention?", answer: "The main argument or position in persuasive writing", type: "short" },
-  { id: "e11", question: "What is a dystopia?", answer: "An imagined society with great suffering and injustice", type: "short" },
-  { id: "e12", question: "Who wrote 1984?", answer: "George Orwell", type: "short" },
-  { id: "e13", question: "What is the Party's slogan in 1984?", answer: "War is Peace. Freedom is Slavery. Ignorance is Strength.", type: "short" },
-  { id: "e14", question: "What is Newspeak?", answer: "The Party's simplified language designed to limit free thought", type: "short" },
-  { id: "e15", question: "What does Big Brother represent?", answer: "Total surveillance and authoritarian control", type: "short" },
-  { id: "e16", question: "What is Room 101?", answer: "A torture room containing each person's worst fear", type: "short" },
-  { id: "e17", question: "What does '2+2=5' symbolise in 1984?", answer: "Total submission to the Party's control over truth", type: "short" },
-  { id: "e18", question: "Who is the protagonist of 1984?", answer: "Winston Smith", type: "short" },
-  { id: "e19", question: "What is the Ministry of Truth's real purpose?", answer: "To rewrite history and spread propaganda", type: "short" },
-  { id: "e20", question: "What is doublethink?", answer: "Holding two contradictory beliefs simultaneously", type: "short" },
-  { id: "e21", question: "What is symbolism?", answer: "Using objects or images to represent abstract ideas", type: "short" },
-  { id: "e22", question: "What is irony?", answer: "Expressing meaning by using language that signifies the opposite", type: "short" },
-  { id: "e23", question: "What does TEEL stand for?", answer: "Topic, Explain, Evidence, Link", type: "short" },
-  { id: "e24", question: "What is a thesis statement?", answer: "A sentence stating the main argument of an essay", type: "short" },
-  { id: "e25", question: "What is an allegory?", answer: "A story with a hidden political or moral meaning", type: "short" },
-];
-
-// Week-specific reading content for Mathematics
-// Term 1: Problem solving, exponents, units, surds, absolute value, patterns, coordinate geometry, linear equations
-// Term 2: Algebra review, relations/functions, quadratics, sequences, formulas, proportion
-const mathReadingByWeek: Record<number, ReadingContent> = {
-  1: {
-    title: "Problem Solving and the Real Number System",
-    content: `Mathematics is fundamentally about problem solving. George Polya developed a famous four-step approach that helps tackle any mathematical problem systematically.
-
-Polya's Four Steps:
-1. Understand the Problem: What are you asked to find? What information is given? What are the conditions?
-2. Devise a Plan: How can you connect the given information to what you need to find? Consider strategies like drawing a diagram, looking for patterns, working backwards, or breaking the problem into smaller parts.
-3. Carry Out the Plan: Execute your strategy step by step, checking each step as you go.
-4. Look Back: Check your answer. Does it make sense? Could you solve it differently?
-
-The Real Number System:
-All numbers we use can be classified into the real number system:
-- Natural numbers (N): Counting numbers 1, 2, 3, ...
-- Whole numbers (W): Natural numbers plus zero
-- Integers (Z): Whole numbers and their negatives ..., -2, -1, 0, 1, 2, ...
-- Rational numbers (Q): Numbers expressible as fractions a/b where b ≠ 0
-- Irrational numbers: Numbers that cannot be expressed as fractions (like π, √2)
-
-Together, rational and irrational numbers form the real numbers (R).`,
-    keyPoints: [
-      "Polya's 4 steps: Understand, Plan, Execute, Check",
-      "Natural ⊂ Whole ⊂ Integers ⊂ Rational ⊂ Real",
-      "Irrational numbers cannot be written as fractions",
-      "Apply systematic problem-solving to all mathematics"
-    ]
-  },
-  2: {
-    title: "Laws of Exponents",
-    content: `Exponents (or indices) are a shorthand way of writing repeated multiplication. Understanding the laws of exponents is essential for simplifying expressions and solving equations.
-
-The Laws of Exponents:
-
-1. Product Rule: aᵐ × aⁿ = aᵐ⁺ⁿ
-When multiplying same bases, add the exponents.
-Example: 2³ × 2⁴ = 2⁷ = 128
-
-2. Quotient Rule: aᵐ ÷ aⁿ = aᵐ⁻ⁿ
-When dividing same bases, subtract the exponents.
-Example: 5⁶ ÷ 5² = 5⁴ = 625
-
-3. Power Rule: (aᵐ)ⁿ = aᵐˣⁿ
-When raising a power to a power, multiply the exponents.
-Example: (3²)⁴ = 3⁸ = 6561
-
-4. Zero Exponent: a⁰ = 1 (where a ≠ 0)
-Any non-zero number raised to the power of zero equals 1.
-
-5. Negative Exponent: a⁻ⁿ = 1/aⁿ
-A negative exponent means the reciprocal.
-Example: 2⁻³ = 1/2³ = 1/8
-
-6. Power of a Product: (ab)ⁿ = aⁿbⁿ
-7. Power of a Quotient: (a/b)ⁿ = aⁿ/bⁿ`,
-    keyPoints: [
-      "Multiply same base: add exponents (aᵐ × aⁿ = aᵐ⁺ⁿ)",
-      "Divide same base: subtract exponents (aᵐ ÷ aⁿ = aᵐ⁻ⁿ)",
-      "Power to power: multiply exponents ((aᵐ)ⁿ = aᵐˣⁿ)",
-      "a⁰ = 1 and a⁻ⁿ = 1/aⁿ"
-    ]
-  },
-  3: {
-    title: "Units and Measurements",
-    content: `Understanding units and being able to convert between them is essential for solving real-world problems. The metric system is based on powers of 10, making conversions straightforward.
-
-Metric Prefixes:
-- kilo (k) = 1000
-- hecto (h) = 100
-- deca (da) = 10
-- base unit = 1
-- deci (d) = 0.1
-- centi (c) = 0.01
-- milli (m) = 0.001
-
-Length Conversions:
-1 km = 1000 m, 1 m = 100 cm = 1000 mm
-
-Area Conversions:
-Since area is length × length, we square the conversion factor.
-1 m² = 10,000 cm² (because 1 m = 100 cm, so 100² = 10,000)
-1 km² = 1,000,000 m²
-
-Volume Conversions:
-Since volume is length × length × length, we cube the conversion factor.
-1 m³ = 1,000,000 cm³
-1 L = 1000 mL = 1000 cm³
-
-Compound Measures:
-Speed = distance/time (km/h or m/s)
-Density = mass/volume (g/cm³ or kg/m³)
-Pressure = force/area (Pa or N/m²)
-
-To convert km/h to m/s: multiply by 1000/3600 = 5/18`,
-    keyPoints: [
-      "Metric system is based on powers of 10",
-      "Area units: square the conversion factor",
-      "Volume units: cube the conversion factor",
-      "Compound measures combine multiple units"
-    ]
-  },
-  4: {
-    title: "Surds, Roots and Radicals",
-    content: `A surd (or radical) is a root that cannot be simplified to a whole number. Understanding how to work with surds is important for exact calculations.
-
-What is a Surd?
-√4 = 2 (not a surd - it's rational)
-√5 ≈ 2.236... (a surd - it's irrational)
-
-Simplifying Surds:
-To simplify a surd, find the largest perfect square factor.
-√72 = √(36 × 2) = √36 × √2 = 6√2
-√50 = √(25 × 2) = √25 × √2 = 5√2
-
-Rules for Radicals:
-1. √a × √b = √(ab)
-2. √a ÷ √b = √(a/b)
-3. √a² = |a| (absolute value)
-4. (√a)² = a
-
-Adding and Subtracting Surds:
-You can only combine like surds (same number under the root).
-3√2 + 5√2 = 8√2
-√50 + √18 = 5√2 + 3√2 = 8√2
-
-Multiplying Surds:
-√3 × √5 = √15
-2√3 × 4√5 = 8√15
-
-Rationalising the Denominator:
-To remove a surd from the denominator, multiply by a form of 1.
-1/√2 = 1/√2 × √2/√2 = √2/2`,
-    keyPoints: [
-      "Surds are irrational roots like √2, √3, √5",
-      "Simplify by finding largest perfect square factor",
-      "Only combine like surds (same radical)",
-      "Rationalise denominators by multiplying by √n/√n"
-    ]
-  },
-  5: {
-    title: "Absolute Value",
-    content: `Absolute value represents the distance of a number from zero on the number line. Distance is always positive, so absolute value is always non-negative.
-
-Definition:
-|a| = a if a ≥ 0
-|a| = -a if a < 0
-
-In words: If the number is positive or zero, keep it. If negative, make it positive.
-
-Examples:
-|7| = 7
-|-7| = 7
-|0| = 0
-
-Properties of Absolute Value:
-1. |a| ≥ 0 (always non-negative)
-2. |a| = |-a| (distance is the same in both directions)
-3. |ab| = |a| × |b|
-4. |a/b| = |a|/|b| (where b ≠ 0)
-5. |a + b| ≤ |a| + |b| (triangle inequality)
-
-Solving Absolute Value Equations:
-If |x| = 5, then x = 5 or x = -5
-If |x - 3| = 7, then x - 3 = 7 or x - 3 = -7
-So x = 10 or x = -4
-
-Solving Absolute Value Inequalities:
-|x| < 3 means -3 < x < 3
-|x| > 3 means x < -3 or x > 3`,
-    keyPoints: [
-      "Absolute value = distance from zero",
-      "|a| is always non-negative",
-      "|x| = k has two solutions: x = k or x = -k",
-      "|x| < k means -k < x < k"
-    ]
-  },
-  6: {
-    title: "Making Generalisations and Patterns",
-    content: `Finding patterns and making generalisations is at the heart of algebra. By identifying patterns in specific examples, we can write general rules that work for any case.
-
-Looking for Patterns:
-Consider the sum of the first n odd numbers:
-1 = 1 = 1²
-1 + 3 = 4 = 2²
-1 + 3 + 5 = 9 = 3²
-1 + 3 + 5 + 7 = 16 = 4²
-
-Pattern: The sum of the first n odd numbers equals n².
-
-Steps to Find Patterns:
-1. List several specific examples
-2. Look for relationships between inputs and outputs
-3. Test your pattern with more examples
-4. Write a general rule using algebra
-5. Prove it works for all cases
-
-Types of Patterns:
-Linear patterns: Increase by a constant amount (2, 5, 8, 11...)
-Quadratic patterns: Second differences are constant (1, 4, 9, 16...)
-Geometric patterns: Multiply by a constant (2, 6, 18, 54...)
-
-Writing Generalisations:
-If the nth term of a sequence is aₙ:
-Linear: aₙ = dn + c (where d is common difference)
-Quadratic: aₙ = an² + bn + c
-
-Using patterns to solve problems allows us to find answers for any value of n without calculating every case.`,
-    keyPoints: [
-      "Look for patterns in specific examples",
-      "Test patterns with more examples before generalising",
-      "Linear patterns have constant first differences",
-      "Quadratic patterns have constant second differences"
-    ]
-  },
-  7: {
-    title: "NAPLAN Preparation - Review Week",
-    content: `This week focuses on consolidating skills for NAPLAN. Review the key mathematical concepts and practice applying them in various contexts.
-
-Number and Algebra Review:
-- Place value and number operations
-- Fractions, decimals, and percentages
-- Ratio and proportion
-- Order of operations (BODMAS)
-- Algebraic expressions and equations
-
-Measurement and Geometry Review:
-- Perimeter, area, and volume
-- Angles and shapes
-- Coordinate geometry
-- Time and rates
-
-Statistics and Probability Review:
-- Mean, median, mode, range
-- Reading graphs and tables
-- Probability calculations
-
-NAPLAN Tips:
-1. Read questions carefully - identify what's being asked
-2. Show your working - even for multiple choice
-3. Check units match in your answer
-4. Use estimation to check if answers are reasonable
-5. Manage your time - don't spend too long on one question
-6. If stuck, move on and come back later
-
-Practice applying Polya's problem-solving steps to unfamiliar questions. Many NAPLAN questions test understanding rather than just procedures.`,
-    keyPoints: [
-      "Review number, algebra, measurement, statistics",
-      "Read questions carefully before solving",
-      "Check that answers are reasonable",
-      "Manage time effectively during the test"
-    ]
-  },
-  8: {
-    title: "Coordinate Geometry",
-    content: `Coordinate geometry connects algebra and geometry by using coordinates to describe positions and relationships on a plane.
-
-The Coordinate Plane:
-- Horizontal axis (x-axis) and vertical axis (y-axis)
-- Origin (0, 0) is where axes meet
-- Points are written as ordered pairs (x, y)
-
-Distance Between Two Points:
-The distance between (x₁, y₁) and (x₂, y₂) is:
-d = √[(x₂ - x₁)² + (y₂ - y₁)²]
-
-This comes from Pythagoras' theorem.
-Example: Distance from (1, 2) to (4, 6)
-d = √[(4-1)² + (6-2)²] = √[9 + 16] = √25 = 5
-
-Midpoint Between Two Points:
-The midpoint of the line segment joining (x₁, y₁) and (x₂, y₂) is:
-M = ((x₁ + x₂)/2, (y₁ + y₂)/2)
-
-Example: Midpoint of (2, 3) and (8, 7)
-M = ((2+8)/2, (3+7)/2) = (5, 5)
-
-Gradient (Slope):
-The gradient measures steepness and direction.
-m = (y₂ - y₁)/(x₂ - x₁) = rise/run
-
-Positive gradient: line goes up from left to right
-Negative gradient: line goes down from left to right
-Zero gradient: horizontal line
-Undefined: vertical line`,
-    keyPoints: [
-      "Distance formula: d = √[(x₂-x₁)² + (y₂-y₁)²]",
-      "Midpoint formula: M = ((x₁+x₂)/2, (y₁+y₂)/2)",
-      "Gradient = rise/run = (y₂-y₁)/(x₂-x₁)",
-      "Positive gradient goes up, negative goes down"
-    ]
-  },
-  9: {
-    title: "Linear Equations and Systems",
-    content: `Linear equations form straight lines when graphed. Solving systems of linear equations means finding where two lines intersect.
-
-Equation of a Straight Line:
-Gradient-intercept form: y = mx + c
-- m is the gradient
-- c is the y-intercept
-
-Finding the Equation:
-Given gradient m and a point (x₁, y₁):
-y - y₁ = m(x - x₁)
-
-Solving Linear Equations:
-The goal is to isolate the variable.
-Example: 3x + 7 = 16
-3x = 16 - 7 = 9
-x = 3
-
-Systems of Linear Equations:
-Two equations with two unknowns - find values that satisfy both.
-
-Substitution Method:
-1. Solve one equation for a variable
-2. Substitute into the other equation
-3. Solve and substitute back
-
-Elimination Method:
-1. Multiply equations so coefficients match
-2. Add or subtract to eliminate a variable
-3. Solve and substitute back
-
-Example: x + y = 10, x - y = 4
-Adding: 2x = 14, so x = 7
-Substituting: 7 + y = 10, so y = 3
-
-Real-Life Modelling:
-Linear equations can model situations with constant rates of change, such as distance-time relationships, cost functions, or depreciation.`,
-    keyPoints: [
-      "y = mx + c: m is gradient, c is y-intercept",
-      "Use substitution when one equation is already solved",
-      "Use elimination when coefficients can be matched",
-      "Check solutions in both original equations"
-    ]
-  },
-  10: {
-    title: "Algebra Review: Simplifying and Expanding",
-    content: `Term 2 begins with consolidating algebraic skills. Being fluent with simplifying, expanding, and factorising is essential for working with functions and equations.
-
-Simplifying Algebraic Expressions:
-Combine like terms - terms with the same variables raised to the same power.
-3x + 5y - 2x + 3y = x + 8y
-4a²b - 2ab² + 3a²b = 7a²b - 2ab²
-
-Expanding Single Brackets:
-Multiply the term outside by each term inside.
-3(x + 4) = 3x + 12
--2(3y - 5) = -6y + 10
-x(x + 3) = x² + 3x
-
-Expanding Double Brackets (FOIL):
-(x + 2)(x + 5)
-= x² + 5x + 2x + 10
-= x² + 7x + 10
-
-First × First, Outer × Outer, Inner × Inner, Last × Last
-
-Special Products:
-Perfect square: (a + b)² = a² + 2ab + b²
-Perfect square: (a - b)² = a² - 2ab + b²
-Difference of squares: (a + b)(a - b) = a² - b²
-
-Factorising (reverse of expanding):
-Common factor: 6x + 9 = 3(2x + 3)
-Grouping: ax + ay + bx + by = a(x+y) + b(x+y) = (a+b)(x+y)`,
-    keyPoints: [
-      "Combine like terms when simplifying",
-      "Use FOIL for double brackets",
-      "(a+b)² = a² + 2ab + b²",
-      "(a+b)(a-b) = a² - b²"
-    ]
-  },
-  11: {
-    title: "Relations and Functions",
-    content: `Functions are a fundamental concept in mathematics, describing relationships where each input has exactly one output.
-
-Relations vs Functions:
-A relation is any set of ordered pairs.
-A function is a special relation where each x-value maps to exactly one y-value.
-
-Testing for Functions:
-Vertical Line Test: If any vertical line crosses the graph more than once, it's NOT a function.
-
-Mapping Diagrams:
-Show how each input maps to outputs.
-If any input has more than one arrow leaving it, it's not a function.
-
-Function Notation:
-f(x) reads as "f of x" - the output when x is input.
-If f(x) = 2x + 3:
-f(1) = 2(1) + 3 = 5
-f(-2) = 2(-2) + 3 = -1
-
-Domain and Range:
-Domain: All possible input values (x-values)
-Range: All possible output values (y-values)
-
-For f(x) = √x:
-Domain: x ≥ 0 (can't take square root of negative)
-Range: y ≥ 0 (square root is always non-negative)
-
-Evaluating Functions:
-To find f(a), substitute a for x in the function rule.
-To find x when f(x) = k, solve the equation.`,
-    keyPoints: [
-      "Functions: each input has exactly one output",
-      "Vertical line test identifies functions",
-      "f(x) notation: f(2) means substitute x = 2",
-      "Domain = inputs, Range = outputs"
-    ]
-  },
-  12: {
-    title: "Quadratic Expressions",
-    content: `Quadratic expressions contain a variable squared as the highest power. Learning to factorise them is key to solving quadratic equations.
-
-Standard Form:
-ax² + bx + c where a ≠ 0
-
-Factorising when a = 1 (Monic Quadratics):
-x² + bx + c = (x + m)(x + n)
-where m × n = c and m + n = b
-
-Example: x² + 7x + 12
-Need: m × n = 12 and m + n = 7
-Factors of 12: 1×12, 2×6, 3×4
-3 + 4 = 7 ✓
-So x² + 7x + 12 = (x + 3)(x + 4)
-
-Factorising when a ≠ 1 (Non-Monic):
-2x² + 7x + 3
-Product: 2 × 3 = 6
-Sum: 7
-Factors: 1 and 6 (1 × 6 = 6, 1 + 6 = 7)
-Rewrite: 2x² + x + 6x + 3
-Group: x(2x + 1) + 3(2x + 1)
-Factor: (x + 3)(2x + 1)
-
-Special Cases:
-Difference of squares: x² - 16 = (x + 4)(x - 4)
-Perfect square: x² + 6x + 9 = (x + 3)²
-
-Always check by expanding your answer!`,
-    keyPoints: [
-      "Find two numbers that multiply to c and add to b",
-      "For non-monic: use the product-sum method",
-      "x² - a² = (x + a)(x - a)",
-      "Always check by expanding"
-    ]
-  },
-  13: {
-    title: "Representing Quadratic Functions",
-    content: `Quadratic functions create parabolas when graphed. Understanding different forms helps us identify key features.
-
-Three Forms of Quadratics:
-1. Standard form: y = ax² + bx + c
-   - a determines if parabola opens up (a > 0) or down (a < 0)
-   - c is the y-intercept
-
-2. Factorised form: y = a(x - p)(x - q)
-   - p and q are the x-intercepts (roots)
-   - Axis of symmetry: x = (p + q)/2
-
-3. Vertex form: y = a(x - h)² + k
-   - (h, k) is the vertex (turning point)
-   - Axis of symmetry: x = h
-
-Finding the Vertex:
-From standard form y = ax² + bx + c:
-x-coordinate: x = -b/(2a)
-y-coordinate: Substitute x back into equation
-
-Example: y = x² - 6x + 8
-x = -(-6)/(2×1) = 3
-y = (3)² - 6(3) + 8 = 9 - 18 + 8 = -1
-Vertex: (3, -1)
-
-Converting to Vertex Form (Completing the Square):
-y = x² - 6x + 8
-y = (x² - 6x + 9) - 9 + 8
-y = (x - 3)² - 1
-
-Key Features:
-- Vertex (turning point)
-- Axis of symmetry
-- x-intercepts (if they exist)
-- y-intercept
-- Direction (opens up or down)`,
-    keyPoints: [
-      "Standard form: y = ax² + bx + c (y-intercept = c)",
-      "Factorised form: y = a(x-p)(x-q) (roots at p and q)",
-      "Vertex form: y = a(x-h)² + k (vertex at (h,k))",
-      "Axis of symmetry: x = -b/(2a)"
-    ]
-  },
-  14: {
-    title: "Solving Quadratic Equations",
-    content: `A quadratic equation is when a quadratic expression equals zero. There are several methods to find the solutions (roots).
-
-Method 1: Factorising
-If x² - 5x + 6 = 0
-Factorise: (x - 2)(x - 3) = 0
-If product = 0, one factor must be 0:
-x - 2 = 0 or x - 3 = 0
-x = 2 or x = 3
-
-Method 2: Quadratic Formula
-For ax² + bx + c = 0:
-x = (-b ± √(b² - 4ac)) / (2a)
-
-The Discriminant (Δ = b² - 4ac):
-- Δ > 0: Two distinct real solutions
-- Δ = 0: One repeated solution
-- Δ < 0: No real solutions
-
-Example: 2x² + 5x - 3 = 0
-a = 2, b = 5, c = -3
-Δ = 25 - 4(2)(-3) = 25 + 24 = 49
-x = (-5 ± 7)/4
-x = 2/4 = 0.5 or x = -12/4 = -3
-
-Method 3: Graphically
-The solutions are where the parabola crosses the x-axis.
-
-Real-Life Applications:
-Projectile motion: height = -4.9t² + v₀t + h₀
-Optimisation problems (finding maximum/minimum)
-Area problems`,
-    keyPoints: [
-      "Factorise and set each bracket to zero",
-      "Quadratic formula: x = (-b ± √(b²-4ac))/2a",
-      "Discriminant tells number of solutions",
-      "Solutions are x-intercepts of the parabola"
-    ]
-  },
-  15: {
-    title: "Sequences",
-    content: `A sequence is an ordered list of numbers following a pattern. Understanding sequences helps model many real-world situations.
-
-Key Terms:
-- Term: Each number in the sequence
-- First term (a₁ or a): The starting value
-- Common difference (d): Amount added each time (arithmetic)
-- Common ratio (r): Amount multiplied each time (geometric)
-
-Arithmetic Sequences:
-Each term is found by adding a constant.
-2, 5, 8, 11, 14, ... (d = 3)
-
-Explicit formula: aₙ = a₁ + (n-1)d
-Recursive formula: aₙ = aₙ₋₁ + d
-
-Example: First term 3, common difference 4
-aₙ = 3 + (n-1)×4 = 3 + 4n - 4 = 4n - 1
-
-Geometric Sequences:
-Each term is found by multiplying by a constant.
-2, 6, 18, 54, ... (r = 3)
-
-Explicit formula: aₙ = a₁ × r^(n-1)
-Recursive formula: aₙ = aₙ₋₁ × r
-
-Finding the Pattern:
-1. Calculate differences between consecutive terms
-2. If differences are constant → arithmetic
-3. If differences are not constant, check ratios
-4. If ratios are constant → geometric
-
-Real-Life Examples:
-- Simple interest (arithmetic)
-- Compound interest (geometric)
-- Population growth (geometric)`,
-    keyPoints: [
-      "Arithmetic: add constant (aₙ = a₁ + (n-1)d)",
-      "Geometric: multiply constant (aₙ = a₁ × r^(n-1))",
-      "Constant differences → arithmetic sequence",
-      "Constant ratios → geometric sequence"
-    ]
-  },
-  16: {
-    title: "Rearranging Formulas and Proportion",
-    content: `Being able to rearrange formulas and understand proportional relationships are essential skills for applying mathematics to real situations.
-
-Changing the Subject of a Formula:
-Use inverse operations to isolate the desired variable.
-
-Example: Make r the subject of A = πr²
-A/π = r²
-r = √(A/π)
-
-Example: Make t the subject of v = u + at
-v - u = at
-t = (v - u)/a
-
-Tips:
-- Do the same operation to both sides
-- Work from the outside in
-- Clear fractions by multiplying by denominators
-
-Direct Proportion:
-When one quantity increases, the other increases by the same factor.
-y ∝ x means y = kx (k is the constant of proportionality)
-
-If y = 12 when x = 4, find k:
-12 = k × 4, so k = 3
-The equation is y = 3x
-
-Inverse Proportion:
-When one quantity increases, the other decreases by the same factor.
-y ∝ 1/x means y = k/x
-
-If y = 6 when x = 2, find k:
-6 = k/2, so k = 12
-The equation is y = 12/x
-
-Graphs:
-Direct proportion: straight line through origin
-Inverse proportion: hyperbola`,
-    keyPoints: [
-      "Use inverse operations to change the subject",
-      "Direct: y = kx (straight line through origin)",
-      "Inverse: y = k/x (hyperbola)",
-      "Find k by substituting known values"
-    ]
-  },
-  17: {
-    title: "Semester Review and Exam Preparation",
-    content: `This week focuses on reviewing all topics covered this semester in preparation for the end-of-semester examination.
-
-Term 1 Topics:
-- Problem solving (Polya's steps)
-- Real number system
-- Laws of exponents
-- Units and measurements
-- Surds and radicals
-- Absolute value
-- Patterns and generalisations
-- Coordinate geometry (distance, midpoint, gradient)
-- Linear equations and systems
-
-Term 2 Topics:
-- Algebra: simplifying, expanding, factorising
-- Relations and functions
-- Quadratic expressions
-- Quadratic functions (standard, factorised, vertex form)
-- Solving quadratic equations
-- Sequences (arithmetic and geometric)
-- Rearranging formulas
-- Direct and inverse proportion
-
-Exam Tips:
-1. Read each question carefully
-2. Show all working for partial marks
-3. Check units are consistent
-4. Draw diagrams when helpful
-5. Use the discriminant to check number of solutions
-6. Check answers by substituting back
-7. Manage your time - attempt all questions
-
-Key Formulas to Remember:
-- Distance: d = √[(x₂-x₁)² + (y₂-y₁)²]
-- Midpoint: M = ((x₁+x₂)/2, (y₁+y₂)/2)
-- Quadratic formula: x = (-b ± √(b²-4ac))/2a
-- Arithmetic sequence: aₙ = a₁ + (n-1)d
-- Geometric sequence: aₙ = a₁ × r^(n-1)`,
-    keyPoints: [
-      "Review all topics from both terms",
-      "Practice past exam questions",
-      "Show working for partial marks",
-      "Check answers are reasonable"
-    ]
-  }
-};
-
-// Science reading by week
-// Term 1 (Weeks 1-9): Chemistry - Atomic structure, isotopes, radioactivity, chemical reactions
-// Term 2 (Weeks 10-17): Biology - Homeostasis, endocrine system, diseases, immune system
-const scienceReadingByWeek: Record<number, ReadingContent> = {
-  1: {
-    title: "The Structure of the Atom",
-    content: `Understanding atomic structure is fundamental to chemistry. Our model of the atom has evolved over centuries as scientists discovered new evidence.
-
-History of Atomic Theory:
-- Democritus (400 BC): First proposed matter was made of indivisible "atoms"
-- Dalton (1803): Atoms are solid spheres; each element has unique atoms
-- Thomson (1897): Discovered electrons; "plum pudding" model
-- Rutherford (1911): Discovered the nucleus; mostly empty space
-- Bohr (1913): Electrons orbit in fixed energy levels
-- Modern model: Electron cloud/probability model
-
-Parts of an Atom:
-- Protons: Positive charge (+1), in nucleus, mass ≈ 1 amu
-- Neutrons: No charge (0), in nucleus, mass ≈ 1 amu
-- Electrons: Negative charge (-1), orbit nucleus, negligible mass
-
-Key Numbers:
-- Atomic number (Z): Number of protons - defines the element
-- Mass number (A): Protons + neutrons
-- Number of electrons = protons (in neutral atom)
-
-The Periodic Table:
-Elements are arranged by increasing atomic number.
-- Rows (periods): Same number of electron shells
-- Columns (groups): Same number of outer electrons
-- Properties repeat periodically (hence the name)
-
-Electron Configuration:
-Electrons fill shells from the nucleus outward.
-Shell 1: Maximum 2 electrons
-Shell 2: Maximum 8 electrons
-Shell 3: Maximum 8 electrons (for first 20 elements)`,
-    keyPoints: [
-      "Atomic number = protons, defines the element",
-      "Mass number = protons + neutrons",
-      "Electrons fill shells: 2, 8, 8...",
-      "Periodic table organised by atomic number"
-    ]
-  },
-  2: {
-    title: "Isotopes and Radioactive Decay",
-    content: `Isotopes are atoms of the same element with different numbers of neutrons. Some isotopes are unstable and undergo radioactive decay.
-
-Isotopes:
-- Same number of protons (same element)
-- Different number of neutrons (different mass)
-- Similar chemical properties
-- Different physical properties
-
-Notation:
-Carbon-12: ¹²C (6 protons, 6 neutrons)
-Carbon-14: ¹⁴C (6 protons, 8 neutrons)
-Both are carbon, but C-14 is radioactive.
-
-Radioactive Decay:
-Unstable nuclei release energy and particles to become more stable.
-
-Types of Radiation:
-1. Alpha (α) particles:
-   - 2 protons + 2 neutrons (helium nucleus)
-   - Stopped by paper
-   - Most ionising, least penetrating
-
-2. Beta (β) particles:
-   - High-energy electron
-   - Stopped by aluminium
-   - Medium ionising and penetrating
-
-3. Gamma (γ) rays:
-   - High-energy electromagnetic radiation
-   - Reduced by lead/concrete
-   - Least ionising, most penetrating
-
-Nuclear Equations:
-Mass number and atomic number must balance.
-²³⁸U → ²³⁴Th + ⁴He (alpha decay)
-¹⁴C → ¹⁴N + e⁻ (beta decay)`,
-    keyPoints: [
-      "Isotopes: same protons, different neutrons",
-      "Alpha: stopped by paper, most ionising",
-      "Beta: stopped by aluminium",
-      "Gamma: reduced by lead, most penetrating"
-    ]
-  },
-  3: {
-    title: "Half-Life and Uses of Radioisotopes",
-    content: `Half-life is a measure of how quickly a radioactive isotope decays. Radioisotopes have many important applications.
-
-What is Half-Life?
-Half-life (t½) is the time taken for half of the radioactive nuclei in a sample to decay.
-
-Example:
-If you start with 100g and the half-life is 10 years:
-After 10 years: 50g remains
-After 20 years: 25g remains
-After 30 years: 12.5g remains
-
-Calculating Remaining Amount:
-Amount remaining = Initial amount × (1/2)^n
-where n = number of half-lives elapsed
-
-Different isotopes have very different half-lives:
-- Polonium-214: 0.00016 seconds
-- Carbon-14: 5,730 years
-- Uranium-238: 4.5 billion years
-
-Applications of Radioisotopes:
-
-Medical Uses:
-- Diagnosis: Tracers show organ function (technetium-99m)
-- Treatment: Radiation kills cancer cells (cobalt-60, iodine-131)
-- Sterilisation: Medical equipment
-
-Dating:
-- Carbon-14 dating: For organic materials up to 50,000 years
-- Uranium-lead dating: For rocks billions of years old
-
-Industrial Uses:
-- Smoke detectors (americium-241)
-- Thickness gauges in manufacturing
-- Detecting leaks in pipes`,
-    keyPoints: [
-      "Half-life: time for half the sample to decay",
-      "Amount remaining = Initial × (1/2)^n",
-      "Carbon-14 used to date organic materials",
-      "Medical uses: tracers, cancer treatment"
-    ]
-  },
-  4: {
-    title: "Atomic Model Project Week",
-    content: `This week focuses on consolidating understanding of atomic structure through the Atomic Model Project assessment.
-
-Review: Atomic Structure
-The atom consists of:
-- Nucleus: Contains protons (+) and neutrons (neutral)
-- Electron cloud: Electrons (-) orbit the nucleus
-
-Each element is defined by its number of protons (atomic number).
-
-Evolution of Atomic Models:
-Scientists refined the atomic model as new evidence emerged:
-1. Dalton's solid sphere → simple but incomplete
-2. Thomson's plum pudding → discovered electrons
-3. Rutherford's nuclear model → gold foil experiment
-4. Bohr's planetary model → fixed electron orbits
-5. Quantum model → electron probability clouds
-
-Key Evidence:
-- Cathode ray experiments → electrons exist
-- Gold foil experiment → most of atom is empty space
-- Line spectra → electrons have specific energy levels
-
-Connecting Structure to Properties:
-- Electron configuration determines chemical behaviour
-- Group number relates to number of outer electrons
-- Atoms react to achieve stable outer shells (8 electrons)
-
-For Your Project:
-Consider how the atomic model:
-- Explains the organisation of the periodic table
-- Predicts chemical properties of elements
-- Has evolved based on experimental evidence`,
-    keyPoints: [
-      "Atomic models evolved with new evidence",
-      "Protons define the element",
-      "Outer electrons determine chemical properties",
-      "Scientific models are refined as evidence emerges"
-    ]
-  },
-  5: {
-    title: "Introduction to Chemical Reactions",
-    content: `A chemical reaction occurs when substances (reactants) are transformed into new substances (products) with different properties.
-
-Signs of a Chemical Reaction:
-- Colour change
-- Gas bubbles produced
-- Temperature change (heat released or absorbed)
-- Precipitate forms (solid from liquids)
-- Light or sound produced
-- Difficult to reverse
-
-Physical vs Chemical Change:
-Physical change: No new substances formed (e.g., melting ice)
-Chemical change: New substances with different properties formed
-
-Law of Conservation of Mass:
-In a chemical reaction, the total mass of reactants equals the total mass of products. Atoms are rearranged, not created or destroyed.
-
-Writing Chemical Equations:
-Word equation: Hydrogen + Oxygen → Water
-Symbol equation: 2H₂ + O₂ → 2H₂O
-
-Balancing Equations:
-The same number of each type of atom must appear on both sides.
-
-Steps to Balance:
-1. Write the unbalanced equation with correct formulas
-2. Count atoms of each element on both sides
-3. Add coefficients (numbers in front) to balance
-4. Check all atoms are balanced
-5. Reduce coefficients to smallest whole numbers
-
-Never change the subscripts in formulas - only add coefficients!`,
-    keyPoints: [
-      "Chemical reactions form new substances",
-      "Conservation of mass: atoms rearranged, not created",
-      "Same atoms on both sides of equation",
-      "Balance by adding coefficients, not changing formulas"
-    ]
-  },
-  6: {
-    title: "Types of Chemical Reactions",
-    content: `Chemical reactions can be classified into several types based on how atoms are rearranged.
-
-Synthesis (Combination):
-Two or more substances combine to form one product.
-A + B → AB
-Example: 2Na + Cl₂ → 2NaCl
-
-Decomposition:
-One compound breaks down into simpler substances.
-AB → A + B
-Example: 2H₂O → 2H₂ + O₂
-
-Single Replacement (Displacement):
-One element replaces another in a compound.
-A + BC → AC + B
-Example: Zn + CuSO₄ → ZnSO₄ + Cu
-
-Double Replacement:
-Two compounds exchange ions.
-AB + CD → AD + CB
-Example: NaCl + AgNO₃ → NaNO₃ + AgCl
-
-Combustion:
-A substance reacts rapidly with oxygen, releasing heat and light.
-Fuel + O₂ → CO₂ + H₂O
-Example: CH₄ + 2O₂ → CO₂ + 2H₂O
-
-Neutralisation:
-Acid + Base → Salt + Water
-Example: HCl + NaOH → NaCl + H₂O
-
-Energy Changes:
-Exothermic: Releases energy (combustion, neutralisation)
-Endothermic: Absorbs energy (photosynthesis, decomposition)`,
-    keyPoints: [
-      "Synthesis: A + B → AB",
-      "Decomposition: AB → A + B",
-      "Combustion: Fuel + O₂ → CO₂ + H₂O",
-      "Neutralisation: Acid + Base → Salt + Water"
-    ]
-  },
-  7: {
-    title: "Electrolysis and Extraction of Metals",
-    content: `Electrolysis uses electricity to break down compounds and can be used to extract metals from their ores.
-
-What is Electrolysis?
-Electrolysis is the process of using electric current to decompose an ionic compound in solution or when molten.
-
-Components:
-- Electrolyte: The liquid that conducts electricity (molten ionic compound or solution)
-- Electrodes: Conductors where reactions occur
-  - Anode: Positive electrode (oxidation occurs)
-  - Cathode: Negative electrode (reduction occurs)
-
-Electrolysis of Water:
-2H₂O → 2H₂ + O₂
-- Hydrogen forms at cathode (negative)
-- Oxygen forms at anode (positive)
-- Volume of H₂ is twice that of O₂
-
-Extraction of Metals:
-Very reactive metals (like aluminium) cannot be extracted by carbon reduction. They must be extracted by electrolysis.
-
-Aluminium Extraction (Hall-Héroult Process):
-- Aluminium oxide dissolved in molten cryolite
-- At cathode: Al³⁺ + 3e⁻ → Al
-- At anode: Oxygen formed (reacts with carbon anode)
-
-Activity Series:
-Metals can be ranked by reactivity:
-K, Na, Ca, Mg, Al, Zn, Fe, Pb, Cu, Ag, Au
-More reactive metals require more energy to extract.`,
-    keyPoints: [
-      "Electrolysis uses electricity to break down compounds",
-      "Cathode: negative electrode, reduction (gain electrons)",
-      "Anode: positive electrode, oxidation (lose electrons)",
-      "Very reactive metals extracted by electrolysis"
-    ]
-  },
-  8: {
-    title: "Green Chemistry and Environmental Impact",
-    content: `Green chemistry focuses on designing chemical products and processes that reduce or eliminate hazardous substances and environmental impact.
-
-Principles of Green Chemistry:
-1. Prevention: Prevent waste rather than clean it up
-2. Atom economy: Maximise atoms from reactants in products
-3. Less hazardous synthesis: Use and generate safer substances
-4. Safer solvents: Avoid toxic solvents where possible
-5. Energy efficiency: Minimise energy requirements
-6. Renewable feedstocks: Use renewable raw materials
-7. Reduce derivatives: Avoid unnecessary steps
-8. Catalysis: Use catalysts rather than stoichiometric reagents
-9. Design for degradation: Products should break down safely
-10. Pollution prevention: Monitor and prevent releases
-
-Environmental Issues from Chemistry:
-- Acid rain: From SO₂ and NOₓ emissions
-- Ozone depletion: From CFCs
-- Climate change: From CO₂ and other greenhouse gases
-- Water pollution: From industrial waste
-- Plastic pollution: From non-biodegradable materials
-
-Sustainable Solutions:
-- Biodegradable plastics
-- Alternative energy sources
-- Water treatment technologies
-- Recycling and circular economy
-- Electric vehicles and hydrogen fuel cells
-
-As scientists, we have responsibility to consider the environmental impact of chemical processes and develop sustainable alternatives.`,
-    keyPoints: [
-      "Green chemistry aims to reduce environmental impact",
-      "Prevent waste rather than clean up",
-      "Use renewable resources where possible",
-      "Design products to break down safely"
-    ]
-  },
-  9: {
-    title: "Chemistry Review and Revision",
-    content: `This week consolidates all Chemistry topics covered in Term 1 in preparation for assessment.
-
-Atomic Structure:
-- Atoms contain protons, neutrons, and electrons
-- Atomic number = protons, mass number = protons + neutrons
-- Isotopes have same protons, different neutrons
-- Electron configuration determines chemical properties
-
-Radioactivity:
-- Unstable isotopes decay, emitting radiation
-- Alpha (stopped by paper), Beta (stopped by aluminium), Gamma (reduced by lead)
-- Half-life: time for half the sample to decay
-- Applications: dating, medicine, industry
-
-Chemical Reactions:
-- Conservation of mass: atoms rearranged, not created
-- Balance equations using coefficients
-- Types: synthesis, decomposition, displacement, combustion, neutralisation
-- Energy changes: exothermic (releases) vs endothermic (absorbs)
-
-Electrolysis:
-- Uses electricity to decompose compounds
-- Cathode (negative): reduction, metal deposited
-- Anode (positive): oxidation, non-metal released
-- Used to extract reactive metals
-
-Key Skills:
-- Balancing equations
-- Calculating half-life problems
-- Identifying reaction types
-- Writing nuclear equations
-
-Review these topics and practice problems to prepare for Term 2.`,
-    keyPoints: [
-      "Know atomic structure and isotopes",
-      "Understand radioactive decay and half-life",
-      "Balance chemical equations correctly",
-      "Identify reaction types and energy changes"
-    ]
-  },
-  10: {
-    title: "The Endocrine System",
-    content: `Term 2 focuses on Biology. The endocrine system controls body functions through hormones, producing long-lasting effects compared to the nervous system.
-
-Endocrine vs Nervous System:
-Nervous system: Fast, short-lived, electrical signals
-Endocrine system: Slower, long-lasting, chemical signals (hormones)
-
-Hormones:
-Chemical messengers produced by endocrine glands, transported in blood to target organs.
-
-Major Endocrine Glands:
-- Pituitary gland: "Master gland" - controls other glands
-- Thyroid: Metabolism (thyroxine)
-- Adrenal glands: Stress response (adrenaline, cortisol)
-- Pancreas: Blood sugar (insulin, glucagon)
-- Ovaries/Testes: Reproduction (oestrogen, testosterone)
-
-Fight, Flight, or Freeze Response:
-When you perceive danger:
-1. Hypothalamus signals adrenal glands
-2. Adrenaline and noradrenaline released
-3. Effects: increased heart rate, blood to muscles, pupils dilate, digestion stops
-4. Body prepared for immediate action
-
-This response evolved to help us survive threats but can be triggered by modern stressors like exams or public speaking.
-
-Hormones work more slowly than nerve impulses but their effects last longer - from minutes to months.`,
-    keyPoints: [
-      "Hormones are chemical messengers in blood",
-      "Pituitary is the 'master gland'",
-      "Adrenaline triggers fight/flight response",
-      "Hormones act slower but last longer than nerves"
-    ]
-  },
-  11: {
-    title: "Homeostasis and Regulation",
-    content: `Homeostasis is the maintenance of a stable internal environment despite changing external conditions. It's essential for cells to function properly.
-
-Why Homeostasis Matters:
-Cells work best within narrow ranges of temperature, pH, glucose, water, etc. Too much variation can damage or kill cells.
-
-What is Regulated?
-- Body temperature (~37°C)
-- Blood glucose levels
-- Water and salt balance
-- Blood pH
-- Oxygen and carbon dioxide levels
-
-Negative Feedback Loops:
-The main mechanism for homeostasis. When a variable moves away from the set point, mechanisms bring it back.
-
-Example: Blood Glucose Regulation
-1. Blood glucose rises (after eating)
-2. Pancreas detects increase
-3. Pancreas releases insulin
-4. Cells take up glucose; liver stores glucose as glycogen
-5. Blood glucose returns to normal
-
-If blood glucose falls too low:
-1. Pancreas detects decrease
-2. Pancreas releases glucagon
-3. Liver converts glycogen to glucose
-4. Blood glucose rises to normal
-
-Temperature Regulation:
-Too hot: Sweating, vasodilation, less activity
-Too cold: Shivering, vasoconstriction, increased metabolism
-
-The brain (hypothalamus) acts as the control centre for many homeostatic processes.`,
-    keyPoints: [
-      "Homeostasis maintains stable internal conditions",
-      "Negative feedback returns variables to set point",
-      "Insulin lowers blood glucose, glucagon raises it",
-      "Hypothalamus is the control centre"
-    ]
-  },
-  12: {
-    title: "Disruptions to Homeostasis",
-    content: `When homeostatic mechanisms fail, disease can result. Understanding these disruptions helps us appreciate the importance of regulation.
-
-Type 1 Diabetes:
-- Autoimmune disease - immune system destroys insulin-producing cells
-- Body cannot produce insulin
-- Blood glucose remains high
-- Treatment: Insulin injections
-
-Type 2 Diabetes:
-- Cells become resistant to insulin
-- Often linked to lifestyle factors
-- Treatment: Diet, exercise, medication
-
-Hyperthyroidism (Overactive Thyroid):
-- Too much thyroxine produced
-- Symptoms: Weight loss, rapid heartbeat, anxiety
-- Body's metabolism too fast
-
-Hypothyroidism (Underactive Thyroid):
-- Too little thyroxine produced
-- Symptoms: Weight gain, fatigue, feeling cold
-- Body's metabolism too slow
-
-Performance-Enhancing Hormones:
-Athletes sometimes misuse hormones to gain advantage:
-- EPO (Erythropoietin): Increases red blood cells
-- Testosterone/Anabolic steroids: Increase muscle mass
-- Human Growth Hormone: Increases muscle and reduces fat
-
-Ethical Issues:
-- Health risks to athletes
-- Unfair advantage
-- Against the spirit of sport
-- Pressure on others to use them
-
-These substances are banned in competitive sports.`,
-    keyPoints: [
-      "Type 1 diabetes: can't produce insulin (autoimmune)",
-      "Type 2 diabetes: cells resist insulin (lifestyle-related)",
-      "Thyroid disorders affect metabolism",
-      "Performance-enhancing hormones are banned and risky"
-    ]
-  },
-  13: {
-    title: "Homeostasis Project Week",
-    content: `This week focuses on the Homeostasis Project assessment. Apply your understanding of how the body maintains stable internal conditions.
-
-Key Concepts to Include:
-
-What is Homeostasis?
-- Definition: Maintenance of stable internal environment
-- Importance: Cells function best in specific conditions
-- Examples: Temperature, glucose, water, pH
-
-Feedback Mechanisms:
-- Negative feedback: Returns variable to set point
-- Components: Stimulus → Receptor → Control centre → Effector → Response
-- Example: Blood glucose regulation with insulin and glucagon
-
-Case Study Ideas:
-1. Temperature regulation during exercise
-2. Blood glucose control in diabetes
-3. Water balance during dehydration
-4. Hormone regulation in stress response
-
-Data Interpretation:
-- Analyse graphs showing homeostatic responses
-- Identify normal ranges and fluctuations
-- Explain what happens when systems fail
-
-Connections to Real Life:
-- Medical treatments that support homeostasis
-- How diet and exercise affect regulation
-- Environmental factors that challenge homeostasis
-
-Your project should demonstrate understanding of:
-- The concept of homeostasis
-- Specific examples with biological detail
-- What happens when regulation fails
-- Application to real-world scenarios`,
-    keyPoints: [
-      "Define and explain homeostasis clearly",
-      "Include specific examples with detail",
-      "Explain the role of negative feedback",
-      "Connect to real-world applications"
-    ]
-  },
-  14: {
-    title: "Infectious and Non-Infectious Diseases",
-    content: `Diseases can be classified based on whether they can spread from person to person.
-
-Infectious Diseases:
-Caused by pathogens and can spread between organisms.
-- Bacteria: Tuberculosis, cholera, food poisoning
-- Viruses: COVID-19, influenza, measles
-- Fungi: Athlete's foot, thrush
-- Parasites: Malaria, tapeworm
-
-Transmission Methods:
-- Direct contact: Touching infected person
-- Droplet: Coughing, sneezing
-- Airborne: Fine particles in air
-- Vector: Carried by organisms (mosquitoes)
-- Contaminated food/water
-- Body fluids: Blood, sexual contact
-
-Non-Infectious Diseases:
-Cannot spread between people.
-Caused by:
-- Genetics: Cystic fibrosis, sickle cell
-- Lifestyle: Type 2 diabetes, heart disease
-- Environment: Some cancers, asthma
-- Nutritional deficiency: Scurvy, rickets
-- Immune malfunction: Allergies, autoimmune
-
-Risk Factors:
-Factors that increase chance of disease:
-- Modifiable: Diet, exercise, smoking
-- Non-modifiable: Age, genetics, sex
-
-Prevention:
-Infectious: Vaccination, hygiene, quarantine
-Non-infectious: Healthy lifestyle, screening, avoiding risk factors`,
-    keyPoints: [
-      "Infectious diseases spread via pathogens",
-      "Non-infectious diseases don't spread between people",
-      "Pathogens: bacteria, viruses, fungi, parasites",
-      "Risk factors can be modifiable or non-modifiable"
-    ]
-  },
-  15: {
-    title: "Germ Theory and Pathogens",
-    content: `Germ theory states that many diseases are caused by microorganisms (germs/pathogens) invading the body.
-
-History of Germ Theory:
-Before germ theory, people believed diseases came from "bad air" (miasma) or imbalanced humours.
-
-Key Scientists:
-- Louis Pasteur: Proved microorganisms cause disease
-- Robert Koch: Developed Koch's postulates to identify disease-causing organisms
-- Joseph Lister: Introduced antiseptic surgery
-
-Koch's Postulates:
-1. The microorganism must be found in all cases of the disease
-2. It must be isolated and grown in pure culture
-3. It must cause the disease when introduced to a healthy host
-4. It must be re-isolated from the new host
-
-Types of Pathogens:
-
-Bacteria:
-- Single-celled organisms
-- Can reproduce rapidly
-- Some produce toxins
-- Treated with antibiotics
-
-Viruses:
-- Not living (can't reproduce alone)
-- Invade cells and use them to replicate
-- Antibiotics don't work against viruses
-- Treated with antivirals or prevented by vaccines
-
-Fungi:
-- Can be single-celled (yeast) or multicellular
-- Often affect skin, nails, respiratory system
-- Treated with antifungals
-
-Parasites:
-- Live on or in a host organism
-- Take nutrients from host
-- Include protozoa, worms, insects`,
-    keyPoints: [
-      "Germ theory: microorganisms cause disease",
-      "Koch's postulates identify disease-causing organisms",
-      "Antibiotics only work on bacteria, not viruses",
-      "Different treatments for different pathogen types"
-    ]
-  },
-  16: {
-    title: "Disease Transmission and the Immune System",
-    content: `Understanding how diseases spread helps us prevent infection. The immune system protects us from pathogens.
-
-How Diseases Spread:
-1. Contact transmission: Direct (touching) or indirect (surfaces)
-2. Droplet: Large particles from coughs/sneezes
-3. Airborne: Small particles stay suspended in air
-4. Vector-borne: Carried by animals (mosquitoes, ticks)
-5. Vehicle: Contaminated food, water, blood
-
-Breaking the Chain of Infection:
-- Hand hygiene
-- Masks and barriers
-- Vaccination
-- Safe food handling
-- Vector control
-- Isolation of infected individuals
-
-The Immune System:
-Three lines of defence protect us from pathogens.
-
-First Line (Physical/Chemical Barriers):
-- Skin: Physical barrier
-- Mucus: Traps pathogens
-- Stomach acid: Kills microbes
-- Tears and saliva: Contain enzymes
-
-Second Line (Innate Immune Response):
-- Inflammation: Increases blood flow
-- Phagocytes: Engulf and destroy pathogens
-- Fever: High temperature kills some pathogens
-- Natural killer cells: Destroy infected cells
-
-Third Line (Adaptive Immune Response):
-- B lymphocytes: Produce antibodies
-- T lymphocytes: Destroy infected cells
-- Specific to each pathogen
-- Creates immunological memory`,
-    keyPoints: [
-      "Break chain of infection to prevent spread",
-      "First line: physical barriers (skin, mucus)",
-      "Second line: inflammation, phagocytes",
-      "Third line: specific antibodies and memory"
-    ]
-  },
-  17: {
-    title: "Immunity, Vaccination, and Science Review",
-    content: `Vaccination harnesses the immune system's memory to provide protection against future infections.
-
-How Vaccines Work:
-1. Vaccine contains weakened, dead, or parts of pathogen
-2. Immune system recognises foreign antigens
-3. B cells produce antibodies
-4. Memory cells are created
-5. If exposed to real pathogen, response is rapid
-
-Types of Vaccines:
-- Live attenuated: Weakened pathogen (MMR, chickenpox)
-- Inactivated: Killed pathogen (flu, polio)
-- Subunit: Parts of pathogen (hepatitis B)
-- mRNA: Instructions to make viral protein (COVID-19)
-
-Herd Immunity:
-When enough people are vaccinated, disease can't spread easily, protecting those who can't be vaccinated.
-
-When the Immune System Goes Wrong:
-- Allergies: Overreaction to harmless substances
-- Autoimmune diseases: Immune system attacks own cells
-- Immunodeficiency: Weak immune response (HIV/AIDS)
-
-Semester Review:
-Term 1 Chemistry: Atomic structure, isotopes, radioactivity, chemical reactions, electrolysis
-Term 2 Biology: Endocrine system, homeostasis, diseases, immune system
-
-Key Skills:
-- Explain how body systems maintain homeostasis
-- Describe how pathogens cause disease
-- Explain how the immune system responds
-- Evaluate the importance of vaccination`,
-    keyPoints: [
-      "Vaccines train immune system using safe antigens",
-      "Memory cells enable rapid secondary response",
-      "Herd immunity protects the whole community",
-      "Review both Chemistry and Biology for exam"
-    ]
-  }
-};
-
-// History/Humanities reading by week
-// Term 1 (Weeks 1-9): History - Australians at War (WWI, WWII)
-// Term 2 (Weeks 10-17): Politics/Civics - Australian democracy, Constitution, citizenship
-const historyReadingByWeek: Record<number, ReadingContent> = {
-  1: {
-    title: "The World Goes to War: Setting the Stage for WWI",
-    content: `World War I (1914-1918) was one of the deadliest conflicts in human history. Understanding its causes helps us see how a single event could trigger a global catastrophe.
-
-Global Causes of WWI (MAIN):
-
-Militarism:
-Countries built up armies and navies. An arms race between Britain and Germany increased tensions. Military leaders gained political influence.
-
-Alliances:
-Europe was divided into two armed camps:
-- Triple Alliance: Germany, Austria-Hungary, Italy
-- Triple Entente: France, Russia, Britain
-An attack on one would bring allies into war.
-
-Imperialism:
-European powers competed for colonies in Africa and Asia, creating rivalries and tensions.
-
-Nationalism:
-Intense pride in one's nation led countries to believe they were superior. Ethnic groups in empires (especially Austria-Hungary) wanted independence.
-
-The Spark:
-On June 28, 1914, Archduke Franz Ferdinand of Austria-Hungary was assassinated in Sarajevo by a Serbian nationalist.
-
-Chain of Events:
-Austria-Hungary → Serbia → Russia → Germany → France → Britain
-
-Why Australia Went to War:
-- Loyalty to Britain ("when Britain is at war, Australia is at war")
-- Defence concerns about German presence in Pacific
-- Sense of adventure and duty
-- Belief it would be a short war`,
-    keyPoints: [
-      "MAIN: Militarism, Alliances, Imperialism, Nationalism",
-      "Assassination of Franz Ferdinand triggered the war",
-      "Alliance system caused rapid escalation",
-      "Australia entered due to ties with Britain"
-    ]
-  },
-  2: {
-    title: "Gallipoli and the Birth of National Identity",
-    content: `The Gallipoli campaign became a defining moment in Australian history, shaping the ANZAC legend and national identity.
-
-The Gallipoli Campaign (1915):
-The Allies aimed to capture the Dardanelles Strait and knock the Ottoman Empire out of the war. The campaign was poorly planned and faced determined Turkish resistance.
-
-April 25, 1915:
-Australian and New Zealand Army Corps (ANZAC) landed at what became known as Anzac Cove. Instead of the expected low beaches, they faced steep cliffs and well-defended positions.
-
-The Campaign:
-- Soldiers became trapped on narrow beaches
-- Brutal conditions: heat, flies, disease, limited water
-- Neither side could break the deadlock
-- Fighting continued for eight months
-
-The Evacuation (December 1915 - January 1916):
-The most successful part of the campaign. Troops were evacuated secretly with minimal casualties.
-
-The Cost:
-- 8,000+ Australian soldiers killed
-- 2,700+ New Zealand soldiers killed
-- 21,000+ British soldiers killed
-- ~86,000 Turkish casualties
-
-The ANZAC Legend:
-From this defeat emerged powerful national symbols:
-- Courage under fire
-- Mateship and looking after your mates
-- Endurance in harsh conditions
-- Larrikin spirit and irreverence for authority
-
-Different Perspectives:
-Consider experiences of: soldiers, nurses, families at home, Turkish defenders. Each group experienced Gallipoli differently.`,
-    keyPoints: [
-      "ANZAC landed April 25, 1915 (now ANZAC Day)",
-      "Eight-month campaign ending in evacuation",
-      "8,000+ Australian soldiers died",
-      "ANZAC legend: courage, mateship, endurance"
-    ]
-  },
-  3: {
-    title: "The Western Front and the Changing Nature of War",
-    content: `After Gallipoli, Australian forces joined the Western Front in France and Belgium, where they experienced the horrors of modern industrial warfare.
-
-Key Battles Involving Australians:
-
-Battle of Fromelles (July 1916):
-- First major Australian battle on Western Front
-- Disastrous attack with 5,500 casualties in one night
-- Bodies not recovered for decades
-
-Battle of the Somme (1916):
-- Massive offensive lasting months
-- Australians involved in battles at Pozières
-- Over 1 million casualties total
-
-Battle of Passchendaele (1917):
-- Fought in horrific mud
-- Soldiers drowned in shell holes
-- Little territorial gain for massive losses
-
-Trench Warfare:
-- Front lines, support trenches, communication trenches
-- No Man's Land between opposing forces
-- Soldiers lived with mud, rats, disease
-- Constant shelling created psychological trauma
-
-New Technologies:
-- Machine guns: Made frontal attacks suicidal
-- Artillery: Caused most casualties
-- Poison gas: Chemical warfare introduced
-- Tanks: First used 1916, broke stalemate
-- Aircraft: Reconnaissance and fighting
-
-Impact on Soldiers:
-- Physical: Wounds, gas damage, disease
-- Psychological: Shell shock (now PTSD)
-- Loss of innocence about glory of war`,
-    keyPoints: [
-      "Western Front: years of trench warfare stalemate",
-      "Fromelles, Pozières, Passchendaele - major Australian battles",
-      "New technology made war more deadly",
-      "Physical and psychological trauma affected soldiers"
-    ]
-  },
-  4: {
-    title: "The Interwar Period: From Hope to Tension",
-    content: `The period between WWI and WWII saw attempts at peace but also growing instability that would lead to another global conflict.
-
-Treaty of Versailles (1919):
-The peace treaty that ended WWI:
-- War Guilt Clause: Germany accepted blame
-- Reparations: Germany paid massive compensation
-- Territory: Germany lost land and colonies
-- Military: German army limited to 100,000
-- League of Nations: New international organisation
-
-Problems with the Treaty:
-- Germany felt humiliated ("diktat" - dictated peace)
-- Reparations crippled German economy
-- National borders didn't match ethnic populations
-- USA didn't join the League of Nations
-
-The Great Depression (1929-1939):
-- Stock market crash triggered global economic collapse
-- Unemployment reached 25% in many countries
-- Poverty, hunger, social unrest
-- People lost faith in democratic governments
-
-Rise of Fascism:
-In times of crisis, people turned to strong leaders promising order:
-- Italy: Mussolini (1922)
-- Germany: Hitler (1933)
-- Japan: Military government
-
-These regimes:
-- Rejected democracy
-- Promoted aggressive nationalism
-- Built up military power
-- Sought territorial expansion
-
-League of Nations Failures:
-- No army to enforce decisions
-- Major powers ignored it
-- Failed to stop Japanese invasion of Manchuria (1931)
-- Failed to stop Italian invasion of Ethiopia (1935)`,
-    keyPoints: [
-      "Treaty of Versailles humiliated Germany",
-      "Great Depression caused global economic collapse",
-      "Fascism rose in Italy, Germany, Japan",
-      "League of Nations couldn't prevent aggression"
-    ]
-  },
-  5: {
-    title: "The Outbreak of World War II and Australia's Early Involvement",
-    content: `World War II began in 1939, and Australia was quickly drawn into another global conflict.
-
-Causes of WWII:
-- Treaty of Versailles created resentment
-- Rise of totalitarianism (fascism, Nazism)
-- Failure of appeasement (giving in to Hitler's demands)
-- Hitler's territorial expansion
-- Japanese expansion in Asia
-
-Hitler's Aggression:
-1935: Reintroduced conscription (broke treaty)
-1936: Remilitarised Rhineland
-1938: Anschluss with Austria
-1938: Munich Agreement (took Sudetenland)
-1939: Invaded Czechoslovakia
-1939: Nazi-Soviet Pact
-September 1, 1939: Invaded Poland
-
-Australia Enters the War:
-Prime Minister Menzies: "Britain is at war; therefore Australia is at war."
-Initially, Australian troops went to North Africa and the Middle East.
-
-Key Campaigns:
-
-Fall of Singapore (February 1942):
-- Britain's "impregnable fortress" fell in days
-- 15,000 Australian soldiers captured
-- Shattered belief in British protection
-- War came to Australia's doorstep
-
-Siege of Tobruk (1941):
-- Australian troops held Libyan port for months
-- German propaganda called them "rats of Tobruk"
-- Australians adopted name with pride
-
-Kokoda Track (1942):
-- Japanese advance toward Port Moresby
-- Australian troops fought in brutal jungle conditions
-- First time Australians defended their homeland
-- Stopped Japanese advance toward Australia`,
-    keyPoints: [
-      "Hitler's aggression led to war in 1939",
-      "Fall of Singapore: 15,000 Australians captured",
-      "Kokoda: Australians defended homeland",
-      "War came directly to Australia's region"
-    ]
-  },
-  6: {
-    title: "The Australian Home Front",
-    content: `WWII affected everyone in Australia, not just soldiers. The home front was essential to the war effort.
-
-Government Controls:
-- Rationing: Limited quantities of food, petrol, clothing
-- Censorship: Government controlled information
-- Manpower regulations: Directed where people worked
-- Internment: Japanese-Australians and others detained
-
-Women's Roles:
-With men away fighting, women filled essential roles:
-- Factories producing munitions and equipment
-- Land Army - farming
-- Armed forces (WAAAF, AWAS, WRANS) - non-combat roles
-- Nursing - including in war zones
-- Volunteer work
-
-Indigenous Australians:
-- Many served despite not being citizens
-- Approximately 3,000 enlisted
-- Faced discrimination in and out of military
-- Service not always recognised
-- Some communities used for defence labour
-
-Propaganda:
-Government used posters, radio, and film to:
-- Encourage enlistment
-- Promote war bonds
-- Maintain morale
-- Encourage productivity
-- Promote rationing and conservation
-
-Brisbane Line:
-Secret plan to abandon northern Australia if invaded. Controversial and never officially confirmed.
-
-Attack on Australia:
-- Darwin bombed February 19, 1942 (more bombs than Pearl Harbor)
-- 64 raids on Darwin total
-- Sydney Harbour attacked by Japanese midget submarines
-- Showed vulnerability of Australia`,
-    keyPoints: [
-      "Rationing, censorship, and labour controls",
-      "Women entered workforce in new roles",
-      "Indigenous Australians served despite discrimination",
-      "Darwin bombed, Sydney Harbour attacked"
-    ]
-  },
-  7: {
-    title: "The Holocaust and Human Rights",
-    content: `The Holocaust was the systematic, state-sponsored persecution and murder of six million Jews by the Nazi regime. It stands as one of history's greatest crimes against humanity.
-
-Nazi Ideology:
-- Racial hierarchy with "Aryans" at top
-- Jews portrayed as enemies of Germany
-- Other groups also targeted: Roma, disabled, homosexuals, political opponents
-
-Stages of Persecution:
-
-1933-1938: Discrimination
-- Anti-Jewish laws (Nuremberg Laws 1935)
-- Jews lost citizenship, jobs, property
-- Kristallnacht (1938) - violent attacks on Jewish businesses
-
-1939-1941: Concentration
-- Jews forced into ghettos
-- Overcrowded, starvation conditions
-- Deportations began
-
-1942-1945: Extermination
-- "Final Solution" decided at Wannsee Conference
-- Death camps: Auschwitz, Treblinka, Sobibor
-- Mass murder in gas chambers
-
-Liberation:
-- Allies discovered camps as they advanced
-- World shocked by evidence of genocide
-- Nuremberg Trials held perpetrators accountable
-
-Lessons for Human Rights:
-- Universal Declaration of Human Rights (1948)
-- Genocide Convention
-- "Never Again" - commitment to prevent genocide
-- Importance of speaking out against hatred
-
-Australia's Response:
-After the war, Australia accepted many Holocaust survivors as refugees, changing immigration policies.`,
-    keyPoints: [
-      "Six million Jews murdered in systematic genocide",
-      "Persecution escalated: discrimination → ghettos → death camps",
-      "Holocaust led to human rights declarations",
-      "Responsibility to prevent genocide"
-    ]
-  },
-  8: {
-    title: "Source Interpretation and Historical Analysis",
-    content: `This week focuses on developing skills in analysing historical sources for assessment.
-
-Types of Sources:
-Primary Sources: Created at the time
-- Letters, diaries, photographs
-- Government documents, speeches
-- Newspapers, propaganda posters
-- Artefacts, uniforms, medals
-
-Secondary Sources: Created later
-- Textbooks, documentaries
-- Historical analyses
-- Museum exhibitions
-
-Analysing Sources - OPCL:
-O - Origin:
-- Who created it? When? Where?
-- What type of source is it?
-
-P - Purpose:
-- Why was it created?
-- To inform? Persuade? Entertain? Record?
-- Who was the intended audience?
-
-C - Content:
-- What does it say or show?
-- What information does it provide?
-- What language or imagery is used?
-
-L - Limitation:
-- What biases might exist?
-- What information is missing?
-- How reliable is this source?
-- What perspective is represented?
-
-Evaluating Reliability:
-- Consider author's position and motivation
-- Cross-reference with other sources
-- Look for corroboration
-- Be aware of propaganda
-
-Using Evidence in Arguments:
-- Make a claim (contention)
-- Support with evidence from sources
-- Analyse what the evidence shows
-- Consider multiple perspectives
-- Acknowledge limitations`,
-    keyPoints: [
-      "OPCL: Origin, Purpose, Content, Limitation",
-      "Primary sources: from the time period",
-      "Consider bias, perspective, and gaps",
-      "Corroborate with multiple sources"
-    ]
-  },
-  9: {
-    title: "Legacy, Remembrance, and Reflection",
-    content: `The world wars continue to shape Australian identity, international relations, and our approach to remembrance.
-
-The ANZAC Legend:
-Emerged from Gallipoli, grew through subsequent wars:
-- Courage and sacrifice
-- Mateship
-- Endurance
-- Australian values under pressure
-
-Changing Narratives:
-How we remember has evolved:
-- Initially: Focus on heroism and sacrifice
-- Later: Recognition of horror and trauma
-- Now: Inclusion of Indigenous service, women's contributions, diverse experiences
-
-ANZAC Day:
-- April 25 commemorates the landing at Gallipoli
-- Dawn services echo the early morning landing
-- "Lest We Forget" - commitment to remember
-- Marches, ceremonies, two-up games
-
-Remembrance Day:
-- November 11, 11am - armistice took effect
-- One minute's silence
-- Red poppies worn
-
-Commemorative Sites:
-- Australian War Memorial, Canberra
-- Shrine of Remembrance, Melbourne
-- Local war memorials throughout Australia
-
-Continuing Legacy:
-The wars shaped:
-- Australia's national identity
-- International alliances (ANZUS, Five Eyes)
-- Immigration policies
-- Commitment to human rights
-- Regional defence relationships
-
-Questions for Reflection:
-- How should we remember war?
-- Whose stories are told? Whose are missing?
-- What responsibilities come from remembrance?
-- How do these events connect to today?`,
-    keyPoints: [
-      "ANZAC legend: courage, mateship, endurance",
-      "Remembrance has evolved to include more perspectives",
-      "ANZAC Day (April 25) and Remembrance Day (November 11)",
-      "Wars continue to shape Australian identity"
-    ]
-  },
-  10: {
-    title: "Australian Democracy and the Constitution",
-    content: `Term 2 focuses on Politics and Civics. Understanding Australia's democratic system is essential for active citizenship.
-
-Federation (1901):
-Six separate British colonies united to form the Commonwealth of Australia.
-
-Reasons for Federation:
-- Defence: Stronger together
-- Immigration: Uniform policies
-- Trade: Remove interstate tariffs
-- National identity
-
-The Australian Constitution:
-The set of rules establishing Australia's system of government.
-- Divides power between federal and state governments
-- Establishes the Parliament, Executive, and Judiciary
-- Can only be changed by referendum
-
-Division of Powers:
-Federal (Commonwealth) Powers:
-- Defence, foreign affairs
-- Immigration, customs
-- Currency, banking
-- Telecommunications
-
-State Powers:
-- Education, health
-- Police, roads
-- Land management
-
-Concurrent (Shared) Powers:
-- Taxation
-- Environment
-- Some social services
-
-Constitutional Monarchy:
-- The King is Head of State (represented by Governor-General)
-- Prime Minister is Head of Government
-- Parliament makes laws
-- Courts interpret laws
-
-Referendums:
-To change the Constitution:
-- Majority of voters nationally must agree
-- Majority of voters in majority of states (4/6)
-- Only 8 of 44 referendums have passed`,
-    keyPoints: [
-      "Federation united six colonies in 1901",
-      "Constitution divides power between federal and state",
-      "Constitutional monarchy with democratic Parliament",
-      "Referendums required to change Constitution"
-    ]
-  },
-  11: {
-    title: "Parliament and the Legislative Process",
-    content: `Understanding how Parliament works helps us see how laws are made and how citizens can influence the process.
-
-Structure of Federal Parliament:
-Three parts:
-1. The King (represented by Governor-General)
-2. Senate (Upper House)
-3. House of Representatives (Lower House)
-
-House of Representatives:
-- 151 members, one per electorate
-- Government formed by party with majority
-- Prime Minister leads the government
-- Debates and passes bills
-- Money bills must start here
-
-Senate:
-- 76 senators (12 per state, 2 per territory)
-- Reviews bills from the House
-- Represents state interests
-- Can block or amend legislation
-- Minor parties often hold balance of power
-
-How a Bill Becomes Law:
-1. Proposal: Drafted by government department
-2. First Reading: Introduced to Parliament
-3. Second Reading: Debated, voted on in principle
-4. Committee Stage: Detailed examination, amendments
-5. Third Reading: Final vote
-6. Other House: Same process in Senate
-7. Royal Assent: Governor-General signs into law
-
-Representation and Legitimacy:
-- Elected members represent constituents
-- Free, fair elections provide legitimacy
-- Voting is compulsory for Australian citizens
-- Preferential voting in House, proportional in Senate`,
-    keyPoints: [
-      "Parliament: House of Representatives + Senate + King",
-      "Government formed in House of Representatives",
-      "Senate reviews and can amend legislation",
-      "Bills require both houses and royal assent"
-    ]
-  },
-  12: {
-    title: "Political Parties, Interest Groups, and Media",
-    content: `Democracy involves many groups trying to influence government decisions. Understanding these influences helps us be informed citizens.
-
-Political Parties:
-Organised groups seeking to win government:
-- Develop policies based on ideology
-- Select candidates for elections
-- Provide stable government
-
-Major Australian Parties:
-- Liberal Party: Centre-right, business focus
-- Labor Party: Centre-left, union origins
-- National Party: Rural and regional
-- Greens: Environmental focus
-- Minor parties and independents
-
-Ideology:
-Left: More government intervention, social equality
-Right: Less government, individual responsibility
-Most parties sit somewhere on this spectrum.
-
-Interest Groups:
-Organised groups that try to influence policy:
-- Unions (workers' rights)
-- Business groups (industry interests)
-- Environmental groups
-- Professional associations
-- Community organisations
-
-How They Influence:
-- Lobbying politicians
-- Media campaigns
-- Protests and demonstrations
-- Providing expertise
-- Political donations
-
-The Media:
-Traditional and social media shape public opinion:
-- Report on government actions
-- Investigate issues
-- Provide platforms for debate
-- Can influence election outcomes
-
-Media literacy is crucial:
-- Identify bias and perspective
-- Check sources
-- Distinguish news from opinion
-- Consider who owns the media`,
-    keyPoints: [
-      "Political parties compete for government",
-      "Ideology ranges from left to right",
-      "Interest groups lobby to influence policy",
-      "Media shapes public opinion - be critical"
-    ]
-  },
-  13: {
-    title: "Citizenship, Rights, and Responsibilities",
-    content: `Australian citizenship comes with both rights and responsibilities. Active citizenship strengthens democracy.
-
-Becoming a Citizen:
-- By birth: Born in Australia to citizen/resident parent
-- By descent: Born overseas to Australian parent
-- By application: Meet residency and character requirements, take pledge
-
-Rights of Citizens:
-- Vote in elections
-- Run for Parliament
-- Work in public service
-- Apply for Australian passport
-- Return to Australia at any time
-- Access to consular assistance overseas
-
-Responsibilities:
-- Vote in elections (compulsory)
-- Serve on a jury if called
-- Defend Australia if needed
-- Obey the law
-
-Values:
-Citizenship test includes commitment to:
-- Democratic beliefs
-- Rule of law
-- Freedom and dignity
-- Equality and fair go
-
-Forms of Civic Participation:
-Beyond voting, citizens can:
-- Join political parties
-- Write to representatives
-- Sign petitions
-- Attend public meetings
-- Join community organisations
-- Volunteer
-- Peaceful protest
-- Engage in public debate
-
-Active citizenship means being informed and participating in democracy, not just following rules.`,
-    keyPoints: [
-      "Citizens have rights (vote, passport) and responsibilities (vote, jury)",
-      "Citizenship by birth, descent, or application",
-      "Civic participation goes beyond voting",
-      "Active citizenship strengthens democracy"
-    ]
-  },
-  14: {
-    title: "Influencing Decision-Making and Global Citizenship",
-    content: `Citizens and groups can influence government decisions at local, national, and global levels.
-
-Ways Citizens Influence Decisions:
-- Voting: Choosing representatives
-- Contacting representatives: Letters, emails, meetings
-- Petitions: Gathering support for causes
-- Protests: Peaceful demonstrations
-- Media: Writing letters, social media campaigns
-- Joining organisations: Amplifying voice through groups
-
-Successful Campaigns:
-Examples of citizen action creating change:
-- Environmental campaigns
-- Marriage equality
-- Indigenous rights recognition
-- Consumer campaigns
-
-Advocacy vs Activism:
-Advocacy: Working within the system (lobbying, submissions)
-Activism: Direct action to demand change (protests, boycotts)
-Both are legitimate forms of civic participation.
-
-Global Citizenship:
-Beyond national citizenship, we are part of a global community.
-
-Global Issues Requiring Cooperation:
-- Climate change
-- Refugees and migration
-- Human rights
-- Global health
-- International trade
-
-Responsibilities:
-- Awareness of global issues
-- Ethical consumption
-- Support for international aid
-- Understanding diverse perspectives
-- Acting locally, thinking globally
-
-Connecting Local to Global:
-Local actions can have global impact. Individual choices about consumption, waste, and engagement matter.`,
-    keyPoints: [
-      "Citizens influence through voting, petitions, protests",
-      "Advocacy works within systems, activism demands change",
-      "Global citizenship: awareness and responsibility beyond borders",
-      "Local actions have global impact"
-    ]
-  },
-  15: {
-    title: "Australia's International Relationships",
-    content: `Australia's foreign policy balances relationships with major powers, regional engagement, and global responsibilities.
-
-Key Relationships:
-
-United States:
-- ANZUS Treaty (1951): Security alliance
-- Five Eyes: Intelligence sharing
-- Trade and investment partner
-- Cultural connections
-
-China:
-- Major trading partner
-- Complex relationship: trade vs security concerns
-- Growing tensions over various issues
-
-United Kingdom:
-- Historical ties
-- Head of Commonwealth
-- Five Eyes member
-- Ongoing cultural connections
-
-Regional Engagement:
-- ASEAN: Association of Southeast Asian Nations
-- Pacific Islands Forum: Regional cooperation
-- Important for security and stability
-
-International Organisations:
-- United Nations: Collective security, human rights
-- World Trade Organization: Trade rules
-- G20: Major economies coordination
-- Commonwealth of Nations
-
-Treaties and Agreements:
-International agreements shape domestic policy:
-- Trade agreements
-- Environmental treaties (Paris Agreement)
-- Human rights conventions
-- Defence agreements
-
-Balancing Sovereignty and Cooperation:
-Australia must balance:
-- National interests
-- Alliance obligations
-- Regional relationships
-- Global responsibilities`,
-    keyPoints: [
-      "ANZUS alliance with USA central to security",
-      "China: major trade partner, complex relationship",
-      "Regional engagement through ASEAN, Pacific Forum",
-      "Balance sovereignty with international cooperation"
-    ]
-  },
-  16: {
-    title: "Contemporary Issues and Civic Engagement",
-    content: `Applying political understanding to contemporary issues helps us engage meaningfully as citizens.
-
-Current Political Issues:
-Consider how different perspectives approach:
-- Climate policy
-- Immigration and refugees
-- Indigenous recognition
-- Economic management
-- Education and health funding
-- Housing affordability
-
-Analysing Issues:
-1. What is the issue?
-2. Who are the stakeholders?
-3. What are different perspectives?
-4. What evidence supports each view?
-5. What are possible solutions?
-6. What are the trade-offs?
-
-Making Informed Decisions:
-- Seek diverse sources of information
-- Distinguish facts from opinions
-- Consider short and long-term consequences
-- Recognise your own biases
-- Be willing to change your mind with evidence
-
-Engaging Respectfully:
-Democratic debate requires:
-- Listening to other views
-- Arguing with evidence, not personal attacks
-- Accepting that people can disagree reasonably
-- Finding common ground where possible
-- Respecting the process even when you disagree
-
-Being an Active Citizen:
-- Stay informed about current affairs
-- Engage with issues that matter to you
-- Participate in democratic processes
-- Encourage others to engage
-- Model respectful debate`,
-    keyPoints: [
-      "Analyse issues from multiple perspectives",
-      "Distinguish facts from opinions",
-      "Engage respectfully in democratic debate",
-      "Active citizenship requires ongoing engagement"
-    ]
-  },
-  17: {
-    title: "Humanities Review and Exam Preparation",
-    content: `This week consolidates learning from both terms in preparation for the end-of-semester examination.
-
-Term 1: History - Australians at War
-Key Topics:
-- Causes of WWI (MAIN: Militarism, Alliances, Imperialism, Nationalism)
-- Gallipoli campaign and ANZAC legend
-- Western Front battles and trench warfare
-- Treaty of Versailles and interwar period
-- Causes and outbreak of WWII
-- Australian home front
-- Holocaust and human rights
-- Source analysis (OPCL)
-
-Term 2: Politics and Civics
-Key Topics:
-- Constitution and Federation
-- Structure of Parliament
-- How laws are made
-- Political parties and interest groups
-- Media influence
-- Citizenship rights and responsibilities
-- Civic participation
-- Australia's international relationships
-
-Historical Skills:
-- Source analysis using OPCL
-- Identifying perspectives and bias
-- Using evidence to support arguments
-- Understanding cause and effect
-- Recognising continuity and change
-
-Civics Skills:
-- Understanding how democracy works
-- Analysing political issues
-- Evaluating civic participation
-- Connecting local to global
-
-Exam Tips:
-- Read questions carefully
-- Use specific examples
-- Structure responses clearly
-- Support arguments with evidence
-- Consider multiple perspectives`,
-    keyPoints: [
-      "Review WWI, WWII, and their legacy",
-      "Know Australian democracy and citizenship",
-      "Use OPCL for source analysis",
-      "Support arguments with specific evidence"
-    ]
-  }
-};
-
-// English reading by week
-// Term 1 (Weeks 1-9): News Article Analysis - rationale, message, persuasive techniques
-// Term 2 (Weeks 10-17): 1984 by George Orwell - dystopia, power, control
-const englishReadingByWeek: Record<number, ReadingContent> = {
-  1: {
-    title: "Introduction to News Article Analysis",
-    content: `Term 1 focuses on analysing news articles, understanding how they communicate messages and use persuasive techniques to influence readers.
-
-What is a News Article?
-A news article is a piece of writing that informs readers about current events. While news should be objective, all media involves choices about what to include, how to frame issues, and what language to use.
-
-Purpose of News Media:
-- Inform: Provide facts about events
-- Interpret: Explain significance
-- Investigate: Uncover hidden information
-- Entertain: Engage audience interest
-
-Structure of News Articles:
-- Headline: Grabs attention, summarises story
-- Lead/Byline: Opening paragraph with key information (Who, What, When, Where, Why, How)
-- Body: Details in order of importance
-- Quotes: Direct statements from sources
-- Background: Context and history
-
-The Inverted Pyramid:
-News articles put the most important information first, with decreasing importance as you read. This allows readers to get key facts quickly.
-
-Analysing News:
-When reading news articles, consider:
-- What facts are presented?
-- What sources are quoted?
-- What language choices are made?
-- What is included and what is left out?
-- What perspective is represented?`,
-    keyPoints: [
-      "News articles inform, interpret, investigate, entertain",
-      "Inverted pyramid: most important information first",
-      "Consider what is included and what is left out",
-      "All media involves choices that shape meaning"
-    ]
-  },
-  2: {
-    title: "Understanding Rationale and Message",
-    content: `Every news article has an underlying rationale (reason for writing) and message (what the writer wants you to understand or believe).
-
-Rationale:
-The rationale is the purpose behind the article. Ask: Why was this written?
-- To report breaking news
-- To investigate an issue
-- To profile a person
-- To review or critique
-- To persuade readers
-- To generate discussion
-
-Message:
-The message is the main idea or argument. Ask: What does the writer want me to think?
-- This might be stated explicitly
-- Or implied through choices made
-- Consider the angle or slant
-
-Identifying the Message:
-1. Read the headline and lead - what's emphasised?
-2. Look at which facts are highlighted
-3. Consider which sources are quoted
-4. Notice the language used
-5. What conclusion does the article lead to?
-
-Intended Audience:
-Writers shape content for their audience:
-- Consider the publication (broadsheet vs tabloid)
-- Age and education level of readers
-- Political leanings of readership
-- Existing knowledge assumed
-
-Context Matters:
-The same event can be reported very differently depending on:
-- When the article was written
-- Where it was published
-- Who the writer is
-- What else was happening at the time`,
-    keyPoints: [
-      "Rationale: Why was this article written?",
-      "Message: What does the writer want you to think?",
-      "Consider audience and publication context",
-      "Same event can be framed differently"
-    ]
-  },
-  3: {
-    title: "Persuasive Techniques in News",
-    content: `While news should be objective, many articles use persuasive techniques to influence how readers interpret information.
-
-Appeals:
-Ethos: Appeal to credibility
-- Expert quotes
-- References to authority
-- Credentials of writer
-
-Pathos: Appeal to emotion
-- Emotive language
-- Personal stories
-- Imagery
-
-Logos: Appeal to logic
-- Statistics and data
-- Facts and evidence
-- Logical reasoning
-
-Language Techniques:
-Emotive Language:
-Instead of "said," using "claimed" or "admitted" changes meaning.
-"Home" vs "house" vs "property"
-
-Connotation:
-Words carry emotional associations beyond their literal meaning.
-"Freedom fighter" vs "terrorist" - same person, different framing
-
-Rhetorical Questions:
-Questions that don't need answers but make readers think.
-"How long can we ignore this crisis?"
-
-Repetition:
-Repeating key words or phrases for emphasis.
-
-Hyperbole:
-Exaggeration for effect.
-"The worst decision in history"
-
-Selection and Omission:
-What facts are included? What is left out?
-This shapes the story without obvious bias.`,
-    keyPoints: [
-      "Ethos (credibility), Pathos (emotion), Logos (logic)",
-      "Emotive language shapes reader response",
-      "Connotation carries meaning beyond definition",
-      "Selection and omission shape without obvious bias"
-    ]
-  },
-  4: {
-    title: "Analysing Visual Elements and Layout",
-    content: `News articles use visual elements strategically. Understanding these choices helps you analyse the full message.
-
-Headlines:
-- Large, bold, designed to grab attention
-- May use wordplay, alliteration, questions
-- Often simplify or sensationalise
-- Set expectations for the article
-
-Images and Photographs:
-- Selected to support the story's angle
-- Caption provides interpretation
-- Positioning affects importance
-- Subject's expression/pose matters
-
-Consider:
-- Who is shown? Who is not?
-- What is the subject doing?
-- What angle is the photo taken from?
-- What emotions does it evoke?
-
-Layout and Design:
-- Size and placement show importance
-- Front page vs back pages
-- Above vs below the fold
-- Sidebar vs main story
-- Pull quotes highlight key points
-
-Infographics and Data:
-- Statistics presented visually
-- Can clarify or mislead
-- Check scale and context
-- Consider what data is selected
-
-Typography:
-- Font size shows hierarchy
-- Bold and italics add emphasis
-- Colour can evoke emotion
-- All-caps suggests urgency
-
-Reading Images Critically:
-Images are not neutral - they are chosen and cropped to support the story. The same event photographed differently creates different impressions.`,
-    keyPoints: [
-      "Headlines grab attention and set expectations",
-      "Images are selected to support the story's angle",
-      "Layout and placement indicate importance",
-      "All visual elements are deliberate choices"
-    ]
-  },
-  5: {
-    title: "Comparing News Coverage",
-    content: `Comparing how different sources cover the same story reveals how media shapes our understanding of events.
-
-Why Compare?
-- Different outlets have different perspectives
-- Reveals what's emphasised and omitted
-- Shows how framing affects meaning
-- Helps identify bias
-- Develops critical reading skills
-
-What to Compare:
-Headlines:
-- How do they frame the same event?
-- What words are chosen?
-- What aspect is emphasised?
-
-Lead Paragraphs:
-- What information comes first?
-- What angle is taken?
-- Who/what is centred?
-
-Sources Quoted:
-- Whose voices are included?
-- What perspectives are represented?
-- Are sources balanced?
-
-Language:
-- Emotive vs neutral words
-- Positive vs negative framing
-- Active vs passive voice
-
-What's Included/Omitted:
-- What facts appear in one but not another?
-- What context is provided?
-- What might change understanding?
-
-Visuals:
-- What images are selected?
-- How do they affect interpretation?
-
-Language for Comparison:
-- "While [Source A] emphasises..., [Source B] focuses on..."
-- "In contrast to..."
-- "Similarly, both sources..."
-- "However, they differ in..."`,
-    keyPoints: [
-      "Comparing sources reveals framing and bias",
-      "Compare headlines, leads, sources, language",
-      "Note what's included and what's omitted",
-      "Use comparative language in analysis"
-    ]
-  },
-  6: {
-    title: "News Article Assessment Preparation",
-    content: `This week prepares you for the News Article Analysis assessment, consolidating skills developed in Term 1.
-
-Assessment Structure:
-You will analyse a news article, identifying:
-- The rationale (purpose)
-- The message (main argument)
-- Persuasive techniques used
-- How techniques support the message
-
-Approaching the Task:
-1. Read the article carefully - multiple times
-2. Identify the topic and main message
-3. Note who the audience might be
-4. Highlight persuasive techniques
-5. Consider visual elements if present
-6. Plan your response before writing
-
-Analysis Structure:
-Introduction:
-- Identify the article, author, publication
-- State the main message/contention
-- Preview your analysis
-
-Body Paragraphs:
-Use TEEL structure for each technique:
-- Topic: Identify the technique
-- Explain: How is it used?
-- Evidence: Quote from the text
-- Link: How does it support the message?
-
-Conclusion:
-- Summarise how techniques work together
-- Evaluate effectiveness
-- Consider overall impact on readers
-
-Key Terms:
-- Rationale, message, contention
-- Ethos, pathos, logos
-- Emotive language, connotation
-- Rhetorical question, repetition
-- Selection, omission, framing`,
-    keyPoints: [
-      "Read carefully and annotate the article",
-      "Identify message before analysing techniques",
-      "Use TEEL paragraphs for each technique",
-      "Link techniques to the overall message"
-    ]
-  },
-  7: {
-    title: "Political Campaign Presentation Preparation",
-    content: `This week focuses on preparing your Political Campaign Presentation, demonstrating your understanding of persuasive communication.
-
-The Task:
-Create and deliver a persuasive presentation on a political or social issue, using the techniques studied in news analysis.
-
-Choosing Your Topic:
-Select an issue you care about:
-- Local community issue
-- School-related topic
-- Social justice issue
-- Environmental concern
-- Youth-focused policy
-
-Crafting Your Message:
-- Clear contention (what you want audience to believe/do)
-- Supporting arguments
-- Anticipate counterarguments
-- Call to action
-
-Using Persuasive Techniques:
-Ethos: Establish credibility
-- Research your topic
-- Use reliable sources
-- Present professionally
-
-Pathos: Appeal to emotion
-- Personal stories
-- Vivid examples
-- Connect to audience's values
-
-Logos: Appeal to logic
-- Facts and statistics
-- Logical reasoning
-- Cause and effect
-
-Presentation Skills:
-Speaking:
-- Clear, confident voice
-- Appropriate pace
-- Eye contact
-- Avoid reading directly
-
-Visual Aids:
-- Support, don't replace, your words
-- Simple and clear
-- Professional appearance
-
-Structure:
-- Engaging opening
-- Clear arguments
-- Strong conclusion with call to action`,
-    keyPoints: [
-      "Choose a topic you care about",
-      "State a clear contention",
-      "Use ethos, pathos, and logos",
-      "Practise delivery for confidence"
-    ]
-  },
-  8: {
-    title: "Presentation Delivery and Feedback",
-    content: `This week focuses on delivering presentations and providing constructive peer feedback.
-
-Presentation Delivery:
-Before:
-- Review your content
-- Practise timing (stay within limits)
-- Prepare visual aids
-- Arrive ready
-
-During:
-- Breathe and stay calm
-- Speak clearly and confidently
-- Make eye contact with audience
-- Use gestures naturally
-- Engage with your content
-
-After:
-- Answer questions thoughtfully
-- Accept feedback graciously
-- Reflect on your performance
-
-Providing Peer Feedback:
-Good feedback is:
-- Specific: Not just "good job" but what was good
-- Constructive: Suggestions for improvement
-- Kind: Delivered respectfully
-- Balanced: Positives and areas for growth
-
-Feedback Framework:
-What worked well:
-- Strong opening/closing
-- Effective use of techniques
-- Confident delivery
-- Engaging content
-
-Areas for development:
-- Clearer structure
-- More evidence
-- Better eye contact
-- Stronger call to action
-
-Receiving Feedback:
-- Listen without defending
-- Ask clarifying questions
-- Note specific suggestions
-- Thank the person
-- Reflect on what's useful`,
-    keyPoints: [
-      "Preparation and practice build confidence",
-      "Engage with audience through eye contact",
-      "Give specific, constructive feedback",
-      "Use feedback to improve future work"
-    ]
-  },
-  9: {
-    title: "Term 1 Review and Transition to Term 2",
-    content: `This week consolidates Term 1 learning and prepares for the study of 1984 in Term 2.
-
-Term 1 Skills Review:
-News Article Analysis:
-- Identifying rationale and message
-- Recognising persuasive techniques
-- Analysing language choices
-- Considering visual elements
-- Comparing coverage
-
-Persuasive Communication:
-- Ethos, pathos, logos
-- Structuring arguments
-- Supporting with evidence
-- Presentation skills
-
-Critical Literacy:
-- Questioning media messages
-- Recognising bias
-- Considering perspectives
-- Evaluating sources
-
-Looking Ahead to Term 2:
-In Term 2, we study George Orwell's dystopian novel 1984.
-
-What is a Dystopia?
-A dystopia is an imagined society with:
-- Oppressive social control
-- Loss of individual freedom
-- Often totalitarian government
-- Warnings about current trends
-
-1984 Overview:
-- Written by George Orwell in 1948
-- Set in a totalitarian future society
-- Explores surveillance, propaganda, control
-- Remains relevant to modern issues
-
-Connecting Terms:
-The persuasive techniques studied in Term 1 connect to 1984's exploration of propaganda and manipulation. Understanding how media influences thinking prepares us to analyse how the Party controls thought in 1984.`,
-    keyPoints: [
-      "Review news analysis and persuasive techniques",
-      "Dystopia: imagined oppressive society",
-      "1984 explores surveillance, propaganda, control",
-      "Term 1 skills apply to Term 2 text study"
-    ]
-  },
-  10: {
-    title: "Introduction to 1984: Dystopia and Context",
-    content: `Term 2 begins our study of George Orwell's 1984, a dystopian novel that remains powerfully relevant today.
-
-About the Author:
-George Orwell (1903-1950):
-- Real name Eric Arthur Blair
-- Fought in Spanish Civil War
-- Witnessed totalitarianism firsthand
-- Concerned with truth, justice, freedom
-- Also wrote Animal Farm
-
-Historical Context:
-1984 was written in 1948, responding to:
-- Rise of Nazism and fascism
-- Soviet totalitarianism under Stalin
-- World War II and its aftermath
-- Emerging Cold War tensions
-- Concerns about technology and power
-
-The Dystopian Genre:
-Key features:
-- Imagined future society
-- Oppressive government control
-- Propaganda and surveillance
-- Suppression of individuality
-- Warning about current trends
-
-1984's World:
-- Set in Oceania (including Britain/Airstrip One)
-- Perpetual war between three superpowers
-- The Party controls everything
-- Big Brother is the symbolic leader
-- History constantly rewritten
-
-Key Concepts:
-- Big Brother: Symbol of total surveillance
-- Thought Police: Enforce orthodoxy
-- Newspeak: Language designed to limit thought
-- Doublethink: Holding contradictory beliefs
-- Ministry of Truth: Propaganda and lies`,
-    keyPoints: [
-      "Orwell wrote 1984 in response to totalitarianism",
-      "Dystopia: imagined oppressive future society",
-      "Big Brother symbolises total surveillance",
-      "Newspeak limits thought through language"
-    ]
-  },
-  11: {
-    title: "1984 Part 1: Oceania and the Party",
-    content: `Part 1 of 1984 introduces the world of Oceania, the Party's control, and our protagonist Winston Smith.
-
-The Setting:
-London (now Airstrip One) is a dreary place:
-- Crumbling buildings
-- Constant surveillance via telescreens
-- Posters: "Big Brother Is Watching You"
-- Perpetual war creates scarcity
-- Everything controlled by the Party
-
-The Party's Structure:
-- Big Brother: Unseen leader, maybe not real
-- Inner Party: Elite ruling class (2%)
-- Outer Party: Workers like Winston (13%)
-- Proles: Working class, largely ignored (85%)
-
-Party Slogans:
-"War is Peace" - perpetual war unites people
-"Freedom is Slavery" - independence leads to failure
-"Ignorance is Strength" - thinking leads to trouble
-
-Winston Smith:
-- Works at Ministry of Truth
-- Job: Rewriting historical records
-- Secretly hates the Party
-- Begins keeping an illegal diary
-- Commits "thoughtcrime"
-
-Surveillance and Control:
-- Telescreens watch and listen
-- Thought Police arrest thoughtcriminals
-- Children spy on parents
-- No privacy exists
-
-Orwell's Techniques:
-- Third-person limited perspective
-- Detailed world-building
-- Ironic naming (Ministry of Truth spreads lies)
-- Cold, oppressive atmosphere`,
-    keyPoints: [
-      "Oceania: totalitarian society under the Party",
-      "Big Brother represents constant surveillance",
-      "Winston commits thoughtcrime by questioning",
-      "Irony: ministries do opposite of their names"
-    ]
-  },
-  12: {
-    title: "1984 Part 1-2: Propaganda and Rebellion",
-    content: `The novel develops themes of propaganda, truth manipulation, and the beginning of Winston's rebellion.
-
-Propaganda in 1984:
-Two Minutes Hate:
-- Daily ritual of directed hatred
-- Emmanuel Goldstein as enemy figure
-- Unifies people against common enemy
-- Releases and redirects anger
-
-Historical Revisionism:
-- Winston's job: altering historical records
-- "Who controls the past controls the future"
-- No objective truth can exist
-- Memory becomes unreliable
-
-Newspeak:
-The Party is developing a new language:
-- Reduce vocabulary
-- Eliminate words for rebellion
-- Make thoughtcrime literally impossible
-- "Thoughtcrime does not entail death. Thoughtcrime IS death."
-
-Winston's Rebellion:
-His acts of rebellion:
-- Keeping a diary ("down with Big Brother")
-- Remembering the past
-- Having independent thoughts
-- His fascination with Julia
-- Seeking the Brotherhood
-
-Julia:
-- Fellow Outer Party member
-- Appears to be devout Party member
-- Actually rebels through pleasure
-- More practical than Winston
-- Their relationship is political act
-
-The Paperweight:
-Symbol of the past and beauty:
-- Fragment of pre-Party world
-- Represents Winston's hope
-- Later destroyed (foreshadowing)`,
-    keyPoints: [
-      "Two Minutes Hate directs emotion against enemies",
-      "History is constantly rewritten",
-      "Newspeak designed to prevent thoughtcrime",
-      "Winston and Julia's relationship is rebellion"
-    ]
-  },
-  13: {
-    title: "1984 Part 2-3: Love, Betrayal, and the Brotherhood",
-    content: `Part 2 explores Winston and Julia's relationship, while Part 3 reveals the Party's ultimate power over individuals.
-
-Winston and Julia:
-Their relationship develops:
-- Secret meetings in countryside
-- Renting room above Mr Charrington's shop
-- Sexual relationship as political act
-- "I love you" as rebellion
-- Different approaches to resistance
-
-O'Brien:
-- Inner Party member
-- Winston believes he's Brotherhood member
-- Gives Winston "The Book" (Goldstein's manifesto)
-- Actually working for Thought Police
-- Represents the Party's deception
-
-The Betrayal:
-- Mr Charrington is Thought Police
-- Telescreen hidden behind painting
-- Winston and Julia arrested
-- Their private world destroyed
-- Paperweight smashed (symbol)
-
-Ministry of Love:
-Part 3 takes place here:
-- Where thought criminals are "cured"
-- Designed to break individuals
-- Physical and psychological torture
-- Goal: make prisoners love Big Brother
-
-O'Brien as Torturer:
-Reveals Party's true nature:
-- Power is not a means, but an end
-- "If you want a picture of the future, imagine a boot stamping on a human face—forever"
-- Party seeks power for its own sake`,
-    keyPoints: [
-      "Winston and Julia's love is an act of rebellion",
-      "O'Brien betrays Winston's trust",
-      "Ministry of Love 'cures' thought criminals",
-      "Party seeks power as an end in itself"
-    ]
-  },
-  14: {
-    title: "1984 Part 3: Room 101 and the Ending",
-    content: `The novel's climax shows the Party's complete victory over Winston's individual spirit.
-
-Breaking Winston:
-The Party's goal is not just obedience but love.
-Stages of his "re-education":
-1. Physical torture
-2. Psychological manipulation
-3. Understanding Party philosophy
-4. Final step: Room 101
-
-2+2=5:
-Winston is tortured until he genuinely believes 2+2=5.
-This represents:
-- Complete control over truth
-- Victory of Party over reality
-- Destruction of objective thinking
-
-Room 101:
-Contains each person's worst fear.
-For Winston: rats
-Faced with rats, Winston betrays Julia:
-- "Do it to Julia! Not me!"
-- His last private self is destroyed
-- The Party has conquered his mind
-
-The Ending:
-After release:
-- Winston works at ministry
-- He and Julia meet but feel nothing
-- He has been "cured"
-- "He loved Big Brother"
-
-The Appendix:
-Written in past tense about Newspeak.
-Suggests the Party eventually fell.
-Ambiguous hope in otherwise bleak ending.
-
-Interpretations:
-Is the ending:
-- Complete despair?
-- Warning we can still avoid?
-- Hidden hope in the appendix?
-Orwell leaves readers to decide.`,
-    keyPoints: [
-      "Room 101 contains each person's worst fear",
-      "Winston betrays Julia to save himself",
-      "The ending: 'He loved Big Brother'",
-      "Appendix may suggest eventual Party fall"
-    ]
-  },
-  15: {
-    title: "Themes and Techniques in 1984",
-    content: `Understanding Orwell's major themes and techniques deepens our analysis of 1984.
-
-Major Themes:
-
-Totalitarianism and Power:
-- Absolute power corrupts absolutely
-- Power as end in itself
-- Control over history, language, thought
-- Surveillance as control mechanism
-
-Truth and Reality:
-- Party controls what is "true"
-- "Reality exists in the human mind"
-- Memory vs official history
-- Objective truth destroyed
-
-Language and Thought:
-- Newspeak limits possible thoughts
-- Language shapes consciousness
-- Propaganda replaces genuine communication
-- "Doublethink" holds contradictions
-
-Individuality and Identity:
-- Party seeks to destroy the self
-- Love and loyalty as threats
-- "Freedom is the freedom to say 2+2=4"
-- Without private thought, no self exists
-
-Orwell's Techniques:
-
-Symbolism:
-- Big Brother: surveillance
-- Telescreen: constant watching
-- Paperweight: fragile past
-- Golden Country: freedom
-
-Irony:
-- Ministry of Truth spreads lies
-- Ministry of Love tortures
-- Ministry of Peace wages war
-- Ministry of Plenty creates scarcity
-
-Language:
-- Cold, precise prose
-- Newspeak vocabulary
-- Contrast between Party language and Winston's thoughts`,
-    keyPoints: [
-      "Power, truth, language, individuality - key themes",
-      "Newspeak shows language controls thought",
-      "Ironic naming of ministries",
-      "Symbols reinforce themes throughout"
-    ]
-  },
-  16: {
-    title: "1984's Relevance Today",
-    content: `Orwell's warnings remain relevant as modern societies grapple with surveillance, misinformation, and power.
-
-Surveillance Today:
-Modern parallels to Big Brother:
-- CCTV cameras everywhere
-- Social media tracking
-- Data collection by companies
-- Government surveillance programs
-- Smart devices that listen
-
-"Post-Truth" and Propaganda:
-Modern parallels to Ministry of Truth:
-- "Fake news" debates
-- Social media misinformation
-- Deep fakes and manipulation
-- Denial of established facts
-- Information bubbles
-
-Language and Manipulation:
-Modern parallels to Newspeak:
-- Political euphemisms
-- Simplified communication
-- Algorithms shaping information
-- Reduced attention spans
-
-Individual Freedom:
-Ongoing debates about:
-- Privacy vs security
-- Free speech limits
-- Corporate power
-- Government overreach
-
-Islamic Perspectives:
-Consider through ethical lens:
-- Truth-telling as religious duty
-- Justice and accountability
-- Protection of privacy
-- Speaking truth to power
-- Moral responsibility
-
-Critical Questions:
-- What surveillance do you accept?
-- How do you verify information?
-- What would you sacrifice for security?
-- How can we protect truth and freedom?`,
-    keyPoints: [
-      "Surveillance technology echoes Big Brother",
-      "Misinformation parallels Ministry of Truth",
-      "Language manipulation continues today",
-      "Consider ethical implications critically"
-    ]
-  },
-  17: {
-    title: "English Review and Exam Preparation",
-    content: `This week consolidates all learning from both terms in preparation for the end-of-semester examination.
-
-Term 1: News Article Analysis
-Key Skills:
-- Identifying rationale and message
-- Analysing persuasive techniques (ethos, pathos, logos)
-- Examining language choices
-- Considering visual elements
-- Comparing coverage
-
-Key Terms:
-Contention, emotive language, connotation, rhetorical question, framing, selection, omission
-
-Term 2: 1984 Analysis
-Key Topics:
-- Context: Orwell's purpose and historical background
-- Plot: Winston's journey from rebellion to submission
-- Characters: Winston, Julia, O'Brien, Big Brother
-- Themes: Power, truth, language, individuality
-- Techniques: Symbolism, irony, language
-
-Key Quotes:
-- "War is Peace. Freedom is Slavery. Ignorance is Strength."
-- "Who controls the past controls the future."
-- "If you want a picture of the future, imagine a boot stamping on a human face—forever."
-- "Freedom is the freedom to say that two plus two make four."
-
-Essay Skills:
-- Clear thesis statement
-- TEEL paragraphs
-- Evidence with quotations
-- Link techniques to meaning
-- Consider multiple perspectives
-
-Exam Tips:
-- Read questions carefully
-- Plan before writing
-- Use specific textual evidence
-- Connect to themes and context
-- Proofread your work`,
-    keyPoints: [
-      "Review news analysis and 1984 themes",
-      "Know key quotes and their significance",
-      "Use TEEL structure with evidence",
-      "Connect techniques to meaning and context"
-    ]
-  }
-};
 
 const mathContent: StudyContent = {
   type: "practice",
   vocabulary: [
-    { term: "Exponent", definition: "A number indicating how many times to multiply the base by itself" },
-    { term: "Surd", definition: "An irrational root that cannot be simplified to a whole number" },
-    { term: "Absolute Value", definition: "The distance of a number from zero, always positive" },
-    { term: "Gradient", definition: "The slope or steepness of a line" },
-    { term: "Quadratic", definition: "An expression with a squared term as the highest power" },
-    { term: "Vertex", definition: "The turning point of a parabola" },
-    { term: "Sequence", definition: "An ordered list of numbers following a pattern" },
-    { term: "Proportion", definition: "A relationship where two quantities change at the same rate" },
+    { term: "Bivariate data", definition: "Data where two variables are recorded for each individual" },
+    { term: "Correlation", definition: "A relationship between two variables; it does not prove causation" },
+    { term: "Line of best fit", definition: "A line drawn by eye that describes the trend of a scatter plot" },
+    { term: "Response rate", definition: "The percentage of people surveyed who reply" },
+    { term: "Surface area", definition: "The total area of all the outer faces of a 3D shape" },
+    { term: "Volume", definition: "The amount of space inside a 3D shape, in cubic units" },
+    { term: "Transformation", definition: "A change of position or size: translation, rotation, reflection or enlargement" },
+    { term: "Tessellation", definition: "Shapes fitting together to cover a plane with no gaps or overlaps" },
+    { term: "Trigonometric ratio", definition: "sin, cos or tan — a ratio of two sides of a right-angled triangle" },
+    { term: "Angle of elevation", definition: "The angle measured up from the horizontal to an object" },
+    { term: "Angle of depression", definition: "The angle measured down from the horizontal to an object" },
+    { term: "Bearing", definition: "A direction measured clockwise from north, written with three figures" },
+    { term: "Arc", definition: "A part of the circumference of a circle" },
+    { term: "Sector", definition: "The region of a circle bounded by two radii and an arc" },
+    { term: "Chord", definition: "A straight line joining two points on the circumference" },
+    { term: "Cyclic quadrilateral", definition: "A four-sided shape whose vertices all lie on a circle" },
   ],
   practiceQuestions: mathQuestions,
   summaryPoints: [
-    "Polya's 4 steps: Understand, Plan, Execute, Check",
-    "Exponent laws: multiply → add indices, divide → subtract indices",
-    "Distance formula: d = √[(x₂-x₁)² + (y₂-y₁)²]",
-    "Quadratic formula: x = (-b ± √(b²-4ac))/2a",
-    "Arithmetic sequence: aₙ = a₁ + (n-1)d",
-    "Direct proportion: y = kx",
+    "Chapter 9: bivariate data and correlation — describe the trend, draw a line of best fit, and remember correlation is not causation",
+    "Chapter 5: surface area and volume of prisms, cylinders, spheres and other 3D shapes",
+    "Chapter 5: transformations — translation, rotation, reflection and enlargement; regular and semi-regular tessellation; one transformation can replace two",
+    "Chapter 7: right-angled triangles — SOH CAH TOA, angles of elevation and depression, and bearings (three figures, clockwise from north)",
+    "Chapter 7: circles — arc length and sector area as fractions of the whole circle, chord length, and the circle theorems including intersecting chords (AP × PB = CP × PD)",
+    "Enlargement by scale factor k multiplies lengths by k, areas by k² and volumes by k³",
   ],
 };
+
+// ===== Psychology (Term 4, taught in the Science slot) =====
+const scienceQuestions: PracticeQuestion[] = [
+  // Week 1 — Introduction to Psychology; variables, hypothesis and correlation vs causation
+  {
+    id: "s1",
+    question: "Psychology is defined as the scientific study of which of the following?",
+    options: [
+      "Human thoughts, feelings and behaviour",
+      "Only behaviour that can be measured",
+      "The structure of the brain in animals",
+      "Mental illness and its treatment",
+    ],
+    answer: "Human thoughts, feelings and behaviour",
+    solution: "The booklet defines psychology as the scientific study of human thoughts, feelings and behaviour. Psyche means mind and logos means knowledge.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s2",
+    question: "Which of these is one of the major branches of psychology listed in the booklet?",
+    options: ["Forensic psychology", "Astrological psychology", "Veterinary psychology", "Forensic chemistry"],
+    answer: "Forensic psychology",
+    solution: "The booklet lists biological, cognitive, developmental, social, educational, forensic, sports and consumer psychology as the major branches.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s3",
+    question: "A student investigates whether the number of study hours influences exam scores. What is the independent variable?",
+    options: [
+      "The number of study hours",
+      "The exam scores",
+      "The number of students in the study",
+      "The subject the exam is in",
+    ],
+    answer: "The number of study hours",
+    solution: "The IV is what the researcher changes — the number of study hours. The exam scores are the DV, which is what is measured.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s4",
+    question: "Which four elements must be included in a hypothesis?",
+    options: [
+      "Population, IV (experimental condition), DV (direction of prediction) and IV (control condition)",
+      "Aim, method, results and conclusion",
+      "Population, sample, ethics and debriefing",
+      "IV, DV, correlation and causation",
+    ],
+    answer: "Population, IV (experimental condition), DV (direction of prediction) and IV (control condition)",
+    solution: "The booklet states that every hypothesis includes the population, the IV (experimental condition), the DV (direction of prediction) and the IV (control condition).",
+    type: "multiple-choice",
+  },
+  {
+    id: "s5",
+    question: "What are extraneous variables?",
+    options: [
+      "Variables other than the IV that may have an unwanted effect on the DV and the results",
+      "The variables that are held constant during an experiment",
+      "The variable the researcher deliberately changes",
+      "The variable that is measured at the end of the experiment",
+    ],
+    answer: "Variables other than the IV that may have an unwanted effect on the DV and the results",
+    solution: "Extraneous variables may have an unwanted effect on the DV; controlled variables are held constant so that the only influence on the DV is the IV.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s6",
+    question: "A study compares students who study for four hours with students who study for zero hours. Which group is the experimental group?",
+    options: [
+      "The group that studies for four hours, because the IV is present",
+      "The group that studies for zero hours, because the IV is absent",
+      "Both groups, because both take the exam",
+      "Neither group, because this is not an experiment",
+    ],
+    answer: "The group that studies for four hours, because the IV is present",
+    solution: "The experimental group is exposed to the experimental condition in which the IV is present (studying 4 hours); the control group is exposed to the control condition in which the IV is absent (studying 0 hours).",
+    type: "multiple-choice",
+  },
+  {
+    id: "s7",
+    question: "Students who sleep more hours often report feeling happier. What does this finding show?",
+    options: [
+      "The two variables are correlated, but that does not prove sleep causes happiness",
+      "Sleep definitely causes happiness",
+      "There is no relationship between sleep and happiness",
+      "A controlled experiment has proven causation",
+    ],
+    answer: "The two variables are correlated, but that does not prove sleep causes happiness",
+    solution: "Correlation means two variables are related — when one changes, the other tends to change too — but the link could be due to another factor, such as less stress. Causation means one variable directly affects another and can only be tested with a controlled experiment.",
+    type: "multiple-choice",
+  },
+
+  // Week 2 — Regions of the brain; somatic and autonomic nervous systems
+  {
+    id: "s8",
+    question: "Which part of the brain is the lowest part, located at the back of the skull, and controls breathing, heart rate and coordination?",
+    options: ["The hindbrain", "The midbrain", "The forebrain", "The cerebral cortex"],
+    answer: "The hindbrain",
+    solution: "The hindbrain controls the vital functions that keep us alive, such as breathing, heart rate and coordination. The cerebellum, part of the hindbrain, helps us balance, move smoothly and maintain posture.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s9",
+    question: "Which description matches the midbrain?",
+    options: [
+      "A bridge between the lower and higher parts of the brain that controls basic eye movements",
+      "The largest and most complex part of the brain",
+      "The part that controls breathing and heart rate",
+      "The wrinkled outer layer that processes touch",
+    ],
+    answer: "A bridge between the lower and higher parts of the brain that controls basic eye movements",
+    solution: "The midbrain controls basic movements of the eyes, processes sensory information such as sight and sound, and lets you automatically turn your head towards a sudden noise or bright light.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s10",
+    question: "Which lobe of the cerebral cortex is responsible for hearing, memory and language?",
+    options: ["The temporal lobe", "The frontal lobe", "The parietal lobe", "The occipital lobe"],
+    answer: "The temporal lobe",
+    solution: "The temporal lobe handles hearing, memory and language; the occipital lobe processes visual information from the eyes and the parietal lobe processes touch and spatial awareness.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s11",
+    question: "Which two structures make up the central nervous system (CNS)?",
+    options: [
+      "The brain and the spinal cord",
+      "The somatic and autonomic nervous systems",
+      "The sensory and motor neurons",
+      "The receptors and the effectors",
+    ],
+    answer: "The brain and the spinal cord",
+    solution: "The CNS is the brain and spinal cord; the peripheral nervous system (PNS) connects the CNS to the rest of the body and includes the somatic nervous system (SNS) and the autonomic nervous system (ANS).",
+    type: "multiple-choice",
+  },
+  {
+    id: "s12",
+    question: "In the somatic nervous system pathway, what carries the message towards the CNS?",
+    options: [
+      "A sensory neuron along the afferent pathway",
+      "A motor neuron along the efferent pathway",
+      "The effector",
+      "The receptor",
+    ],
+    answer: "A sensory neuron along the afferent pathway",
+    solution: "The receptor detects the stimulus, a sensory neuron carries the message towards the CNS along the afferent pathway, the brain interprets the message and decides how to respond, a motor neuron carries the signal away from the CNS to the muscles, and the effector performs the action.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s13",
+    question: "After a stressful situation has passed, which system calms the body by slowing the heart rate and supporting digestion?",
+    options: [
+      "The parasympathetic nervous system",
+      "The sympathetic nervous system",
+      "The somatic nervous system",
+      "The central nervous system",
+    ],
+    answer: "The parasympathetic nervous system",
+    solution: "The parasympathetic nervous system is the 'rest and digest' system: it slows the heart rate, supports digestion, relaxes the muscles and returns the body to a steady, balanced state. The sympathetic system, the 'fight or flight' system, does the opposite.",
+    type: "multiple-choice",
+  },
+
+  // Week 3 — Neuron structure and neurotransmission
+  {
+    id: "s14",
+    question: "What is the function of the myelin sheath?",
+    options: [
+      "It insulates the axon and speeds up information transmission",
+      "It stores and releases neurotransmitters",
+      "It receives information from other neurons",
+      "It processes information before it travels down the axon",
+    ],
+    answer: "It insulates the axon and speeds up information transmission",
+    solution: "The myelin sheath covers most axons in the human body. It is a fatty substance that acts as insulation and helps speed up information transmission in the nervous system.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s15",
+    question: "Which structure receives information from other neurons and typically branches from the cell body?",
+    options: ["The dendrite", "The axon", "The axon terminal", "The myelin sheath"],
+    answer: "The dendrite",
+    solution: "Dendrites receive information from other neurons. The soma (cell body) receives information from the dendrites and passes it down the axon, which transmits the signal to other cells.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s16",
+    question: "Which sequence correctly describes neurotransmission?",
+    options: [
+      "Electrical impulse → neurotransmitter release → synapse → receptor sites → reuptake",
+      "Neurotransmitter release → electrical impulse → receptor sites → synapse → reuptake",
+      "Reuptake → synapse → neurotransmitter release → receptor sites → electrical impulse",
+      "Synapse → electrical impulse → reuptake → receptor sites → neurotransmitter release",
+    ],
+    answer: "Electrical impulse → neurotransmitter release → synapse → receptor sites → reuptake",
+    solution: "When an impulse reaches the axon terminals it triggers the release of neurotransmitters, which cross the synapse and attach to receptor sites on the dendrites of the next neuron. Afterwards the neurotransmitters are broken down or reabsorbed by the original neuron.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s17",
+    question: "What happens during reuptake?",
+    options: [
+      "Neurotransmitters are broken down or reabsorbed by the original neuron",
+      "Neurotransmitters remain in the synapse permanently",
+      "The electrical impulse travels back up the axon",
+      "The receptor sites release hormones into the blood",
+    ],
+    answer: "Neurotransmitters are broken down or reabsorbed by the original neuron",
+    solution: "After the signal is passed on, the neurotransmitters are either broken down or reabsorbed by the original neuron. This process is called reuptake.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s18",
+    question: "What do inhibitory neurotransmitters do?",
+    options: [
+      "They decrease the likelihood that the next neuron will fire, calming neural activity",
+      "They increase the likelihood that the next neuron will fire",
+      "They speed up the electrical impulse along the axon",
+      "They store information in long-term memory",
+    ],
+    answer: "They decrease the likelihood that the next neuron will fire, calming neural activity",
+    solution: "Inhibitory neurotransmitters make it less likely the next neuron will fire, helping to slow down or calm neural activity so the brain does not become overloaded. Excitatory neurotransmitters do the opposite. Examples to know are dopamine, serotonin, acetylcholine, endorphins, GABA and glutamate.",
+    type: "multiple-choice",
+  },
+
+  // Week 4 — Memory, schema and sampling methods
+  {
+    id: "s19",
+    question: "Which sequence matches the three stages of memory in the Atkinson-Shiffrin model?",
+    options: [
+      "Sensory memory → short-term memory → long-term memory",
+      "Short-term memory → sensory memory → long-term memory",
+      "Long-term memory → short-term memory → sensory memory",
+      "Sensory memory → long-term memory → short-term memory",
+    ],
+    answer: "Sensory memory → short-term memory → long-term memory",
+    solution: "Sensory memory holds information from the senses for just a few seconds, short-term memory stores small amounts for about 20–30 seconds, and long-term memory stores information more permanently. Memory itself is the process of encoding, storing and retrieving information.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s20",
+    question: "A student recalls material better in the quiet room where she first studied it. Which factor is this?",
+    options: ["Context-dependent memory", "Interference", "Maintenance rehearsal", "Schema"],
+    answer: "Context-dependent memory",
+    solution: "People often remember information better when they are in the same setting, mood or environment in which they first learned it. This is known as context-dependent memory.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s21",
+    question: "A student repeats a phone number over and over in their head to keep it active. Which type of rehearsal is this?",
+    options: ["Maintenance rehearsal", "Elaborative rehearsal", "Organisation", "Interference"],
+    answer: "Maintenance rehearsal",
+    solution: "Maintenance rehearsal repeats information over and over to keep it active in short-term memory, but it does not usually make it stay for long. Elaborative rehearsal is deeper: it connects the information to something meaningful, such as an image or something you already know.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s22",
+    question: "A witness is certain she saw the thief wearing a hat, even though the thief wore none. Which concept best explains this?",
+    options: ["Schema", "Reuptake", "Correlation", "Resilience"],
+    answer: "Schema",
+    solution: "A schema is a mental framework or template built from past experiences that guides how we interpret new situations. Sometimes the brain fills in missing information based on what we expect rather than what is actually there, causing misunderstandings, assumptions and false memories.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s23",
+    question: "A Year 9 cohort is 60% girls and 40% boys. A researcher selects 6 girls and 4 boys out of 10 students to keep those proportions. Which sampling method is this?",
+    options: ["Stratified sampling", "Convenience sampling", "Random sampling", "Snowball sampling"],
+    answer: "Stratified sampling",
+    solution: "Stratified sampling divides the population into strata — categories or subgroups such as age, gender or year level — and selects participants from each subgroup in the same proportion they appear in the population. Convenience sampling selects whoever is easiest to reach, and random sampling gives everyone an equal chance of being chosen.",
+    type: "multiple-choice",
+  },
+
+  // Week 5 — Research design and ethics
+  {
+    id: "s24",
+    question: "Which statement describes a within-subject design?",
+    options: [
+      "All participants are involved in both the experimental and control conditions",
+      "Participants are randomly allocated to either the experimental or control condition",
+      "Each participant chooses which condition to take part in",
+      "No control condition is used",
+    ],
+    answer: "All participants are involved in both the experimental and control conditions",
+    solution: "In a within-subject design all participants in the sample take part in both the experimental and control conditions. In a between-subject design participants are randomly allocated to either the experimental or the control condition.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s25",
+    question: "Which of the following is one of the key ethical principles in psychology research?",
+    options: [
+      "The right to withdraw",
+      "The right to be paid for taking part",
+      "The right to see the results before they are published",
+      "The right to choose the hypothesis",
+    ],
+    answer: "The right to withdraw",
+    solution: "The principles are informed consent, right to withdraw, no harm, confidentiality and privacy, deception, debriefing and volunteer participation.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s26",
+    question: "At the end of a study, the researcher explains the true purpose of the research to the participants. Which ethical principle is this?",
+    options: ["Debriefing", "Deception", "Informed consent", "Confidentiality and privacy"],
+    answer: "Debriefing",
+    solution: "Debriefing explains the study to participants afterwards and addresses any harm, especially where deception was used.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s27",
+    question: "Why does modern psychology follow strict ethical standards?",
+    options: [
+      "Historical studies showed what happens when ethical rules are not followed — participants were deceived, stressed or not given the choice to stop participating",
+      "Strict standards make studies quicker to run",
+      "All participants must be paid for their time",
+      "Ethics guidelines are only needed for medical research",
+    ],
+    answer: "Historical studies showed what happens when ethical rules are not followed — participants were deceived, stressed or not given the choice to stop participating",
+    solution: "The booklet notes that because of studies such as the Stanford Prison Experiment (Zimbardo, 1971), Milgram's Obedience Study (1963), the Little Albert Experiment (Watson & Rayner, 1920) and the Asch Conformity Experiment (1951), modern psychology developed strict ethical standards that every researcher must follow.",
+    type: "multiple-choice",
+  },
+
+  // Week 6 — Biopsychosocial approach to wellbeing
+  {
+    id: "s28",
+    question: "Which three types of factors does the biopsychosocial approach consider?",
+    options: [
+      "Biological, psychological and social",
+      "Biological, chemical and physical",
+      "Genetic, economic and cultural only",
+      "Physical, emotional and financial",
+    ],
+    answer: "Biological, psychological and social",
+    solution: "The approach explains wellbeing through the combined effects of biological factors (brain chemistry, hormones, sleep, nutrition, exercise, family medical history), psychological factors (thought patterns, beliefs, coping skills, personality, resilience) and social factors (family relationships, friendships, cultural background, school environment, community support, socioeconomic conditions).",
+    type: "multiple-choice",
+  },
+  {
+    id: "s29",
+    question: "Mental health is described as falling on a continuum. What does this mean?",
+    options: [
+      "A person's mental health changes throughout life depending on their experiences and their resilience",
+      "A person is either completely healthy or completely unwell for life",
+      "Mental health is fixed at birth and never changes",
+      "Mental health only changes if a person receives treatment",
+    ],
+    answer: "A person's mental health changes throughout life depending on their experiences and their resilience",
+    solution: "The booklet describes mental health as falling on a spectrum or continuum that changes throughout life depending on the experiences a person has and their resilience — their ability to cope with their experiences, including adverse ones.",
+    type: "multiple-choice",
+  },
+  {
+    id: "s30",
+    question: "The booklet asks whether a biopsychosocial approach sufficiently explains the experience of the Stolen Generations. What does that experience highlight?",
+    options: [
+      "Historical trauma, cultural disconnection and community harm that affect wellbeing across generations",
+      "That biological factors are the only ones that matter",
+      "That social factors never affect wellbeing",
+      "That the model has no relevance to First Nations peoples",
+    ],
+    answer: "Historical trauma, cultural disconnection and community harm that affect wellbeing across generations",
+    solution: "Wellbeing for Aboriginal and Torres Strait Islander peoples also includes cultural connection, connection to Country, spirituality and community, so the model is evaluated on whether it fully captures historical trauma and cultural disconnection.",
+    type: "multiple-choice",
+  },
+];
 
 const scienceContent: StudyContent = {
   type: "practice",
   vocabulary: [
-    { term: "Isotope", definition: "Atoms of the same element with different numbers of neutrons" },
-    { term: "Half-life", definition: "Time for half of a radioactive sample to decay" },
-    { term: "Electrolysis", definition: "Using electricity to break down compounds" },
-    { term: "Homeostasis", definition: "Maintenance of stable internal conditions" },
-    { term: "Hormone", definition: "Chemical messenger produced by endocrine glands" },
-    { term: "Pathogen", definition: "Microorganism that causes disease" },
-    { term: "Antibody", definition: "Protein produced by immune cells to fight specific pathogens" },
-    { term: "Vaccine", definition: "Preparation that stimulates immunity without causing disease" },
+    { term: "Psychology", definition: "The scientific study of human thoughts, feelings and behaviour; psyche means mind and logos means knowledge" },
+    { term: "Aim", definition: "The purpose of a study; it includes the variables being studied" },
+    { term: "Independent variable (IV)", definition: "The variable the researcher changes, for example zero, one or two cups of water" },
+    { term: "Dependent variable (DV)", definition: "The variable that is measured, for example the size of the plants" },
+    { term: "Experimental group", definition: "The group exposed to the experimental condition, in which the IV is present" },
+    { term: "Control group", definition: "The group exposed to the control condition, in which the IV is absent" },
+    { term: "Hypothesis", definition: "A prediction of whether the IV will affect the DV; it includes the population, IV (experimental condition), DV (direction of prediction) and IV (control condition)" },
+    { term: "Extraneous variable", definition: "A variable other than the IV that may have an unwanted effect on the DV and the results" },
+    { term: "Controlled variable", definition: "A variable held constant so the only influence on the DV is the IV" },
+    { term: "Correlation", definition: "Two variables are related; when one changes, the other tends to change too — but not necessarily causally" },
+    { term: "Causation", definition: "One variable directly affects another; tested with a controlled experiment that compares control and experimental groups" },
+    { term: "Hindbrain", definition: "The lowest part of the brain, at the back of the skull; controls vital functions such as breathing, heart rate and coordination" },
+    { term: "Cerebellum", definition: "The part of the hindbrain that helps us balance, move smoothly and maintain posture" },
+    { term: "Midbrain", definition: "The small region that bridges the lower and higher parts of the brain, controls basic eye movements and processes sensory information" },
+    { term: "Forebrain", definition: "The largest and most complex region; involved in thinking, learning, memory and emotion, and contains the thalamus, hypothalamus and cerebrum" },
+    { term: "Cerebral cortex", definition: "The wrinkled outer layer covering much of the forebrain that allows humans to think, reason and make decisions" },
+    { term: "Four cortical lobes", definition: "Frontal (reasoning, planning, movement, emotions), parietal (touch, spatial awareness), temporal (hearing, memory, language) and occipital (vision)" },
+    { term: "Somatic nervous system (SNS)", definition: "The division of the PNS that controls all voluntary movements, using receptors, neurons and effectors" },
+    { term: "Autonomic nervous system (ANS)", definition: "The division of the PNS that controls automatic functions such as heart rate, breathing, digestion and the release of hormones" },
+    { term: "Sympathetic nervous system", definition: "The 'fight or flight' branch: increases heart rate, releases adrenaline, slows digestion and makes the body more alert" },
+    { term: "Parasympathetic nervous system", definition: "The 'rest and digest' branch: slows the heart rate, supports digestion, relaxes the muscles and restores balance" },
+    { term: "Neuron", definition: "An individual nerve cell specialised to receive, process and/or transmit information" },
+    { term: "Dendrite", definition: "A projection that branches from the cell body and receives information from other neurons" },
+    { term: "Myelin sheath", definition: "The fatty insulation covering most axons that speeds up information transmission" },
+    { term: "Axon terminal", definition: "The structures at the end of the axon that store and release neurotransmitters" },
+    { term: "Neurotransmission", definition: "The electrical and chemical process by which neurons communicate, sending messages throughout the brain and body" },
+    { term: "Synapse", definition: "The small gap between neurons that neurotransmitters cross to reach the next neuron" },
+    { term: "Reuptake", definition: "When neurotransmitters are broken down or reabsorbed by the original neuron after the signal is passed on" },
+    { term: "Excitatory neurotransmitter", definition: "Increases the likelihood that the next neuron will fire an electrical signal" },
+    { term: "Inhibitory neurotransmitter", definition: "Decreases the likelihood that the next neuron will fire, calming neural activity" },
+    { term: "Encoding, storage and retrieval", definition: "The three steps of memory: taking information in, keeping it over time, and bringing it back into conscious mind" },
+    { term: "Sensory memory", definition: "Holds information from the senses for just a few seconds" },
+    { term: "Short-term memory", definition: "Stores small amounts of information you are actively thinking about, usually for 20–30 seconds" },
+    { term: "Long-term memory", definition: "Where information is stored more permanently, allowing recall of past experiences, knowledge and skills" },
+    { term: "Maintenance rehearsal", definition: "Repeating information over and over to keep it active in short-term memory" },
+    { term: "Elaborative rehearsal", definition: "Deeper processing that connects new information to something meaningful so it is more likely to be stored" },
+    { term: "Context-dependent memory", definition: "Remembering better in the same setting, mood or environment in which the information was first learned" },
+    { term: "Interference", definition: "When new information disrupts old memories, or old information makes new learning harder" },
+    { term: "Schema", definition: "A mental framework or template built from past experiences that guides interpretation and can cause false memories" },
+    { term: "Sample", definition: "A smaller group of people who represent the larger population being studied" },
+    { term: "Convenience sampling", definition: "Selecting people who are easy to reach; quick, simple and inexpensive but can be biased" },
+    { term: "Random sampling", definition: "Everyone in the population has an equal chance of being chosen; more representative but takes more time to organise" },
+    { term: "Stratified sampling", definition: "Dividing the population into strata and selecting participants from each subgroup in the same proportion" },
+    { term: "Within-subject design", definition: "All participants in the sample are involved in both the experimental and control conditions" },
+    { term: "Between-subject design", definition: "Participants are randomly allocated to either the experimental or the control condition" },
+    { term: "Ethics", definition: "The moral principles and rules that guide how research should be conducted and protect participants" },
+    { term: "Informed consent", definition: "Participants agree to take part after being told what the study involves" },
+    { term: "Right to withdraw", definition: "Participants can leave a study at any time" },
+    { term: "Debriefing", definition: "Explaining the true purpose of the study to participants afterwards and addressing any harm" },
+    { term: "Resilience", definition: "The ability to cope with stress, adapt to change and bounce back after difficulties" },
+    { term: "Biopsychosocial model", definition: "Explains wellbeing through the interaction of biological, psychological and social factors" },
+    { term: "Protective factors", definition: "Positive influences in the biological, psychological and social areas that protect wellbeing and reduce the likelihood of mental illness" },
   ],
   practiceQuestions: scienceQuestions,
   summaryPoints: [
-    "Atomic number = protons, mass number = protons + neutrons",
-    "Alpha stopped by paper, Beta by aluminium, Gamma by lead",
-    "Chemical equations must balance (conservation of mass)",
-    "Negative feedback maintains homeostasis",
-    "Insulin lowers blood glucose, glucagon raises it",
-    "Three lines of defence: barriers, innate, adaptive",
+    "Week 1: psychology as the scientific study of thoughts, feelings and behaviour and its major branches; the aim, IV, DV, experimental and control groups; controlled and extraneous variables; the four elements of a hypothesis; correlation does not prove causation",
+    "Week 2: the hindbrain, midbrain and forebrain and the four cortical lobes; the CNS and the PNS; the SNS pathway (receptor → sensory neuron → brain → motor neuron → effector); the ANS with its sympathetic ('fight or flight') and parasympathetic ('rest and digest') divisions",
+    "Week 3: neuron structures and their functions (dendrite, soma, axon, myelin sheath, axon terminal); neurotransmission (electrical impulse → transmitter release → synapse → receptor sites → reuptake); excitatory and inhibitory neurotransmitters",
+    "Week 4: memory as encoding, storage and retrieval; sensory, short-term and long-term memory; factors influencing recall (attention, rehearsal, organisation, context, interference); schemas and false memories; convenience, random and stratified sampling with their advantages and limitations",
+    "Week 5: within-subject and between-subject research designs and their strengths and limitations; the seven ethical principles; the historical studies (Zimbardo, Milgram, Watson & Rayner, Asch) that drove ethical reform",
+    "Week 6: the mental health continuum and resilience; the biopsychosocial model's biological, psychological and social factors and protective factors; First Nations wellbeing — cultural connection, Country, spirituality and community, and the Stolen Generations",
+    "Week 7: SBA 2 — the rehearsal practical comparing maintenance and elaborative rehearsal (Group A vs Group B) plus application questions",
   ],
 };
+
+// ===== Legal Studies (Term 4, taught in the History/Humanities slot) =====
+const historyQuestions: PracticeQuestion[] = [
+  {
+    id: "h1",
+    question: "Which two houses make up the Commonwealth Parliament?",
+    options: [
+      "The House of Representatives and the Senate",
+      "The House of Representatives and the High Court",
+      "The Senate and the Governor-General",
+      "The Legislative Assembly and the Legislative Council",
+    ],
+    answer: "The House of Representatives and the Senate",
+    solution: "The Commonwealth Parliament is bicameral: the House of Representatives and the Senate, with the King represented by the Governor-General.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h2",
+    question: "Which house of the Commonwealth Parliament is formed on the basis of population?",
+    options: ["The House of Representatives", "The Senate", "The High Court", "The Executive Council"],
+    answer: "The House of Representatives",
+    solution: "The House of Representatives is based on population, while the Senate gives equal representation to each state.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h3",
+    question: "Australia is a constitutional monarchy. What does this mean?",
+    options: [
+      "The King is head of state, represented by the Governor-General, and power is limited by a constitution",
+      "The monarch makes all laws without parliament",
+      "The Prime Minister is the head of state",
+      "There is no head of state",
+    ],
+    answer: "The King is head of state, represented by the Governor-General, and power is limited by a constitution",
+    solution: "In a constitutional monarchy the monarch is head of state but the constitution limits their power and parliament makes the laws.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h4",
+    question: "What is a concurrent power?",
+    options: [
+      "A power shared by both the Commonwealth and the states",
+      "A power held only by the Commonwealth",
+      "A power left with the states alone",
+      "A power held only by local councils",
+    ],
+    answer: "A power shared by both the Commonwealth and the states",
+    solution: "Concurrent powers are shared, for example taxation. Exclusive powers belong only to the Commonwealth and residual powers remain with the states.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h5",
+    question: "Which type of power is left with the states because it is not listed in the Constitution?",
+    options: ["Residual power", "Exclusive power", "Concurrent power", "Specific power"],
+    answer: "Residual power",
+    solution: "Residual powers, such as education and health, stay with the states because they are not given to the Commonwealth.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h6",
+    question: "What does the rule of law mean?",
+    options: [
+      "No one is above the law and everyone is subject to the same laws",
+      "The police can make the law when needed",
+      "Judges are above the law",
+      "Only parliament must obey the law",
+    ],
+    answer: "No one is above the law and everyone is subject to the same laws",
+    solution: "The rule of law means the law applies equally to everyone, including governments and their officials.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h7",
+    question: "How is common law made?",
+    options: [
+      "By judges through their decisions in cases",
+      "By parliament passing an Act",
+      "By a vote of the people at a referendum",
+      "By statutory authorities writing regulations",
+    ],
+    answer: "By judges through their decisions in cases",
+    solution: "Common law (case law) develops through judges' decisions. Parliament makes legislation and statutory authorities make rules under it.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h8",
+    question: "What is precedent?",
+    options: [
+      "A past court decision that guides later courts deciding similar cases",
+      "An Act passed by parliament this year",
+      "A rule made by a local council",
+      "A question put to the jury",
+    ],
+    answer: "A past court decision that guides later courts deciding similar cases",
+    solution: "Under the doctrine of precedent, lower courts follow the decisions of higher courts in similar cases.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h9",
+    question: "Which body can make laws under an Act of parliament?",
+    options: ["A statutory authority", "A jury", "The police", "The Governor-General alone"],
+    answer: "A statutory authority",
+    solution: "Statutory authorities are created by legislation and can make rules (delegated legislation) within their area.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h10",
+    question: "What does equality before the law mean?",
+    options: [
+      "Everyone is subject to the same laws, regardless of wealth or status",
+      "Everyone gets the same sentence for every crime",
+      "Everyone must be represented by the same lawyer",
+      "The wealthy can pay for a different law",
+    ],
+    answer: "Everyone is subject to the same laws, regardless of wealth or status",
+    solution: "Equality before the law means a person's wealth, power or status does not change how the law applies to them.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h11",
+    question: "What is judicial independence?",
+    options: [
+      "Courts decide cases free from influence by parliament or the government",
+      "Judges must follow the government's opinion",
+      "Parliament appoints judges for each case",
+      "The police decide the outcome of trials",
+    ],
+    answer: "Courts decide cases free from influence by parliament or the government",
+    solution: "Judicial independence allows judges to apply the law impartially, without pressure from the government of the day.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h12",
+    question: "What is Legal Aid?",
+    options: [
+      "Government-funded legal assistance for people who cannot afford a lawyer",
+      "A free lawyer for everyone in every case",
+      "A charity that writes new laws",
+      "A court that hears appeals only",
+    ],
+    answer: "Government-funded legal assistance for people who cannot afford a lawyer",
+    solution: "Legal Aid supports access to justice for disadvantaged groups who would otherwise be unable to afford representation.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h13",
+    question: "Which of these is a barrier to access to justice?",
+    options: [
+      "The cost of legal representation",
+      "Having a clear written law",
+      "Judges being independent",
+      "Having a court hierarchy",
+    ],
+    answer: "The cost of legal representation",
+    solution: "Cost, language barriers, distance from courts and lack of legal knowledge can all limit access to justice.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h14",
+    question: "Which participant decides the facts and reaches a verdict in a criminal trial?",
+    options: ["The jury", "The judge", "The prosecutor", "The court officer"],
+    answer: "The jury",
+    solution: "In a jury trial the jury decides guilt beyond reasonable doubt, while the judge rules on the law and imposes the sentence.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h15",
+    question: "What role does a judge play in a trial?",
+    options: [
+      "Ruling on questions of law and imposing a sentence",
+      "Investigating the crime and laying charges",
+      "Representing the accused free of charge",
+      "Deciding guilt in every type of case",
+    ],
+    answer: "Ruling on questions of law and imposing a sentence",
+    solution: "The judge ensures the trial is fair, rules on the law, and sentences an offender after conviction.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h16",
+    question: "How does criminal law differ from civil law?",
+    options: [
+      "Criminal law involves the state prosecuting an offence and imposing a sanction; civil law settles disputes between parties with a remedy",
+      "Criminal law is only about money; civil law is about prison",
+      "Civil law is heard only in the High Court",
+      "There is no difference between them",
+    ],
+    answer: "Criminal law involves the state prosecuting an offence and imposing a sanction; civil law settles disputes between parties with a remedy",
+    solution: "In criminal law the state prosecutes and punishes; in civil law one party sues another and the court orders a remedy.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h17",
+    question: "What is the difference between a sanction and a remedy?",
+    options: [
+      "A sanction is a penalty imposed in criminal law; a remedy corrects a wrong in civil law",
+      "A sanction is compensation; a remedy is a prison sentence",
+      "Both are only used in civil law",
+      "A remedy is given by the jury and a sanction by the judge",
+    ],
+    answer: "A sanction is a penalty imposed in criminal law; a remedy corrects a wrong in civil law",
+    solution: "Sanctions (e.g. fines, imprisonment) punish criminal behaviour; remedies (e.g. damages) compensate or correct a civil wrong.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h18",
+    question: "Which is the highest court in the Australian court hierarchy?",
+    options: ["The High Court of Australia", "The Supreme Court of Victoria", "The County Court", "The Magistrates' Court"],
+    answer: "The High Court of Australia",
+    solution: "The High Court is at the top of the hierarchy; it hears appeals and interprets the Constitution.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h19",
+    question: "Which court deals with the most minor criminal and civil matters?",
+    options: ["The Magistrates' Court", "The Supreme Court", "The High Court", "The Court of Appeal"],
+    answer: "The Magistrates' Court",
+    solution: "The Magistrates' Court is the lowest court and hears minor matters, with the more serious cases going to higher courts.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h20",
+    question: "What is an appeal?",
+    options: [
+      "Asking a higher court to review a decision made by a lower court",
+      "Asking the same judge to hear the case again",
+      "Asking parliament to change the law",
+      "Asking the police to drop the charges",
+    ],
+    answer: "Asking a higher court to review a decision made by a lower court",
+    solution: "Appeals go up the court hierarchy, usually on a question of law or on the basis that the decision was wrong.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h21",
+    question: "What are tribunals mainly used for?",
+    options: [
+      "Resolving specific kinds of disputes, such as tenancy or workplace matters, more informally",
+      "Deciding serious criminal charges",
+      "Writing the Constitution",
+      "Appointing judges",
+    ],
+    answer: "Resolving specific kinds of disputes, such as tenancy or workplace matters, more informally",
+    solution: "Specialist courts and tribunals deal with particular matters, often with less formality and cost than a court.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h22",
+    question: "What is statutory interpretation?",
+    options: [
+      "Judges working out the meaning of the words in legislation",
+      "Parliament rewriting an Act of parliament",
+      "The police explaining the law to the public",
+      "The jury deciding what the law means",
+    ],
+    answer: "Judges working out the meaning of the words in legislation",
+    solution: "When legislation is unclear, judges interpret its words and apply them to the facts of the case.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h23",
+    question: "How do courts make law?",
+    options: [
+      "By applying precedent and interpreting legislation, which sets rules for later cases",
+      "By passing new Acts in parliament",
+      "By holding a referendum",
+      "By issuing regulations through statutory authorities",
+    ],
+    answer: "By applying precedent and interpreting legislation, which sets rules for later cases",
+    solution: "Through precedent and judicial reasoning, courts develop common law that binds lower courts in similar cases.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h24",
+    question: "What is judicial reasoning?",
+    options: [
+      "The explanation of how a judge reached a decision, including the reasons and the law applied",
+      "The vote taken by the jury",
+      "The speech made by the prosecutor",
+      "The law passed by parliament after a case",
+    ],
+    answer: "The explanation of how a judge reached a decision, including the reasons and the law applied",
+    solution: "Judicial reasoning shows the principles behind the decision, which later courts can follow as precedent.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h25",
+    question: "What did the High Court decide in Mabo v Queensland (No 2)?",
+    options: [
+      "That native title is recognised in Australian law",
+      "That all land belongs to the Commonwealth",
+      "That the Senate cannot pass laws about land",
+      "That treaties must be signed with First Nations peoples",
+    ],
+    answer: "That native title is recognised in Australian law",
+    solution: "Mabo (1992) recognised native title — Indigenous land rights that existed before colonisation and can survive it.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h26",
+    question: "What was the significance of the Wik decision?",
+    options: [
+      "It found that native title and pastoral leases can co-exist",
+      "It abolished native title",
+      "It created the Waitangi Tribunal",
+      "It gave the states power over native title",
+    ],
+    answer: "It found that native title and pastoral leases can co-exist",
+    solution: "Wik (1996) held that native title can co-exist with pastoral leases, although the lease rights prevail where they conflict.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h27",
+    question: "Which country's courts decided Delgamuukw?",
+    options: ["Canada", "New Zealand", "Australia", "The United States"],
+    answer: "Canada",
+    solution: "Delgamuukw v British Columbia is a Canadian decision on Aboriginal title, useful for comparing approaches to Indigenous rights.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h28",
+    question: "What is the Waitangi Tribunal?",
+    options: [
+      "A New Zealand body that hears claims about breaches of the Treaty of Waitangi",
+      "An Australian court that hears native title claims",
+      "A Canadian commission on Aboriginal title",
+      "A United Nations human rights committee",
+    ],
+    answer: "A New Zealand body that hears claims about breaches of the Treaty of Waitangi",
+    solution: "The Waitangi Tribunal investigates claims that the Crown breached the Treaty of Waitangi and recommends remedies.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h29",
+    question: "Why is a comparative study of Indigenous rights across Australia, Canada and New Zealand useful?",
+    options: [
+      "It shows how different legal systems have responded to Indigenous rights, and what each can learn",
+      "It proves that Australian law is identical to Canadian law",
+      "It replaces the need to study Australian cases",
+      "It only matters to international courts",
+    ],
+    answer: "It shows how different legal systems have responded to Indigenous rights, and what each can learn",
+    solution: "Comparing Mabo, Delgamuukw and the Waitangi Tribunal reveals different legal pathways to recognising Indigenous rights.",
+    type: "multiple-choice",
+  },
+  {
+    id: "h30",
+    question: "What skills does a mock trial practise?",
+    options: [
+      "Applying court procedure, presenting an argument and taking the roles of legal participants",
+      "Writing new legislation for parliament",
+      "Reporting on a contemporary legal issue as a podcast",
+      "Conducting a referendum",
+    ],
+    answer: "Applying court procedure, presenting an argument and taking the roles of legal participants",
+    solution: "A mock trial puts the roles of judges, barristers, witnesses and the jury into practice in a simulated case.",
+    type: "multiple-choice",
+  },
+];
 
 const historyContent: StudyContent = {
   type: "review",
   vocabulary: [
-    { term: "ANZAC", definition: "Australian and New Zealand Army Corps" },
-    { term: "Armistice", definition: "Agreement to stop fighting" },
-    { term: "Treaty of Versailles", definition: "Peace treaty that ended WWI" },
-    { term: "Federation", definition: "The uniting of Australian colonies in 1901" },
-    { term: "Constitution", definition: "The set of rules establishing government" },
-    { term: "Referendum", definition: "Vote by citizens to change the Constitution" },
-    { term: "Civic Participation", definition: "Ways citizens engage in democracy" },
-    { term: "Primary Source", definition: "Original document from the time studied" },
+    { term: "Constitutional monarchy", definition: "A system where the monarch is head of state but their power is limited by a constitution" },
+    { term: "Bicameral", definition: "A parliament with two houses" },
+    { term: "Exclusive power", definition: "A power held only by the Commonwealth Parliament" },
+    { term: "Concurrent power", definition: "A power shared by the Commonwealth and the states" },
+    { term: "Residual power", definition: "A power left with the states because it is not listed in the Constitution" },
+    { term: "Rule of law", definition: "No one is above the law; the law applies equally to everyone" },
+    { term: "Legislation", definition: "Law made by parliament, also called an Act" },
+    { term: "Statutory authority", definition: "A body created by legislation that can make rules in its area" },
+    { term: "Common law", definition: "Law developed by judges through their decisions in cases" },
+    { term: "Precedent", definition: "A past decision that guides later courts in similar cases" },
+    { term: "Judicial independence", definition: "Courts decide cases free from government influence" },
+    { term: "Access to justice", definition: "People being able to use the legal system, including help such as Legal Aid" },
+    { term: "Legal Aid", definition: "Government-funded legal help for those who cannot afford a lawyer" },
+    { term: "Criminal law", definition: "The state prosecutes an offence and a sanction is imposed" },
+    { term: "Civil law", definition: "Disputes between parties, resolved with a remedy" },
+    { term: "Sanction", definition: "A penalty imposed in criminal law, such as a fine or imprisonment" },
+    { term: "Remedy", definition: "A civil order that compensates or corrects a wrong, such as damages" },
+    { term: "Jurisdiction", definition: "The power of a court to hear a particular type of matter" },
+    { term: "Court hierarchy", definition: "The ranking of courts from the Magistrates' Court to the High Court" },
+    { term: "Appeal", definition: "Asking a higher court to review a decision of a lower court" },
+    { term: "Statutory interpretation", definition: "Judges working out the meaning of the words in legislation" },
+    { term: "Judicial reasoning", definition: "The reasons a judge gives for reaching a decision" },
+    { term: "Native title", definition: "Indigenous land rights that existed before colonisation and can survive it" },
+    { term: "Waitangi Tribunal", definition: "A New Zealand body that hears claims about breaches of the Treaty of Waitangi" },
   ],
   practiceQuestions: historyQuestions,
   flashcards: [
-    { question: "What does MAIN stand for?", answer: "Militarism, Alliances, Imperialism, Nationalism", type: "short-answer" },
-    { question: "When is ANZAC Day?", answer: "April 25", type: "short-answer" },
-    { question: "What treaty ended WWI?", answer: "Treaty of Versailles", type: "short-answer" },
-    { question: "When was Australian Federation?", answer: "1901", type: "short-answer" },
+    {
+      question: "Which house of the Commonwealth Parliament gives each state equal representation?",
+      options: ["The Senate", "The House of Representatives", "The High Court", "The Executive Council"],
+      answer: "The Senate",
+      type: "multiple-choice",
+    },
+    {
+      question: "Which court sits directly above the Magistrates' Court in Victoria?",
+      options: ["The County Court", "The High Court", "The Court of Appeal", "The Supreme Court"],
+      answer: "The County Court",
+      type: "multiple-choice",
+    },
+    {
+      question: "Which case recognised native title in Australia?",
+      options: ["Mabo v Queensland (No 2)", "Wik v Queensland", "Delgamuukw v British Columbia", "R v Murrell"],
+      answer: "Mabo v Queensland (No 2)",
+      type: "multiple-choice",
+    },
+    {
+      question: "Who prosecutes a criminal case in Australia?",
+      options: ["The state, through the prosecution", "The victim personally", "The jury", "The judge"],
+      answer: "The state, through the prosecution",
+      type: "multiple-choice",
+    },
+    {
+      question: "What is the name for government-funded legal help for people who cannot afford a lawyer?",
+      options: ["Legal Aid", "Legal service guarantee", "Public defence fund", "Court duty scheme"],
+      answer: "Legal Aid",
+      type: "multiple-choice",
+    },
+    {
+      question: "What is the correct term for the power to hear a particular type of case?",
+      options: ["Jurisdiction", "Precedent", "Sanction", "Remedy"],
+      answer: "Jurisdiction",
+      type: "multiple-choice",
+    },
   ],
   summaryPoints: [
-    "MAIN: Causes of WWI - Militarism, Alliances, Imperialism, Nationalism",
-    "ANZAC legend: courage, mateship, endurance",
-    "OPCL: Origin, Purpose, Content, Limitation for source analysis",
-    "Parliament: House of Representatives + Senate + King",
-    "Constitution can only be changed by referendum",
+    "Week 1: the Commonwealth Parliament — constitutional monarchy, the House of Representatives and the Senate, and specific, residual, exclusive and concurrent powers; the rule of law (pp. 548–551)",
+    "Week 2: how laws are made — legislation, statutory authorities, common law and precedent (pp. 574–575)",
+    "Week 3: principles of the legal system — equality before the law, judicial independence, and access to justice through Legal Aid; the report and podcast project launches (pp. 576–579)",
+    "Week 4: participants in the legal system — judges, lawyers, juries and police; criminal vs civil law; sanctions vs remedies; the topic test (pp. 580–585)",
+    "Week 5: court jurisdictions and the court hierarchy — Magistrates' Court to the High Court, specialist courts and tribunals, and the appeals process (pp. 582–592)",
+    "Week 6: courts and tribunals making law — precedent, statutory interpretation and judicial reasoning (pp. 592–596)",
+    "Week 7: Indigenous rights and comparative legal systems — Mabo, Wik, Delgamuukw and the Waitangi Tribunal, plus a mock trial",
   ],
 };
+
+// ===== English (Term 4, War Poetry) =====
+const englishQuestions: PracticeQuestion[] = [
+  { id: "e1", question: "What is a symbol?", answer: "An object, image or action that represents a bigger idea", type: "short" },
+  { id: "e2", question: "Name two structural features a poet can use", answer: "Stanzas, enjambment, line length or repetition", type: "short" },
+  { id: "e3", question: "What is a sonnet?", answer: "A 14-line poem, often with a set rhyme scheme", type: "short" },
+  { id: "e4", question: "What is tone?", answer: "The poet's attitude towards the subject or the reader", type: "short" },
+  { id: "e5", question: "What is the speaker (persona) in a poem?", answer: "The voice that narrates the poem, which may not be the poet", type: "short" },
+  { id: "e6", question: "Which senses does imagery appeal to?", answer: "The five senses, creating a vivid picture for the reader", type: "short" },
+  { id: "e7", question: "What is enjambment?", answer: "A sentence or thought that runs over the end of a line without punctuation", type: "short" },
+  { id: "e8", question: "What makes a strong thesis?", answer: "A clear, arguable claim that directly answers the prompt", type: "short" },
+  { id: "e9", question: "How should a quotation be used in an analytical paragraph?", answer: "Integrate it into your sentence, then explain how it creates meaning", type: "short" },
+  { id: "e10", question: "What does TEEL stand for?", answer: "Topic, Explain, Evidence, Link", type: "short" },
+  { id: "e11", question: "What are the parts of a comparative paragraph?", answer: "A point of similarity or difference, evidence from both poems, and a link to the thesis", type: "short" },
+  { id: "e12", question: "Why might a poet use a fragmented structure to show trauma?", answer: "It mirrors the disrupted way traumatic memories return", type: "short" },
+  { id: "e13", question: "What is the difference between identify and analyse?", answer: "Identifying names a technique; analysing explains how and why it creates meaning", type: "short" },
+  { id: "e14", question: "What does a comparative connective do?", answer: "It links two poems, for example 'similarly' or 'in contrast'", type: "short" },
+  { id: "e15", question: "What is the purpose of repetition in a poem?", answer: "To emphasise an idea and create rhythm", type: "short" },
+  { id: "e16", question: "What does 'patriotism' mean in the context of war poetry?", answer: "Devotion to one's country, which some poets question or critique", type: "short" },
+  { id: "e17", question: "What is moral responsibility in the context of war?", answer: "The question of who is accountable for the decisions and suffering of war", type: "short" },
+  { id: "e18", question: "What is the purpose of the conclusion in an analytical essay?", answer: "To synthesise your argument and answer the prompt", type: "short" },
+];
 
 const englishContent: StudyContent = {
   type: "reading",
   vocabulary: [
-    { term: "Rationale", definition: "The underlying reason or purpose for something" },
-    { term: "Contention", definition: "The main argument or position" },
-    { term: "Ethos", definition: "Appeal to credibility" },
-    { term: "Pathos", definition: "Appeal to emotion" },
-    { term: "Logos", definition: "Appeal to logic" },
-    { term: "Dystopia", definition: "Imagined society with suffering and injustice" },
-    { term: "Newspeak", definition: "The Party's language designed to limit thought" },
-    { term: "Doublethink", definition: "Holding two contradictory beliefs simultaneously" },
+    { term: "Symbolism", definition: "Using an object or image to represent a bigger idea" },
+    { term: "Imagery", definition: "Language that creates a picture using the senses" },
+    { term: "Tone", definition: "The poet's attitude towards the subject" },
+    { term: "Enjambment", definition: "A sentence running over the end of a line without punctuation" },
+    { term: "Persona", definition: "The voice or speaker of a poem" },
+    { term: "Thesis", definition: "The main arguable claim of an essay" },
+    { term: "Trauma", definition: "Deep psychological harm, a common theme in war poetry" },
+    { term: "Comparative", definition: "Analysis that links two texts through similarities or differences" },
   ],
   practiceQuestions: englishQuestions,
   writingPrompts: [
     {
-      prompt: "Analyse how Orwell uses language and structure to critique totalitarianism in 1984",
-      requirements: ["Clear thesis", "Multiple techniques analysed", "Textual evidence", "Link to themes"],
-      structure: ["Introduction with thesis", "Technique 1", "Technique 2", "Technique 3", "Conclusion"],
+      prompt: "Analyse how two war poems present trauma and memory",
+      requirements: ["Clear thesis", "Comparison of both poems", "Analysis of at least two techniques", "Integrated quotations"],
+      structure: ["Introduction with thesis", "Comparative paragraph 1", "Comparative paragraph 2", "Comparative paragraph 3", "Conclusion"],
     },
     {
-      prompt: "Compare how two news articles present the same event differently",
-      requirements: ["Identify both messages", "Compare techniques", "Analyse language", "Evaluate effectiveness"],
-      structure: ["Introduction", "Article A analysis", "Article B analysis", "Comparison", "Conclusion"],
+      prompt: "Analyse how a poet uses symbolism and form to critique war",
+      requirements: ["Identify the symbolism", "Explain how form supports meaning", "Use TEEL in each paragraph", "Link back to the thesis"],
+      structure: ["Introduction", "Symbolism paragraph", "Form paragraph", "Link to context", "Conclusion"],
     },
   ],
   summaryPoints: [
-    "News analysis: rationale, message, persuasive techniques",
-    "Ethos, pathos, logos - three forms of persuasion",
-    "1984: dystopia exploring surveillance, propaganda, control",
-    "Big Brother represents total surveillance",
-    "Newspeak designed to limit thought",
+    "Analyse means explaining how a technique creates meaning, not just naming it",
+    "Comparative writing connects a similarity or difference across both poems",
     "TEEL: Topic, Explain, Evidence, Link",
+    "Themes: power, patriotism, resistance, trauma, memory and moral responsibility",
+    "SBA 3 is a full analytical response on War Poetry, completed in Week 7 (16 Nov)",
   ],
+};
+
+// ===== Weekly notes (Term 4, Weeks 1-9) =====
+// Titles and key knowledge follow the Semester 2 Student Weekly Outline for
+// each subject, so the notes match what is being taught that week.
+type WeeklyReadings = Record<number, ReadingContent>;
+
+const mathReadingByWeek: WeeklyReadings = {
+  1: {
+    title: "Chapter 9: Sampling technique and Bivariate data",
+    content:
+      "Bivariate data records two variables for each individual, such as hours slept and test score. A scatter plot displays the pairs as points so the relationship between the variables can be seen. The correlation describes the direction and strength of that relationship: positive (both increase together), negative (one increases as the other decreases) or no correlation. A line of best fit is drawn by eye through the middle of the points to describe the overall trend and to make predictions. Sampling matters here: a larger, more representative sample makes any conclusion drawn from the data more reliable. Correlation only shows that two variables are related — it is not proof that one causes the other, because a third variable could explain both.",
+    keyPoints: [
+      "Understand and interpret the correlation between two sets of data",
+      "Positive, negative or no correlation; strength is shown by how closely the points follow a line",
+      "Draw a line of best fit by eye and use it to describe the trend",
+      "Correlation is not causation",
+      "Calculate a response rate and consider sampling size and method",
+    ],
+  },
+  2: {
+    title: "Chapter 5: Surface area and Volume",
+    content:
+      "Surface area is the total area of every face of a 3D shape, measured in square units. Volume is the space inside it, measured in cubic units. A prism has a constant cross-section, so its volume is the area of the base multiplied by the height — this covers rectangular prisms, triangular prisms and cylinders (V = πr²h). Surface area is found face by face, or by using the known formulas: a cube has 6 identical square faces, a sphere has SA = 4πr² and a cylinder has two circular ends plus the curved surface (2πr² + 2πrh). Always check the units and whether the answer should be exact (in terms of π) or rounded.",
+    keyPoints: [
+      "Find the surface area of any 3D shape by adding the area of every face",
+      "Find the volume of any 3D shape; prism volume = area of base × height",
+      "Cylinder: V = πr²h and SA = 2πrh + 2πr²",
+      "Sphere: SA = 4πr²",
+      "Use square units for area and cubic units for volume",
+    ],
+  },
+  3: {
+    title: "Chapter 5: Geometric Transformation",
+    content:
+      "Transformations move or resize a 2D shape on the Cartesian plane. A translation slides the shape by a vector, a rotation turns it about a point (usually the origin), a reflection flips it in a mirror line, and an enlargement changes its size by a scale factor. Reflection and rotation preserve size and shape (congruence); enlargement creates a similar shape, multiplying lengths by k, areas by k² and volumes by k³. Tessellation is the tiling of a plane with shapes that fit with no gaps or overlaps: the only regular polygons that tessellate alone are the equilateral triangle, square and regular hexagon, because their interior angles divide 360°. Semi-regular tessellations use two or more regular polygons in a repeating pattern. Some combinations of transformations can be replaced by a single transformation that has the same effect, for example two reflections producing a translation or rotation.",
+    keyPoints: [
+      "Transform 2D shapes by translation, rotation, reflection and enlargement",
+      "Regular and semi-regular tessellation; interior angles must meet 360° at a point",
+      "Replace transformations by other transformations where possible",
+      "Enlargement by scale factor k multiplies area by k²",
+    ],
+  },
+  4: {
+    title: "Chapter 7: The Right-angle triangle",
+    content:
+      "Trigonometry links the sides and angles of right-angled triangles: sin θ = opposite ÷ hypotenuse, cos θ = adjacent ÷ hypotenuse and tan θ = opposite ÷ adjacent (SOH CAH TOA), where θ is a given acute angle. Problems in two dimensions include angles of elevation (looking up from the horizontal), angles of depression (looking down from the horizontal) and bearings, which are directions measured clockwise from north and written with three figures, such as 135°. Set out a clear diagram, label the sides relative to the angle, choose the ratio that uses the information you have, and round to the accuracy asked for. This week is also the summative measurement project, so apply these skills to a real measurement task.",
+    keyPoints: [
+      "Solve problems in right-angled triangles using the trigonometric ratios",
+      "Solve problems involving angles of elevation and depression",
+      "Solve problems using bearings (three figures, measured clockwise from north)",
+      "Draw a diagram, choose the correct ratio, then round as required",
+      "Summative assessment: Measurement project",
+    ],
+  },
+  5: {
+    title: "Chapter 7: Properties of Circles and Circle Theorem 1",
+    content:
+      "A circle's circumference is 2πr and its area is πr². An arc is part of the circumference and a sector is the region between two radii: the angle at the centre tells you what fraction of the whole circle you have. Arc length = (θ ÷ 360) × 2πr, perimeter of a sector = arc length + 2r, and sector area = (θ ÷ 360) × πr². A chord is a straight line joining two points on the circumference, and perpendiculars from the centre bisect chords. Circle theorems let you find unknown angles and lengths and prove results: the angle at the centre is twice the angle at the circumference standing on the same arc, the angle in a semicircle is 90°, angles in the same segment are equal, and a tangent is perpendicular to the radius at the point of contact. Each step must be justified by naming the theorem.",
+    keyPoints: [
+      "Find the length of an arc of a circle",
+      "Find the angle in a sector of a circle",
+      "Find the perimeter and area of a sector",
+      "Find the length of a chord",
+      "Find angles and lengths using circle theorems, and prove results by naming the theorem used",
+    ],
+  },
+  6: {
+    title: "Chapter 7: Circle theorem 2",
+    content:
+      "The circle theorems from last week are used here to find chord lengths and to prove further relationships. For two chords that intersect inside a circle, AP × PB = CP × PD, where P is the point of intersection. A perpendicular from the centre to a chord bisects the chord, which turns a chord problem into a right-angled triangle problem that can be solved with Pythagoras or trigonometry. Opposite angles in a cyclic quadrilateral add to 180°, and the exterior angle of a cyclic quadrilateral equals the interior opposite angle. This week includes the summative topic test, so practise choosing the right theorem, writing a reason for each statement, and showing every step of the working.",
+    keyPoints: [
+      "Use circle theorems to find the lengths of chords",
+      "Intersecting chords: AP × PB = CP × PD",
+      "A perpendicular from the centre bisects a chord",
+      "Opposite angles of a cyclic quadrilateral add to 180°",
+      "Summative assessment: Topic test",
+    ],
+  },
+  7: {
+    title: "Revision",
+    content:
+      "Revise every Term 4 chapter: sampling and bivariate data (Ch 9), surface area and volume (Ch 5), transformations and tessellation (Ch 5), right-angled triangles and trigonometry (Ch 7), and circles with the circle theorems (Ch 7). Work through mixed problems rather than single topics, check your working against the summary points, and fix the topics you find hardest first. Practise questions under timed conditions so you know how long each type takes.",
+    keyPoints: [
+      "Revision of all Term 4 chapters: sampling and bivariate data (Ch 9), surface area and volume (Ch 5), transformations and tessellation (Ch 5), right-angled triangles (Ch 7) and circles (Ch 7)",
+      "Practise mixed questions across all Term 4 chapters",
+      "Check each answer against the working, not just the final value",
+      "Focus on the topics you find hardest and time yourself on exam-style questions",
+    ],
+  },
+  8: {
+    title: "Revision Week (End of Semester Examinations)",
+    content:
+      "The end of semester examination period runs from Monday 23 November to Thursday 26 November with revision week. Consolidate your summary points, repeat the questions you got wrong, and make sure you can state every circle theorem and trigonometric ratio without notes.",
+    keyPoints: [
+      "Revision week: 23 - 26 November",
+      "Repeat the questions you got wrong",
+      "Be able to state each theorem and ratio from memory",
+      "Check the exam date, time and equipment",
+    ],
+  },
+  9: {
+    title: "End of Semester Examination Period",
+    content:
+      "The examination period runs from Friday 27 November to Thursday 3 December. Arrive early with the correct equipment, read each question twice, show all working, and check units and rounding before you finish.",
+    keyPoints: [
+      "Exam period: 27 November - 3 December",
+      "Show all working and check units and rounding",
+      "Bring the required equipment",
+    ],
+  },
+};
+
+const scienceReadingByWeek: WeeklyReadings = {
+  1: {
+    title: "Introduction to Psychology, Variables, Hypothesis & Correlation vs Causation",
+    content:
+      "Psychology is defined as the scientific study of human thoughts, feelings and behaviour. The word comes from psyche, meaning mind, and logos, meaning knowledge. Thoughts and feelings are mental processes that cannot be directly observed, while behaviour refers to any externally expressed actions that can be directly observed. Psychology is a science because it relies on systematic research: researchers collect data, test ideas and draw evidence-based conclusions about why people think, feel and act the way they do. The major branches of psychology include biological, cognitive, developmental, social, educational, forensic, sports and consumer psychology, and each studies a different aspect of behaviour and mental processes.\n\nWhen a researcher has an idea about a study they wish to investigate, they decide on an investigation aim, which is the purpose of the study, and the aim includes the variables being studied. In the simplest form of an experiment there is one independent variable (IV), which is what the researcher changes (for example zero, one or two cups of water), and one dependent variable (DV), which is what is measured (for example the size of the plants). The experimental group is exposed to the experimental condition in which the IV under investigation is present (for example studying 4 hours for the exam), while the control group is exposed to the control condition in which the IV is absent (for example studying 0 hours).\n\nResearchers begin an investigation with an idea of the possible outcomes. The hypothesis predicts whether the IV will affect the DV, and the investigation will test whether the hypothesis is supported, partly supported or refuted (not supported). Every hypothesis must include four elements: the population, the IV (experimental condition), the DV (direction of prediction) and the IV (control condition). Extraneous variables are variables other than the IV that may have an unwanted effect on the DV and the results of the investigation, while controlled variables are variables held constant to ensure that the only influence on the DV is the IV.\n\nIn psychology, researchers often look for relationships between variables — for example between sleep and concentration, or between screen time and mood. Correlation means two things are related: when one changes, the other tends to change too. For example, students who sleep more hours often report feeling happier. However, correlation does not mean that one causes the other, because the relationship could be due to another factor such as less stress or better time management. Causation means one variable directly affects another, a cause-and-effect link, for example drinking caffeine causes an increase in heart rate. Psychologists use experiments to test causation by controlling variables and using comparisons (control versus experimental groups). When researchers only observe data without controlling conditions, they can usually show correlation, not causation.",
+    keyPoints: [
+      "Psychology: the scientific study of human thoughts, feelings and behaviour; psyche means mind and logos means knowledge",
+      "Thoughts and feelings are mental processes that cannot be directly observed; behaviour can be directly observed",
+      "Major branches: biological, cognitive, developmental, social, educational, forensic, sports and consumer psychology",
+      "Aim: the purpose of the study, including the variables being studied",
+      "IV is what the researcher changes; DV is what is measured; the experimental group has the IV present and the control group has the IV absent",
+      "A hypothesis has four elements — population, IV (experimental condition), DV (direction of prediction), IV (control condition) — and is supported, partly supported or refuted",
+      "Extraneous variables may have an unwanted effect on the DV; controlled variables are held constant",
+      "Correlation: two variables are related but not necessarily causally; causation requires a controlled experiment",
+      "Correlation vs causation: the ice-cream-and-drowning example shows a link without cause",
+    ],
+  },
+  2: {
+    title: "Regions of the Brain, Somatic & Autonomic Nervous Systems",
+    content:
+      "The brain is the body's main control centre, responsible for everything we think, feel and do, and it is divided into three main regions: the hindbrain, midbrain and forebrain. The hindbrain is the lowest part of the brain, located at the back of the skull, and controls vital functions that keep us alive, such as breathing, heart rate and coordination. The cerebellum, which is part of the hindbrain, helps us balance, move smoothly and maintain posture — for example when you ride a bike or catch a ball. Above the hindbrain lies the midbrain, a small but important region that acts as a bridge between the lower and higher parts of the brain. It controls basic movements of the eyes, processes sensory information like sight and sound, and helps the body respond to things happening around us, letting you automatically turn your head towards a sudden noise or bright light.\n\nThe largest and most complex part of the brain is the forebrain, which is involved in higher mental processes such as thinking, learning, memory and emotion. It contains important structures such as the thalamus and hypothalamus, which help regulate body temperature, sleep and motivation, as well as the cerebrum, the part responsible for conscious thought. Covering much of the forebrain is the cerebral cortex, a wrinkled outer layer that allows humans to think, reason and make decisions. It is divided into four lobes: the frontal lobe, involved in reasoning, planning, movement and emotions; the parietal lobe, which processes touch and spatial awareness; the temporal lobe, responsible for hearing, memory and language; and the occipital lobe, which processes visual information from the eyes.\n\nThe nervous system is divided into the central nervous system (CNS) — made up of the brain and spinal cord — and the peripheral nervous system (PNS), which connects the CNS to the rest of the body. The PNS itself has two main parts: the somatic nervous system (SNS) and the autonomic nervous system (ANS).\n\nThe SNS controls all voluntary movements, meaning the actions you choose to make, such as walking, writing or picking up an object. Its pathway involves receptors, neurons and effectors: a receptor detects a change or stimulus; a sensory neuron sends the message along the afferent pathway towards the CNS (the spinal cord and brain); the brain processes and interprets the message and decides how to respond; a motor neuron carries the signal away from the CNS (the efferent pathway) to the muscles that need to act; and the effector (the muscle) responds by performing the action. For example, the sight of a cat is detected by receptors in the eyes, travels along sensory neurons to the brain, and the brain decides to move your hand to pat it.\n\nThe autonomic nervous system is the part of the peripheral nervous system that controls the automatic functions of the body — the things we do without thinking — including heart rate, breathing, digestion and the release of certain hormones. It has two main branches that work together like opposites. The sympathetic nervous system, often called the 'fight or flight' system, prepares the body for action when it senses danger or stress: it increases heart rate, releases adrenaline, slows digestion and makes the body more alert and ready to respond. The parasympathetic nervous system, known as the 'rest and digest' system, calms the body down after the stressful situation has passed: it slows the heart rate, supports digestion, relaxes the muscles and helps the body return to a steady, balanced state. When one system becomes active, the other helps restore normal functioning once the situation changes.",
+    keyPoints: [
+      "Three brain regions: hindbrain (breathing, heart rate, coordination), midbrain and forebrain",
+      "Cerebellum (part of the hindbrain): balance, smooth movement and posture",
+      "Midbrain: bridges the lower and higher brain, controls basic eye movements, processes sensory information",
+      "Forebrain: the largest region — thinking, learning, memory and emotion; contains the thalamus, hypothalamus and cerebrum",
+      "Cerebral cortex lobes: frontal (reasoning, planning, movement, emotions), parietal (touch, spatial awareness), temporal (hearing, memory, language), occipital (vision)",
+      "CNS: the brain and spinal cord; PNS: connects the CNS to the body and includes the SNS and ANS",
+      "SNS controls voluntary movements; pathway: receptor → sensory neuron (afferent) → brain → motor neuron (efferent) → effector",
+      "ANS controls automatic functions such as heart rate, breathing and digestion",
+      "Sympathetic ('fight or flight'): increases heart rate, releases adrenaline, slows digestion",
+      "Parasympathetic ('rest and digest'): slows heart rate, supports digestion, restores balance",
+    ],
+  },
+  3: {
+    title: "Neuron Structure; Neurotransmission and Neurotransmitter Types",
+    content:
+      "The entire nervous system is comprised of neurons organised into networks that form neural circuits and pathways of varying complexity, through which information is continuously transmitted. A neuron is an individual nerve cell that is specialised to receive, process and/or transmit information, and neurons communicate not only with each other but also with muscles and glands. Each structure has a specific function: dendrites are projections that typically branch from the cell body and are able to receive information from other neurons; the soma, or cell body, receives information from the dendrites and then passes it down the axon; the axon transmits signals, allowing the neuron to send information to multiple other cells, and the signals that travel along it are referred to as electrical messages, nerve impulses or action potential; the myelin sheath covers most of the axons in the human body and is a fatty substance that can be thought of as insulation that helps speed up information transmission; and the axon terminals are the structures at the end of the axon that store and release neurotransmitters.\n\nNeurotransmission is the process by which neurons, or nerve cells, communicate with each other to send messages throughout the brain and body. It is both an electrical and chemical process that allows us to think, move, feel and respond to our surroundings. When a neuron is activated by a stimulus, an electrical impulse travels down its axon. When this impulse reaches the axon terminals, it triggers the release of tiny chemical messengers called neurotransmitters. These neurotransmitters cross a small gap between neurons called the synapse and attach to receptor sites on the dendrites of the next neuron, allowing the message to continue. After the signal is passed on, the neurotransmitters are either broken down or reabsorbed by the original neuron in a process called reuptake. This entire process happens extremely quickly — for example, when you decide to wave, neurons send messages through neurotransmission to activate your arm muscles. Without neurotransmission, the brain and body would not be able to communicate or function properly.\n\nNeurotransmitters can have different effects on the next neuron they connect with. Excitatory neurotransmitters increase the likelihood that the next neuron will fire an electrical signal, which means they help 'activate' brain pathways. Inhibitory neurotransmitters make it less likely that the next neuron will fire; these chemicals help slow down or calm neural activity so the brain does not become overloaded. Neurotransmitters to know include dopamine, serotonin, acetylcholine, endorphins, GABA and glutamate. This week you also submit SBA 1, the Reaction Time Practical and its application questions.",
+    keyPoints: [
+      "Neuron: an individual nerve cell specialised to receive, process and/or transmit information",
+      "Dendrite: receives information from other neurons; soma: passes it down the axon",
+      "Axon: transmits signals, allowing the neuron to send information to other cells (electrical message, nerve impulse or action potential)",
+      "Myelin sheath: fatty insulation that speeds up information transmission; axon terminal: stores and releases neurotransmitters",
+      "Neurotransmission: electrical impulse → neurotransmitter release → synapse → receptor sites → reuptake",
+      "Reuptake: neurotransmitters are broken down or reabsorbed by the original neuron",
+      "Excitatory neurotransmitters increase the likelihood of the next neuron firing; inhibitory neurotransmitters decrease it",
+      "Neurotransmitters include dopamine, serotonin, acetylcholine, endorphins, GABA and glutamate",
+      "SBA 1 due: Reaction Time Practical + Application Questions",
+    ],
+  },
+  4: {
+    title: "Memory, Schema and Sampling Methods",
+    content:
+      "Memory is one of the most important mental processes in psychology, allowing us to take in information from our environment, store it and use it later. In simple terms, memory is the process of encoding, storing and retrieving information. Encoding is the first step: it happens when we take in information through our senses — what we see, hear or experience — and convert it into a form the brain can understand. Storage is the second step, where the brain keeps information over time, some for only a few seconds and some for years. Retrieval is the final step, when we access stored information and bring it back into our conscious mind, for example recalling an answer to a question during an exam.\n\nPsychologists describe memory as having three main stages or types. Sensory memory holds information from the senses for just a few seconds, like the image you still 'see' right after looking away from a bright light. Short-term memory stores small amounts of information that you are actively thinking about, usually for 20–30 seconds, such as remembering a set of instructions. Long-term memory is where information is stored more permanently, allowing you to recall past experiences, knowledge and skills. Memory is not always perfect: it can fade, change, or be influenced by emotions and experiences.\n\nRecall — remembering information stored in the brain and bringing it back into conscious mind, which means retrieving it from long-term memory into short-term memory — can be influenced by several factors. Attention matters because information you are not fully focused on is less likely to be stored properly in the first place; studying while scrolling on your phone divides your attention. Rehearsal means actively practising or repeating information so it stays in memory longer. Maintenance rehearsal involves repeating information over and over to keep it active in short-term memory, but it usually does not make it stay for long. Elaborative rehearsal is a deeper form of processing: instead of just repeating the information, you connect it to something meaningful, such as an image, an example or something you already know, so it is more likely to stay in long-term memory. Organisation also helps, because information grouped or connected in a meaningful way is easier to recall. The context in which learning takes place matters through context-dependent memory: people often remember information better when they are in the same setting, mood or environment in which they first learned it. Finally, interference makes recall more difficult when new information disrupts old memories, or when old information makes it harder to learn something new.\n\nA schema is a mental framework or 'template' that helps us organise information and understand the world. Schemas are built from past experiences and they guide how we interpret new situations — for example, you have schemas for things like 'classroom', 'friendship' or 'teacher'. Schemas are useful because they help us make fast decisions, but they can also lead to mistakes: sometimes our brain fills in missing information based on what we expect rather than what is actually there, which can cause misunderstandings, false memories or assumptions.\n\nWhen psychologists conduct research they usually cannot study every single person in a population, so they select a sample — a smaller group of people who represent the larger population. Convenience sampling is when researchers select people who are easy to reach or available at the time, for example a student surveying their classmates; it is quick, simple and inexpensive, but it can lead to bias because the people chosen may not represent the wider population. Random sampling gives everyone in the population an equal chance of being chosen, for example randomly selecting student names from the whole school list; this makes the sample more representative and reduces bias, but it can take more time and planning to organise. Stratified sampling divides the population into strata — categories or subgroups such as age, gender, year level or background — and then selects participants from each subgroup in the same proportion that they appear in the population. For example, if a school has 60% girls and 40% boys, a stratified sample of 50 students would include 30 girls and 20 boys.",
+    keyPoints: [
+      "Memory is the process of encoding, storing and retrieving information",
+      "Encoding: taking information in through the senses; storage: keeping it over time; retrieval: bringing it back into conscious mind",
+      "Sensory memory holds information for a few seconds; short-term memory holds small amounts for 20–30 seconds; long-term memory stores information more permanently",
+      "Factors influencing recall: attention, rehearsal, organisation, context and interference",
+      "Maintenance rehearsal repeats information; elaborative rehearsal connects it to something meaningful",
+      "Context-dependent memory: remembering better in the setting, mood or environment where you learned it",
+      "Interference: new information disrupts old memories, or old information makes new learning harder",
+      "Schema: a mental framework built from past experience that guides interpretation and can cause false memories",
+      "Convenience sampling: easy to reach, quick and inexpensive, but can be biased",
+      "Random sampling: everyone has an equal chance, more representative, but takes more time and planning",
+      "Stratified sampling: divides the population into strata and samples in proportion (e.g. 30 girls and 20 boys out of 50)",
+    ],
+  },
+  5: {
+    title: "Research Design and Ethics in Psychology",
+    content:
+      "Research designs determine how participants experience the experimental and control conditions. The design chosen depends on the goals of the study, the type of data being collected and which variables are most important to control. In this unit you focus on two designs. Within-subject design is where all participants in the sample are involved in both the experimental AND control conditions. Between-subject design is where participants are randomly allocated to either the experimental OR control conditions.\n\nIn psychology, ethics refers to the moral principles and rules that guide how research should be conducted. Ethical guidelines are designed to protect the rights, safety and wellbeing of participants, and to make sure that research is carried out fairly and responsibly. The key ethical principles are informed consent, the right to withdraw, no harm, confidentiality and privacy, deception, debriefing and volunteer participation. Psychologists must follow these guidelines so that their studies are respectful, honest and do not cause harm.\n\nThroughout history, some studies have shown what can happen when ethical rules are not followed — participants were sometimes deceived, stressed or not given the choice to stop participating. Famous examples studied in this course are the Stanford Prison Experiment (Zimbardo, 1971), Milgram's Obedience Study (1963), the Little Albert Experiment (Watson & Rayner, 1920) and the Asch Conformity Experiment (1951). Because of these studies, modern psychology has developed strict ethical standards that every researcher must follow.",
+    keyPoints: [
+      "Within-subject design: all participants take part in both the experimental and control conditions",
+      "Between-subject design: participants are randomly allocated to either the experimental or the control condition",
+      "Ethics: the moral principles and rules that guide how research should be conducted",
+      "Ethical guidelines protect the rights, safety and wellbeing of participants",
+      "Key ethical principles: informed consent, right to withdraw, no harm, confidentiality and privacy, deception, debriefing, volunteer participation",
+      "Historical studies: Stanford Prison Experiment (Zimbardo, 1971), Milgram's Obedience Study (1963), Little Albert (Watson & Rayner, 1920), Asch Conformity Experiment (1951)",
+      "Because ethical rules were broken in these studies, modern psychology uses strict ethical standards",
+    ],
+  },
+  6: {
+    title: "Biopsychosocial Model of Wellbeing and First Nations Perspectives",
+    content:
+      "Mental health and wellbeing is a complex combination of a person's physical, social, emotional, mental and spiritual health that is linked to happiness and life satisfaction. The mental health of an individual falls on a spectrum, or continuum, and this will change throughout their life depending on the experiences they have and their resilience — their ability to cope with their experiences, including adverse ones.\n\nThe biopsychosocial approach is a model used by psychologists to understand how biological, psychological and social factors all interact to influence a person's overall wellbeing. It recognises that mental health and physical health are not determined by just one cause; instead, they result from the combined effects of the body, mind and environment.\n\nBiological factors are the physical and genetic influences on our wellbeing. They include brain chemistry, hormones, sleep, nutrition, exercise and family medical history — for example, lack of sleep or a poor diet can reduce energy and focus, while regular exercise and balanced meals can improve mood and mental clarity. Psychological factors refer to the mental and emotional processes that shape how we think, feel and behave, including thought patterns, beliefs, coping skills, personality and resilience; a person with a positive outlook and strong problem-solving skills may cope better with stress, while unhelpful thinking patterns such as negative self-talk or overthinking can make challenges feel more overwhelming. Social factors are the environmental and relational influences that come from the people and world around us, including family relationships, friendships, cultural background, school environment, community support and socioeconomic conditions; strong supportive relationships protect mental health, while isolation, bullying or financial stress can increase vulnerability.\n\nThe biopsychosocial model also helps psychologists understand what helps people stay mentally healthy and recover when challenges arise. These positive influences are called protective factors: they protect a person's mental wellbeing and reduce the likelihood of developing a mental illness. Protective factors exist in all three areas of the model — biological, psychological and social — and each area contributes to building resilience, which is the ability to cope with stress, adapt to change and bounce back after difficulties. Wellbeing for Aboriginal and Torres Strait Islander peoples also includes cultural connection, connection to Country, spirituality and community, and the Stolen Generations experience of historical trauma and cultural disconnection continues to affect wellbeing across generations. Evaluating the model means asking whether a biopsychosocial approach sufficiently explains that experience, or whether culture and Country must also be considered.",
+    keyPoints: [
+      "Mental health and wellbeing: a combination of physical, social, emotional, mental and spiritual health linked to happiness and life satisfaction",
+      "Mental health falls on a continuum and changes throughout life depending on experiences and resilience",
+      "Resilience: the ability to cope with experiences, including adverse ones",
+      "Biopsychosocial approach: biological, psychological and social factors interact to influence overall wellbeing",
+      "Biological factors: brain chemistry, hormones, sleep, nutrition, exercise, family medical history",
+      "Psychological factors: thought patterns, beliefs, coping skills, personality and resilience",
+      "Social factors: family relationships, friendships, cultural background, school environment, community support, socioeconomic conditions",
+      "Protective factors exist in all three areas and build resilience, reducing the likelihood of mental illness",
+      "First Nations wellbeing: cultural connection, Country, spirituality and community; the Stolen Generations' historical trauma and cultural disconnection",
+      "Evaluate whether the biopsychosocial approach sufficiently explains the impact of that experience",
+    ],
+  },
+  7: {
+    title: "Assessment Week — Memory & Biopsychosocial Model",
+    content:
+      "This week completes the rehearsal practical, which compares maintenance rehearsal (repeating information over and over to keep it active in short-term memory) with elaborative rehearsal (connecting the information to something meaningful so it lasts) — Group A compared with Group B. Process and analyse the recall data, then write a conclusion that links your results back to the Atkinson-Shiffrin model: explain what the data shows about encoding, storage and retrieval, and acknowledge any limitations of the design, such as how attention, organisation, context or interference may have influenced what participants could recall. The application questions cover schema and false memories, stratified sampling, research design, ethics, and the biopsychosocial model alongside Aboriginal and Torres Strait Islander wellbeing, including the Stolen Generations. This is SBA 2: the Rehearsal Practical plus Application Questions.",
+    keyPoints: [
+      "Rehearsal practical: maintenance vs elaborative rehearsal (Group A vs Group B)",
+      "Process and analyse the recall data",
+      "Write a conclusion using the Atkinson-Shiffrin model",
+      "Application questions: schema, stratified sampling, research design, ethics, the biopsychosocial model and ATSI wellbeing",
+      "SBA 2 due: Rehearsal Practical + Application Questions",
+    ],
+  },
+  8: {
+    title: "Revision Week (End of Semester Examinations)",
+    content:
+      "Revision week runs from Monday 23 November to Thursday 26 November. Revise the whole Term 4 course using the booklet: introduction to psychology, variables and hypotheses, correlation and causation, the regions of the brain, the somatic and autonomic nervous systems, neurons and neurotransmission, memory and schema, sampling methods, research designs and ethics, and the biopsychosocial model with First Nations perspectives. Practise the booklet's own activities and application questions so you can explain the concepts, not just define them.",
+    keyPoints: [
+      "Revision week: 23 - 26 November",
+      "Revise each Term 4 topic with its key terms",
+      "Practise the booklet's activities and application questions in full sentences",
+      "Check the exam date, time and room",
+    ],
+  },
+  9: {
+    title: "End of Semester Examination Period",
+    content: "The examination period runs from Friday 27 November to Thursday 3 December.",
+    keyPoints: [
+      "Exam period: 27 November - 3 December",
+      "Check the exam time and room",
+      "Review your summary points the night before",
+    ],
+  },
+};
+
+const historyReadingByWeek: WeeklyReadings = {
+  1: {
+    title: "The Commonwealth Parliament",
+    content:
+      "Australia is a constitutional monarchy: the King is head of state, represented by the Governor-General, but the Constitution limits that power and parliament makes the laws. The Commonwealth Parliament is bicameral. The House of Representatives is formed on the basis of population and forms government; the Senate gives each state equal representation and acts as a house of review. Powers are divided between the Commonwealth and the states: specific powers are listed in the Constitution, exclusive powers belong only to the Commonwealth (such as defence), concurrent powers are shared (such as taxation), and residual powers stay with the states because they are not listed (such as education and health). The rule of law underpins all of this — no one, including the government, is above the law. (pp. 548–551)",
+    keyPoints: [
+      "Constitutional monarchy: the King is head of state, represented by the Governor-General, with power limited by the Constitution",
+      "House of Representatives (population) and Senate (equal state representation)",
+      "Specific, residual, exclusive and concurrent powers",
+      "The rule of law: no one is above the law",
+      "Textbook: pp. 548–551",
+    ],
+  },
+  2: {
+    title: "How Laws Are Made in Australia",
+    content:
+      "Laws are made in two main ways. Parliament makes legislation: a bill is introduced, debated and voted on in both houses, then receives royal assent and becomes an Act. Parliament can also create statutory authorities, which make detailed rules (delegated legislation) within the area the Act gives them. Courts make common law through their decisions: when a judge decides a case, the legal reasoning can become a precedent that lower courts must follow in similar cases. The rule of law requires that these laws are published, apply equally, and can be changed through proper process. (pp. 574–575)",
+    keyPoints: [
+      "Legislation is made by parliament (bill → debate → vote → royal assent → Act)",
+      "Statutory authorities make rules under an Act",
+      "Common law is made by courts through their decisions",
+      "Precedent: a past decision guides later courts in similar cases",
+      "Textbook: pp. 574–575",
+    ],
+  },
+  3: {
+    title: "Principles of Australia's Legal System",
+    content:
+      "Three principles shape Australia's legal system. Equality before the law means everyone is subject to the same laws and treated equally by them, regardless of wealth, power or status. Judicial independence means courts decide cases free from influence by parliament, the government or the parties, so that decisions are impartial and based on the law and evidence. Access to justice means people can actually use the legal system: cost, language barriers, distance, disability and lack of legal knowledge all get in the way, and Legal Aid provides government-funded help for people who cannot afford a lawyer, alongside community legal centres and pro bono services. Disadvantages often overlap, which is why disadvantaged groups are least able to use the system. This week the Report and Podcast project is launched. (pp. 576–579)",
+    keyPoints: [
+      "Equality before the law",
+      "Judicial independence",
+      "Access to justice, Legal Aid and the barriers faced by disadvantaged groups",
+      "Assessment launch: Report and Podcast project on a contemporary legal issue",
+      "Textbook: pp. 576–579",
+    ],
+  },
+  4: {
+    title: "Participants in the Legal System and Types of Legal Disputes",
+    content:
+      "Judges rule on questions of law, ensure a fair trial and impose sentences; barristers and solicitors argue the case and advise clients; the jury decides the facts and reaches a verdict in serious criminal trials; and police investigate offences, lay charges and keep order. Disputes are either criminal or civil. In criminal law the state prosecutes a person accused of an offence and, on conviction, a sanction is imposed — for example a fine, a community correction order or imprisonment — to punish, deter and protect the community. In civil law one party sues another to resolve a dispute, and the court orders a remedy — damages, an injunction or specific performance — to compensate or correct the wrong. The standard of proof also differs: beyond reasonable doubt in criminal cases, and on the balance of probabilities in civil cases. This week includes the Legal Studies topic test. (pp. 580–585)",
+    keyPoints: [
+      "Roles of judges, lawyers, juries and police",
+      "Criminal law: the state prosecutes; sanctions punish and deter",
+      "Civil law: parties resolve disputes; remedies compensate or correct",
+      "Standard of proof: beyond reasonable doubt (criminal) vs balance of probabilities (civil)",
+      "Legal Studies topic test this week; textbook pp. 580–585",
+    ],
+  },
+  5: {
+    title: "Court Jurisdictions and Court Hierarchy",
+    content:
+      "Courts are ranked in a hierarchy, and each court has a jurisdiction — the types of matters it can hear, which depends on the seriousness of the offence and the amount in dispute. The Magistrates' Court hears minor criminal and civil matters; the County Court hears more serious matters including most serious criminal trials; the Supreme Court (Trial Division) hears the most serious cases such as murder; the Court of Appeal hears appeals from the County and Supreme Courts; and the High Court of Australia is at the top, hearing appeals and interpreting the Constitution. Specialist courts and tribunals, such as the Children's Court, Family Court, VCAT and the Fair Work Commission, deal with particular kinds of disputes more informally. Appeals move upwards and are usually based on an error of law or an unfair trial. This is the project research week. (pp. 582–592)",
+    keyPoints: [
+      "Court hierarchy from the Magistrates' Court to the High Court of Australia",
+      "Jurisdiction: the seriousness of the offence or the amount in dispute",
+      "Specialist courts and tribunals",
+      "The appeals process moves to a higher court",
+      "Project research week; textbook pp. 582–592",
+    ],
+  },
+  6: {
+    title: "Courts and Tribunals and the Role of Courts in Making Laws",
+    content:
+      "Courts do not only apply the law — they make it. When a judge decides a case, the reasoning becomes a precedent that binds lower courts in similar cases (the doctrine of precedent, with lower courts distinguishing cases where the facts are different). Courts also make law through statutory interpretation, working out what the words in legislation mean when they are unclear and applying them to the facts. Judicial reasoning explains the decision: the judge sets out the material facts, the relevant law and the reasons, which is what later courts follow. Tribunals, by contrast, are usually created by statute to resolve particular disputes and do not set binding precedents in the same way. This is the project drafting week. (pp. 592–596)",
+    keyPoints: [
+      "Precedent: binding decisions of higher courts",
+      "Statutory interpretation: judges determining the meaning of legislation",
+      "Judicial reasoning: the reasons a decision is based on",
+      "The difference between courts and tribunals",
+      "Project drafting week; textbook pp. 592–596",
+    ],
+  },
+  7: {
+    title: "Indigenous Rights and Comparative Legal Systems",
+    content:
+      "Indigenous rights have been recognised in different ways across legal systems. In Australia, Mabo v Queensland (No 2) (1992) rejected terra nullius and recognised native title — Indigenous land rights that existed before colonisation and can survive it — and the Wik decision (1996) found that native title can co-exist with pastoral leases. In Canada, Delgamuukw v British Columbia (1997) recognised Aboriginal title, including the right to use and control the land, and set out how it must be proven. In New Zealand, the Treaty of Waitangi (1840) is the founding document, and the Waitangi Tribunal hears claims that the Crown has breached it, recommending remedies. Comparing these systems shows different legal pathways to recognising Indigenous rights, and each raises questions about how well the law protects them. This week also includes a mock trial, and the Report and Podcast project is due Friday 13 November. (pp. 596+)",
+    keyPoints: [
+      "Mabo v Queensland: native title recognised in Australia",
+      "Wik decision: native title can co-exist with pastoral leases",
+      "Delgamuukw: Aboriginal title in Canada",
+      "Waitangi Tribunal: claims about breaches of the Treaty of Waitangi in New Zealand",
+      "Mock trial; Report and Podcast project due Friday 13 November",
+    ],
+  },
+  8: {
+    title: "Revision Week (End of Semester Examinations)",
+    content:
+      "Revision week runs from Monday 23 November to Thursday 26 November. Revise the parliamentary and federal structure, how laws are made, the principles of the legal system, the participants and dispute types, the court hierarchy and appeals, courts making law, and the comparative Indigenous rights cases. Practise explaining each principle with an example.",
+    keyPoints: [
+      "Revision week: 23 - 26 November",
+      "Revise each Term 4 topic with an example",
+      "Know the court hierarchy and the appeals process",
+      "Review the comparative Indigenous rights cases",
+    ],
+  },
+  9: {
+    title: "End of Semester Examination Period",
+    content: "The examination period runs from Friday 27 November to Thursday 3 December.",
+    keyPoints: [
+      "Exam period: 27 November - 3 December",
+      "Check the exam time and room",
+      "Review your summary points the night before",
+    ],
+  },
+};
+
+const englishReadingByWeek: WeeklyReadings = {
+  1: {
+    title: "Close Analysis: Symbolism & Form",
+    content: "Poets use symbols, structure and poetic form to create meaning. Analysis explains how these choices affect the reader in war poetry.",
+    keyPoints: ["Symbolism represents a bigger idea", "Structure and form shape meaning", "Explain how, not just what"],
+  },
+  2: {
+    title: "Comparative Study I",
+    content: "Comparing poems means looking at how they represent power, patriotism and resistance. Use connectives such as 'similarly' or 'in contrast' to link the poems.",
+    keyPoints: ["Power, patriotism and resistance", "Use comparative connectives", "Link evidence from both poems"],
+  },
+  3: {
+    title: "Comparative Study II",
+    content: "This study looks at trauma, memory and moral responsibility. Contrasting perspectives in two poems can strengthen a comparative argument.",
+    keyPoints: ["Trauma and memory", "Moral responsibility", "Contrast perspectives"],
+  },
+  4: {
+    title: "Developing Analytical Skills",
+    content: "A strong analytical paragraph starts with a clear topic sentence, explains the technique, integrates a quotation and links back to the thesis.",
+    keyPoints: ["Refine your thesis", "Integrate quotations", "Use TEEL in each paragraph"],
+  },
+  5: {
+    title: "Exam-Style Writing & Topic Test",
+    content: "Under timed conditions, respond to a prompt with a clear thesis and well-organised paragraphs. The poetry analysis topic test checks these skills.",
+    keyPoints: ["Plan your response before writing", "Keep to the time limit", "Answer the prompt directly"],
+  },
+  6: {
+    title: "Drafting & Feedback",
+    content: "Write a full analytical response on War Poetry and use the teacher feedback to improve it. This is the first draft of SBA 3.",
+    keyPoints: ["Draft the full response", "Act on feedback", "SBA 3 is an analytical response"],
+  },
+  7: {
+    title: "Refining the Analytical Response",
+    content: "Complete the analytical response on War Poetry, focusing on sophisticated interpretation and evidence-based argument. This is SBA 3, due in Week 7.",
+    keyPoints: ["Sophisticated interpretation", "Evidence-based argument", "Edit for clarity and precision"],
+  },
+  8: {
+    title: "Revision Week",
+    content: "Revise the poetry techniques and the comparative structure before the end of semester examinations.",
+    keyPoints: ["Revise poetic techniques", "Practise comparative paragraphs", "Review TEEL"],
+  },
+  9: {
+    title: "End of Semester Exams",
+    content: "The end of semester exam period runs from Friday 27 November to Thursday 3 December.",
+    keyPoints: ["Exam period: 27 Nov - 3 Dec", "Check the exam time and room", "Review your summary points"],
+  },
 };
 
 export function getStudyContent(subjectId: SubjectId, taskTitle: string, week: number): StudyContent {
   const taskType = getTaskType(taskTitle);
-  const safeWeek = Math.max(1, Math.min(17, week));
-  
+  const safeWeek = Math.max(1, Math.min(TOTAL_WEEKS, week));
+
   switch (subjectId) {
     case "math":
-      return { 
-        ...mathContent, 
-        type: taskType,
-        reading: mathReadingByWeek[safeWeek] || mathReadingByWeek[1]
-      };
-    
+      return { ...mathContent, type: taskType, reading: mathReadingByWeek[safeWeek] };
+
     case "science":
-      return { 
-        ...scienceContent, 
-        type: taskType,
-        reading: scienceReadingByWeek[safeWeek] || scienceReadingByWeek[1]
-      };
-    
+      return { ...scienceContent, type: taskType, reading: scienceReadingByWeek[safeWeek] };
+
     case "history":
-      return { 
-        ...historyContent, 
-        type: taskType,
-        reading: historyReadingByWeek[safeWeek] || historyReadingByWeek[1]
-      };
-    
+      return { ...historyContent, type: taskType, reading: historyReadingByWeek[safeWeek] };
+
     case "english":
-      return { 
-        ...englishContent, 
-        type: taskType,
-        reading: englishReadingByWeek[safeWeek] || englishReadingByWeek[1]
-      };
-    
+      return { ...englishContent, type: taskType, reading: englishReadingByWeek[safeWeek] };
+
     default:
       return { type: taskType };
   }

@@ -1,6 +1,8 @@
 import { Badge as BadgeData, badges as allBadges } from "@shared/schema";
+import { BadgeProgress } from "@shared/achievements";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Trophy } from "lucide-react";
 import { BadgeIcon } from "./BadgeIcon";
@@ -9,9 +11,11 @@ interface BadgeDisplayProps {
   earnedBadges: string[];
   showLocked?: boolean;
   compact?: boolean;
+  /** How close each locked badge is, from getBadgeProgress. */
+  progress?: BadgeProgress[];
 }
 
-export function BadgeDisplay({ earnedBadges, showLocked = false, compact = false }: BadgeDisplayProps) {
+export function BadgeDisplay({ earnedBadges, showLocked = false, compact = false, progress }: BadgeDisplayProps) {
   const earned = allBadges.filter(b => earnedBadges.includes(b.id));
   const locked = allBadges.filter(b => !earnedBadges.includes(b.id));
 
@@ -42,8 +46,13 @@ export function BadgeDisplay({ earnedBadges, showLocked = false, compact = false
             <div>
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Earned</h4>
               <div className="flex flex-wrap gap-2">
-                {earned.map((badge) => (
-                  <BadgeItem key={badge.id} badge={badge} earned />
+                {earned.map((badge, index) => (
+                  <BadgeItem
+                    key={badge.id}
+                    badge={badge}
+                    earned
+                    animationDelay={index * 0.05}
+                  />
                 ))}
               </div>
             </div>
@@ -54,7 +63,12 @@ export function BadgeDisplay({ earnedBadges, showLocked = false, compact = false
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Locked</h4>
               <div className="flex flex-wrap gap-2">
                 {locked.map((badge) => (
-                  <BadgeItem key={badge.id} badge={badge} earned={false} />
+                  <BadgeItem
+                    key={badge.id}
+                    badge={badge}
+                    earned={false}
+                    progress={progress?.find((entry) => entry.id === badge.id)}
+                  />
                 ))}
               </div>
             </div>
@@ -65,16 +79,27 @@ export function BadgeDisplay({ earnedBadges, showLocked = false, compact = false
   );
 }
 
-function BadgeItem({ badge, earned }: { badge: BadgeData; earned: boolean }) {
+function BadgeItem({
+  badge,
+  earned,
+  progress,
+  animationDelay = 0,
+}: {
+  badge: BadgeData;
+  earned: boolean;
+  progress?: BadgeProgress;
+  animationDelay?: number;
+}) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <div
           className={`relative flex items-center justify-center w-12 h-12 rounded-lg border-2 transition-all cursor-pointer ${
             earned
-              ? "bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 border-yellow-400"
+              ? "bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 border-yellow-400 animate-milestone-pop"
               : "bg-muted/50 border-muted-foreground/20 opacity-50"
           }`}
+          style={earned ? { animationDelay: `${animationDelay}s` } : undefined}
           data-testid={`badge-${badge.id}`}
         >
           <BadgeIcon 
@@ -91,7 +116,15 @@ function BadgeItem({ badge, earned }: { badge: BadgeData; earned: boolean }) {
             {badge.name}
           </p>
           <p className="text-sm text-muted-foreground">{badge.description}</p>
-          {!earned && (
+          {!earned && progress && (
+            <div className="mt-2 space-y-1">
+              <Progress value={progress.percent} className="h-1.5" />
+              <p className="text-xs text-primary">
+                {progress.current} of {progress.target} — {badge.requirement}
+              </p>
+            </div>
+          )}
+          {!earned && !progress && (
             <p className="text-xs text-primary mt-1">{badge.requirement}</p>
           )}
         </div>

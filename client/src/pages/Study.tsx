@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { subjects, SubjectId } from "@shared/schema";
 import { useTasks, useRecordPomodoro, useAddStudyMinutes } from "@/hooks/useApi";
 import { getStudyContent, getTaskType, StudyContent, PracticeQuestion, FlashcardQuestion } from "@/lib/studyContent";
@@ -22,9 +23,7 @@ import {
   CheckCircle2,
   XCircle,
   ChevronRight,
-  Sparkles,
 } from "lucide-react";
-import FileUploadQuestions from "@/components/FileUploadQuestions";
 
 export default function StudyPage() {
   const params = useParams<{ taskId: string }>();
@@ -250,14 +249,10 @@ export default function StudyPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <Tabs defaultValue="questions" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="questions" className="gap-1" data-testid="tab-questions">
                   <Brain className="h-4 w-4" />
                   Questions
-                </TabsTrigger>
-                <TabsTrigger value="ai-questions" className="gap-1" data-testid="tab-ai-questions">
-                  <Sparkles className="h-4 w-4" />
-                  AI Questions
                 </TabsTrigger>
                 <TabsTrigger value="reading" className="gap-1" data-testid="tab-reading">
                   <BookOpen className="h-4 w-4" />
@@ -294,33 +289,38 @@ export default function StudyPage() {
 
                       {"options" in currentQuestion && currentQuestion.options ? (
                         <div className="space-y-2">
-                          {currentQuestion.options.map((option, idx) => (
-                            <Button
-                              key={idx}
-                              variant={
-                                showAnswer
-                                  ? option === currentQuestion.answer
-                                    ? "default"
-                                    : selectedAnswer === option
-                                      ? "destructive"
-                                      : "outline"
-                                  : "outline"
-                              }
-                              className="w-full justify-start text-left h-auto py-3 px-4"
-                              onClick={() => !showAnswer && handleAnswer(option)}
-                              disabled={showAnswer}
-                              data-testid={`option-${idx}`}
-                            >
-                              <span className="font-medium mr-2">{String.fromCharCode(65 + idx)}.</span>
-                              {option}
-                              {showAnswer && option === currentQuestion.answer && (
-                                <CheckCircle2 className="h-4 w-4 ml-auto text-green-500" />
-                              )}
-                              {showAnswer && selectedAnswer === option && option !== currentQuestion.answer && (
-                                <XCircle className="h-4 w-4 ml-auto" />
-                              )}
-                            </Button>
-                          ))}
+                          {currentQuestion.options.map((option, idx) => {
+                            const isCorrectOption = option === currentQuestion.answer;
+                            const isWrongSelection = selectedAnswer === option && !isCorrectOption;
+                            return (
+                              <Button
+                                key={idx}
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left h-auto py-3 px-4",
+                                  // Correct answers fill green, a wrong pick fills red.
+                                  showAnswer &&
+                                    isCorrectOption &&
+                                    "!border-green-600 !bg-green-600 !text-white hover:!bg-green-600 disabled:!opacity-100",
+                                  showAnswer &&
+                                    isWrongSelection &&
+                                    "!border-red-600 !bg-red-600 !text-white hover:!bg-red-600 disabled:!opacity-100",
+                                )}
+                                onClick={() => !showAnswer && handleAnswer(option)}
+                                disabled={showAnswer}
+                                data-testid={`option-${idx}`}
+                              >
+                                <span className="font-medium mr-2">{String.fromCharCode(65 + idx)}.</span>
+                                {option}
+                                {showAnswer && isCorrectOption && (
+                                  <CheckCircle2 className="h-4 w-4 ml-auto text-white" />
+                                )}
+                                {showAnswer && isWrongSelection && (
+                                  <XCircle className="h-4 w-4 ml-auto text-white" />
+                                )}
+                              </Button>
+                            );
+                          })}
                         </div>
                       ) : (
                         <div className="space-y-3">
@@ -429,14 +429,6 @@ export default function StudyPage() {
                     </CardContent>
                   </Card>
                 )}
-              </TabsContent>
-
-              <TabsContent value="ai-questions" className="mt-4">
-                <FileUploadQuestions
-                  taskId={task.id}
-                  subject={subject?.name || "General"}
-                  topic={task.title}
-                />
               </TabsContent>
 
               <TabsContent value="reading" className="mt-4">

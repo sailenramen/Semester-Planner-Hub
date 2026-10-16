@@ -22,7 +22,6 @@ provider's dashboard.
 | `SESSION_SECRET` | Yes in production | Any long random string; the server refuses to start without it |
 | `PORT` | No | Defaults to 5000 |
 | `NODE_ENV` | Yes for a server | Use `production` when running the built app |
-| `ANTHROPIC_API_KEY` | No | Only for the "generate questions from a file" feature |
 
 ## First deployment
 

@@ -284,8 +284,7 @@ export default function GradesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {subjectData.map((data) => {
           const subject = subjects.find((s) => s.id === data.subjectId)!;
-          const term1Assessments = data.assessments.filter((a) => a.term === 1);
-          const term2Assessments = data.assessments.filter((a) => a.term === 2);
+          const term4Assessments = data.assessments.filter((a) => a.term === 4);
 
           return (
             <Card 
@@ -321,48 +320,15 @@ export default function GradesPage() {
                 )}
               </CardHeader>
               <CardContent className="space-y-4">
-                {term1Assessments.length > 0 && (
+                {term4Assessments.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                      Term 1 {term1Assessments[0].category && `(${term1Assessments[0].category})`}
+                      Term 4 {term4Assessments[0].category && `(${term4Assessments[0].category})`}
                     </h4>
                     <div className="space-y-2">
-                      {term1Assessments.map((assessment) => (
-                        <div 
-                          key={assessment.id} 
-                          className="flex items-center gap-3"
-                        >
-                          <span className="flex-1 text-sm truncate" title={assessment.name}>
-                            {assessment.name}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              placeholder="-"
-                              value={scoreValue(data.subjectId, assessment.id, data.scores[assessment.id])}
-                              onChange={(e) => handleScoreChange(data.subjectId, assessment.id, e.target.value)}
-                              className="w-16 h-8 text-center text-sm"
-                              data-testid={`input-grade-${assessment.id}`}
-                            />
-                            <span className="text-xs text-muted-foreground w-4">%</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {term2Assessments.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                      Term 2 {term2Assessments[0].category && `(${term2Assessments[0].category})`}
-                    </h4>
-                    <div className="space-y-2">
-                      {term2Assessments.map((assessment) => (
-                        <div 
-                          key={assessment.id} 
+                      {term4Assessments.map((assessment) => (
+                        <div
+                          key={assessment.id}
                           className="flex items-center gap-3"
                         >
                           <span className="flex-1 text-sm truncate" title={assessment.name}>

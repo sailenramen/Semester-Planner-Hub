@@ -3,8 +3,18 @@ import { createServer, type Server } from "http";
 import session from "express-session";
 import bcrypt from "bcrypt";
 import { storage } from "./storage";
-import { registerQuestionGenerationRoutes } from "./questionGeneration";
-import { generateSampleTasks, generateSampleExams } from "@shared/schema";
+import { generateSampleTasks, generateSampleExams, POINTS_CONFIG } from "@shared/schema";
+import {
+  achievementEvents,
+  defaultUserStats,
+  refreshMonthlyFreezes,
+  streakMilestoneCrossed,
+  syncAchievements,
+  toStreak,
+  toUserStats,
+  touchStreak,
+} from "./achievements";
+import { dailyCompletionCounts } from "@shared/achievements";
 import connectPgSimple from "connect-pg-simple";
 import { Pool } from "pg";
 import { randomUUID } from "crypto";
@@ -30,56 +40,13 @@ function getSessionSecret(): string {
   return "dev-only-session-secret";
 }
 
-// Login is temporarily disabled: every visitor uses one shared default account.
-const DEFAULT_USER_EMAIL = "owner@local";
-const DEFAULT_USER_NAME = "Sahil";
-let defaultUserIdPromise: Promise<string> | null = null;
-
-// Accounts created by an earlier build of this app were named "Student".
-const LEGACY_DEFAULT_USER_NAME = "Student";
-
-async function getDefaultUserId(): Promise<string> {
-  if (!defaultUserIdPromise) {
-    defaultUserIdPromise = (async () => {
-      const existing = await storage.getUserByEmail(DEFAULT_USER_EMAIL);
-      if (existing) {
-        // Rename it once so the greeting says Sahil without a manual DB edit.
-        if (existing.name === LEGACY_DEFAULT_USER_NAME) {
-          const renamed = await storage.updateUser(existing.id, { name: DEFAULT_USER_NAME });
-          if (renamed) return renamed.id;
-        }
-        return existing.id;
-      }
-      const user = await storage.createUser({
-        name: DEFAULT_USER_NAME,
-        email: DEFAULT_USER_EMAIL,
-        password: await bcrypt.hash(randomUUID(), 10),
-      });
-      await seedUserData(user.id);
-      return user.id;
-    })();
-    defaultUserIdPromise.catch(() => {
-      defaultUserIdPromise = null;
-    });
-  }
-  return defaultUserIdPromise;
-}
-
-async function ensureSessionUserId(req: Request): Promise<string> {
+// Every data route requires a signed-in session. Without one the client gets
+// 401 and shows the login page; nothing is served to anonymous visitors.
+function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) {
-    req.session.userId = await getDefaultUserId();
+    return res.status(401).json({ error: "Not signed in" });
   }
-  return req.session.userId;
-}
-
-async function requireAuth(req: Request, res: Response, next: NextFunction) {
-  try {
-    await ensureSessionUserId(req);
-    next();
-  } catch (error) {
-    console.error("Default user error:", error);
-    res.status(500).json({ error: "Failed to load user" });
-  }
+  next();
 }
 
 async function seedUserData(userId: string) {
@@ -134,8 +101,6 @@ export async function registerRoutes(
       },
     })
   );
-
-  registerQuestionGenerationRoutes(app);
 
   // ================== AUTH ROUTES ==================
   app.post("/api/auth/register", async (req, res) => {
@@ -200,7 +165,11 @@ export async function registerRoutes(
 
   app.get("/api/auth/me", async (req, res) => {
     try {
-      const user = await storage.getUserById(await ensureSessionUserId(req));
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Not signed in" });
+      }
+
+      const user = await storage.getUserById(req.session.userId);
       if (!user) {
         req.session.destroy(() => {});
         return res.status(401).json({ error: "User not found" });
@@ -259,11 +228,65 @@ export async function registerRoutes(
 
   app.patch("/api/tasks/:id/toggle", requireAuth, async (req, res) => {
     try {
-      const task = await storage.toggleTask(req.session.userId!, req.params.id as string);
+      const userId = req.session.userId!;
+      const task = await storage.toggleTask(userId, req.params.id as string);
       if (!task) {
         return res.status(404).json({ error: "Task not found" });
       }
-      res.json(task);
+
+      const before = await storage.getStreak(userId);
+      const statsRow = await storage.getUserStats(userId);
+      const stats = statsRow ? toUserStats(statsRow) : defaultUserStats();
+      const entries = [...stats.taskCompletionTimes];
+      const entryIndex = entries.findIndex((entry) => entry.split("|")[2] === task.id);
+
+      // Completing a task earns its points once; un-completing takes them back
+      // again, so toggling a checkbox on and off cannot farm points.
+      let pointsEarned = 0;
+      if (task.completed) {
+        if (entryIndex === -1) {
+          entries.push(`${new Date().toISOString()}|${task.subjectId}|${task.id}`);
+          pointsEarned = POINTS_CONFIG.TASK_COMPLETE;
+        }
+      } else if (entryIndex !== -1) {
+        entries.splice(entryIndex, 1);
+        pointsEarned = -POINTS_CONFIG.TASK_COMPLETE;
+      }
+
+      await storage.saveUserStats(userId, {
+        totalPoints: Math.max(0, stats.totalPoints + pointsEarned),
+        taskCompletionTimes: entries,
+        dailyTaskCompletions: dailyCompletionCounts(entries),
+      });
+
+      // Finishing work is what keeps a study streak alive.
+      const streak = task.completed ? await touchStreak(userId) : toStreak(before);
+      const streakMilestone = streakMilestoneCrossed(before?.currentStreak ?? 0, streak.currentStreak);
+      const result = await syncAchievements(userId);
+
+      let weekComplete: { week: number; term: number } | null = null;
+      let termComplete: number | null = null;
+      if (task.completed) {
+        const tasks = await storage.getTasksByUserId(userId);
+        const weekTasks = tasks.filter((t) => t.week === task.week && t.term === task.term);
+        if (weekTasks.length > 0 && weekTasks.every((t) => t.completed)) {
+          weekComplete = { week: task.week, term: task.term };
+        }
+        const termTasks = tasks.filter((t) => t.term === task.term);
+        if (termTasks.length > 0 && termTasks.every((t) => t.completed)) {
+          termComplete = task.term;
+        }
+      }
+
+      res.json({
+        ...task,
+        achievements: achievementEvents(result, {
+          pointsEarned,
+          streakMilestone,
+          weekComplete,
+          termComplete,
+        }),
+      });
     } catch (error) {
       console.error("Toggle task error:", error);
       res.status(500).json({ error: "Failed to toggle task" });
@@ -358,7 +381,8 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Subject ID and assessment ID are required" });
       }
       const grade = await storage.saveGrade(req.session.userId!, subjectId, assessmentId, score);
-      res.json(grade);
+      const result = await syncAchievements(req.session.userId!);
+      res.json({ ...grade, achievements: achievementEvents(result) });
     } catch (error) {
       console.error("Save grade error:", error);
       res.status(500).json({ error: "Failed to save grade" });
@@ -421,8 +445,10 @@ export async function registerRoutes(
           ...(subjectId ? { [subjectId]: ((currentStats?.subjectStudyMinutes as Record<string, number>)?.[subjectId] || 0) + minutes } : {}),
         },
       };
-      const stats = await storage.saveUserStats(req.session.userId!, updatedStats);
-      res.json(stats);
+      await storage.saveUserStats(req.session.userId!, updatedStats);
+      await touchStreak(req.session.userId!);
+      const result = await syncAchievements(req.session.userId!);
+      res.json({ ...result.stats, achievements: achievementEvents(result) });
     } catch (error) {
       console.error("Add study minutes error:", error);
       res.status(500).json({ error: "Failed to add study minutes" });
@@ -437,8 +463,10 @@ export async function registerRoutes(
         totalPomodoroSessions: (currentStats?.totalPomodoroSessions || 0) + 1,
         totalPoints: (currentStats?.totalPoints || 0) + 15,
       };
-      const stats = await storage.saveUserStats(req.session.userId!, updatedStats);
-      res.json(stats);
+      await storage.saveUserStats(req.session.userId!, updatedStats);
+      await touchStreak(req.session.userId!);
+      const result = await syncAchievements(req.session.userId!);
+      res.json({ ...result.stats, achievements: achievementEvents(result) });
     } catch (error) {
       console.error("Record pomodoro error:", error);
       res.status(500).json({ error: "Failed to record pomodoro" });
@@ -458,6 +486,24 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Earn badge error:", error);
       res.status(500).json({ error: "Failed to earn badge" });
+    }
+  });
+
+  // Re-decides the trophy case from stored progress. Called once after sign-in
+  // so badges earned before the rules changed are granted retroactively.
+  app.post("/api/achievements/sync", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      await refreshMonthlyFreezes(userId);
+      const result = await syncAchievements(userId);
+      res.json({
+        stats: result.stats,
+        streak: result.streak,
+        achievements: achievementEvents(result),
+      });
+    } catch (error) {
+      console.error("Sync achievements error:", error);
+      res.status(500).json({ error: "Failed to sync achievements" });
     }
   });
 

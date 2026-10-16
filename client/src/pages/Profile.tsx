@@ -8,7 +8,8 @@ import { BadgeShowcase } from "@/components/BadgeShowcase";
 import { PointsDisplay } from "@/components/PointsDisplay";
 import { LevelAvatar } from "@/components/LevelAvatar";
 import { useAuth } from "@/contexts/AuthContext";
-import { subjects, AvatarSettings } from "@shared/schema";
+import { subjects, badges as allBadges, AvatarSettings } from "@shared/schema";
+import { getBadgeProgress } from "@shared/achievements";
 import { 
   useStreak, 
   useUserStats, 
@@ -18,6 +19,7 @@ import {
   useSaveAvatarSettings, 
   useUpdateShowcasedBadges 
 } from "@/hooks/useApi";
+import { useMemo } from "react";
 import { 
   Clock, CheckCircle2, Target, Calendar, BookOpen, 
   TrendingUp, Award, Flame 
@@ -33,6 +35,12 @@ export default function Profile() {
   
   const saveAvatarSettings = useSaveAvatarSettings();
   const updateShowcasedBadges = useUpdateShowcasedBadges();
+
+  // Same rules the server awards by, so a locked badge shows real distance left.
+  const badgeProgress = useMemo(() => {
+    if (!streak || !stats) return undefined;
+    return getBadgeProgress({ tasks, streak, stats, grades });
+  }, [tasks, streak, stats, grades]);
 
   const isLoading = streakLoading || statsLoading || avatarLoading || tasksLoading || gradesLoading;
 
@@ -162,7 +170,7 @@ export default function Profile() {
           icon={<Award className="h-5 w-5 text-yellow-500" />}
           label="Badges Earned"
           value={stats.badgesEarned.length}
-          subValue={`of 19 total`}
+          subValue={`of ${allBadges.length} total`}
           testId="stat-badges"
         />
       </div>
@@ -242,7 +250,7 @@ export default function Profile() {
         </Card>
       </div>
 
-      <BadgeDisplay earnedBadges={stats.badgesEarned} showLocked />
+      <BadgeDisplay earnedBadges={stats.badgesEarned} showLocked progress={badgeProgress} />
     </div>
   );
 }

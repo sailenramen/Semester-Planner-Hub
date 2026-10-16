@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Task, Note, Exam, Grade, Streak, UserStats, AvatarSettings } from "@shared/schema";
+import { AchievementEvents } from "@shared/achievements";
+import { celebrateAchievements } from "@/lib/celebrations";
 
 export function saveErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -19,12 +21,14 @@ export function useToggleTask() {
   return useMutation({
     mutationFn: async (taskId: string) => {
       const res = await apiRequest("PATCH", `/api/tasks/${taskId}/toggle`, {});
-      return res.json();
+      return res.json() as Promise<Task & { achievements?: AchievementEvents }>;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/streak"] });
+      // The server decides what was earned; this just plays it.
+      celebrateAchievements(data?.achievements);
     },
   });
 }
@@ -102,10 +106,12 @@ export function useSaveGrade() {
     // the SPA catch-all, so grades were never stored.
     mutationFn: async (grade: Omit<Grade, "id" | "userId">) => {
       const res = await apiRequest("PUT", "/api/grades", grade);
-      return res.json();
+      return res.json() as Promise<Grade & { achievements?: AchievementEvents }>;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/grades"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      celebrateAchievements(data?.achievements);
     },
   });
 }
@@ -155,10 +161,12 @@ export function useAddStudyMinutes() {
   return useMutation({
     mutationFn: async ({ minutes, subjectId }: { minutes: number; subjectId?: string }) => {
       const res = await apiRequest("POST", "/api/stats/study-minutes", { minutes, subjectId });
-      return res.json();
+      return res.json() as Promise<UserStats & { achievements?: AchievementEvents }>;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/streak"] });
+      celebrateAchievements(data?.achievements);
     },
   });
 }
@@ -168,10 +176,29 @@ export function useRecordPomodoro() {
   return useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/stats/pomodoro", {});
-      return res.json();
+      return res.json() as Promise<UserStats & { achievements?: AchievementEvents }>;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/streak"] });
+      celebrateAchievements(data?.achievements);
+    },
+  });
+}
+
+// Re-decides the trophy case from stored progress. Used after sign-in so badges
+// are granted retroactively, and the celebrations play at that point.
+export function useSyncAchievements() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/achievements/sync", {});
+      return res.json() as Promise<{ achievements?: AchievementEvents }>;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/streak"] });
+      celebrateAchievements(data?.achievements);
     },
   });
 }

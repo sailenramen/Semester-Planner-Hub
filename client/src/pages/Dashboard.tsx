@@ -9,8 +9,6 @@ import { ExamModeToggle } from "@/components/ExamModeToggle";
 import { SubjectProgressChart } from "@/components/SubjectProgressChart";
 import { StreakTracker } from "@/components/StreakTracker";
 import { PointsDisplay } from "@/components/PointsDisplay";
-import { BadgeUnlockModal } from "@/components/BadgeUnlockModal";
-import { Confetti } from "@/components/Confetti";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -30,7 +28,6 @@ import {
   getWeekDates,
   getTermLabel,
   TOTAL_WEEKS,
-  BadgeId,
 } from "@shared/schema";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
@@ -62,8 +59,6 @@ export default function Dashboard() {
   const toggleTask = useToggleTask();
   
   const [examMode, setExamModeState] = useState(false);
-  const [unlockedBadge, setUnlockedBadge] = useState<BadgeId | null>(null);
-  const [showLevelUp, setShowLevelUp] = useState(false);
 
   const currentWeek = getCurrentWeek();
   const currentTerm = getCurrentTerm();
@@ -75,10 +70,9 @@ export default function Dashboard() {
     setExamModeState(getExamMode());
   }, []);
 
+  // Points, streaks and badges are awarded by the server, which returns the
+  // achievements to celebrate; see AchievementCelebrations.
   const handleToggleTask = (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    const wasCompleted = task?.completed || false;
-    
     toggleTask.mutate(taskId);
   };
 
@@ -462,16 +456,6 @@ export default function Dashboard() {
           <SubjectProgressChart tasks={tasks} />
         </div>
       </div>
-
-      {/* Badge Unlock Modal */}
-      <BadgeUnlockModal
-        badgeId={unlockedBadge}
-        open={!!unlockedBadge}
-        onClose={() => setUnlockedBadge(null)}
-      />
-
-      {/* Level Up Confetti */}
-      <Confetti active={showLevelUp} />
     </div>
   );
 }

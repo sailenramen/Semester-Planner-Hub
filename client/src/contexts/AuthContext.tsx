@@ -14,6 +14,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// apiRequest throws "<status>: <body>"; the body is usually JSON with an error field.
+function errorFromResponse(error: unknown, fallback: string): string {
+  const message = error instanceof Error ? error.message : "";
+  const body = message.replace(/^\d+:\s*/, "");
+  try {
+    const parsed = JSON.parse(body);
+    if (parsed && typeof parsed.error === "string") return parsed.error;
+  } catch {
+    // Not JSON (for example a network failure); fall through.
+  }
+  return body || fallback;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Omit<User, "password"> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,14 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.clear();
       return { success: true };
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Login failed";
-      const errorText = message.includes(":") ? message.split(":")[1].trim() : message;
-      try {
-        const parsed = JSON.parse(errorText);
-        return { success: false, error: parsed.error || "Login failed" };
-      } catch {
-        return { success: false, error: errorText || "Login failed" };
-      }
+      return { success: false, error: errorFromResponse(error, "Login failed") };
     }
   };
 
@@ -62,14 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.clear();
       return { success: true };
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Registration failed";
-      const errorText = message.includes(":") ? message.split(":")[1].trim() : message;
-      try {
-        const parsed = JSON.parse(errorText);
-        return { success: false, error: parsed.error || "Registration failed" };
-      } catch {
-        return { success: false, error: errorText || "Registration failed" };
-      }
+      return { success: false, error: errorFromResponse(error, "Registration failed") };
     }
   };
 

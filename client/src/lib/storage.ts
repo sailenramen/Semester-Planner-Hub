@@ -17,6 +17,15 @@ const STORAGE_KEYS = {
   AVATAR: "study-planner-avatar",
   USERS: "study-planner-users",
   CURRENT_USER: "study-planner-current-user",
+  STUDY_MUSIC: "study-planner-study-music",
+};
+
+// The Spotify Embed chosen for the study timer. The embed is identified only by
+// its type and ID; the player itself is a public iframe, so no account or API
+// key is involved.
+export type SpotifyEmbed = {
+  type: "playlist" | "album" | "track" | "artist" | "episode" | "show";
+  id: string;
 };
 
 // User authentication functions
@@ -452,6 +461,27 @@ export function getAvatarSettings(): AvatarSettings {
 
 export function saveAvatarSettings(settings: AvatarSettings): void {
   localStorage.setItem(STORAGE_KEYS.AVATAR, JSON.stringify(settings));
+}
+
+// Study music (Spotify embed) storage
+export function getStudyMusic(): SpotifyEmbed | null {
+  const stored = localStorage.getItem(STORAGE_KEYS.STUDY_MUSIC);
+  if (!stored) return null;
+
+  try {
+    const parsed = JSON.parse(stored);
+    if (typeof parsed?.type === "string" && typeof parsed?.id === "string") {
+      return parsed as SpotifyEmbed;
+    }
+  } catch {
+    // A malformed value is treated the same as no preference at all.
+  }
+
+  return null;
+}
+
+export function setStudyMusic(embed: SpotifyEmbed): void {
+  localStorage.setItem(STORAGE_KEYS.STUDY_MUSIC, JSON.stringify(embed));
 }
 
 export function addPoints(points: number): UserStats {

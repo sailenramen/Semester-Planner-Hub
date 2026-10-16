@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StudyMusicCard } from "@/components/StudyMusicCard";
 import { cn } from "@/lib/utils";
 import { subjects, SubjectId } from "@shared/schema";
 import { useTasks, useRecordPomodoro, useAddStudyMinutes } from "@/hooks/useApi";
@@ -49,6 +50,9 @@ export default function StudyPage() {
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  // Review mode: the indexes of the questions answered incorrectly, so they can be redone.
+  const [mistakes, setMistakes] = useState<Set<number>>(new Set());
+  const [reviewMode, setReviewMode] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -121,18 +125,65 @@ export default function StudyPage() {
   const currentQuestion = allQuestions[currentQuestionIndex];
   const totalQuestions = allQuestions.length;
   const progressPercent = totalQuestions > 0 ? (answeredQuestions.size / totalQuestions) * 100 : 0;
+  const orderedMistakes = Array.from(mistakes).sort((a, b) => a - b);
 
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
     setShowAnswer(true);
     const isCorrect = answer.toLowerCase() === currentQuestion?.answer.toLowerCase();
-    if (isCorrect) {
+    // Only a first attempt counts towards the score, so redoing a question in
+    // review cannot push the accuracy above 100%.
+    if (isCorrect && !answeredQuestions.has(currentQuestionIndex)) {
       setCorrectAnswers(prev => prev + 1);
     }
     setAnsweredQuestions(prev => new Set(Array.from(prev).concat(currentQuestionIndex)));
+    // A wrong answer joins the review list; answering it correctly removes it.
+    const nextMistakes = new Set(mistakes);
+    if (isCorrect) {
+      nextMistakes.delete(currentQuestionIndex);
+    } else {
+      nextMistakes.add(currentQuestionIndex);
+    }
+    setMistakes(nextMistakes);
+    // Nothing left to redo, so leave review without moving the student's view.
+    if (reviewMode && isCorrect && nextMistakes.size === 0) {
+      setReviewMode(false);
+    }
+  };
+
+  // Moves to the next unanswered-wrong question in review mode, or leaves review
+  // once the list is empty.
+  const goToNextMistake = (set: Set<number>, from: number) => {
+    const ordered = Array.from(set).sort((a, b) => a - b);
+    const next = ordered.find(i => i > from) ?? ordered[0];
+    if (next === undefined) {
+      setReviewMode(false);
+      return;
+    }
+    setCurrentQuestionIndex(next);
+    setShowAnswer(false);
+    setSelectedAnswer(null);
+  };
+
+  const startReview = () => {
+    if (orderedMistakes.length === 0) return;
+    setReviewMode(true);
+    setCurrentQuestionIndex(orderedMistakes[0]);
+    setShowAnswer(false);
+    setSelectedAnswer(null);
+  };
+
+  const exitReview = () => {
+    setReviewMode(false);
+    setShowAnswer(false);
+    setSelectedAnswer(null);
   };
 
   const nextQuestion = () => {
+    if (reviewMode) {
+      goToNextMistake(mistakes, currentQuestionIndex);
+      return;
+    }
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
       setShowAnswer(false);
@@ -141,6 +192,18 @@ export default function StudyPage() {
   };
 
   const prevQuestion = () => {
+    if (reviewMode) {
+      const earlier = orderedMistakes.filter(i => i < currentQuestionIndex);
+      const target = earlier.length > 0 ? earlier[earlier.length - 1] : orderedMistakes[orderedMistakes.length - 1];
+      if (target === undefined) {
+        setReviewMode(false);
+        return;
+      }
+      setCurrentQuestionIndex(target);
+      setShowAnswer(false);
+      setSelectedAnswer(null);
+      return;
+    }
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
       setShowAnswer(false);
@@ -273,9 +336,16 @@ export default function StudyPage() {
                   <Card>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">
-                          Question {currentQuestionIndex + 1} of {totalQuestions}
-                        </CardTitle>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-lg">
+                            Question {currentQuestionIndex + 1} of {totalQuestions}
+                          </CardTitle>
+                          {reviewMode && (
+                            <Badge variant="secondary" className="text-xs">
+                              Review
+                            </Badge>
+                          )}
+                        </div>
                         <Badge variant="outline">
                           {correctAnswers}/{answeredQuestions.size} correct
                         </Badge>
@@ -350,9 +420,18 @@ export default function StudyPage() {
                                 variant="outline"
                                 className="flex-1"
                                 onClick={() => {
+                                  const nextMistakes = new Set(mistakes);
+                                  nextMistakes.delete(currentQuestionIndex);
+                                  setMistakes(nextMistakes);
                                   setAnsweredQuestions(prev => new Set(Array.from(prev).concat(currentQuestionIndex)));
-                                  setCorrectAnswers(c => c + 1);
-                                  nextQuestion();
+                                  if (!answeredQuestions.has(currentQuestionIndex)) {
+                                    setCorrectAnswers(c => c + 1);
+                                  }
+                                  if (reviewMode) {
+                                    goToNextMistake(nextMistakes, currentQuestionIndex);
+                                  } else {
+                                    nextQuestion();
+                                  }
                                 }}
                                 data-testid="button-got-it"
                               >
@@ -363,6 +442,9 @@ export default function StudyPage() {
                                 variant="outline"
                                 className="flex-1"
                                 onClick={() => {
+                                  const nextMistakes = new Set(mistakes);
+                                  nextMistakes.add(currentQuestionIndex);
+                                  setMistakes(nextMistakes);
                                   setAnsweredQuestions(prev => new Set(Array.from(prev).concat(currentQuestionIndex)));
                                   nextQuestion();
                                 }}
@@ -380,7 +462,7 @@ export default function StudyPage() {
                         <Button
                           variant="outline"
                           onClick={prevQuestion}
-                          disabled={currentQuestionIndex === 0}
+                          disabled={!reviewMode && currentQuestionIndex === 0}
                           data-testid="button-prev-question"
                         >
                           Previous
@@ -412,7 +494,7 @@ export default function StudyPage() {
                         </div>
                         <Button
                           onClick={nextQuestion}
-                          disabled={currentQuestionIndex === totalQuestions - 1}
+                          disabled={!reviewMode && currentQuestionIndex === totalQuestions - 1}
                           data-testid="button-next-question"
                         >
                           Next
@@ -582,6 +664,24 @@ export default function StudyPage() {
                     className="h-2" 
                   />
                 </div>
+                {(mistakes.size > 0 || reviewMode) && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>To review</span>
+                      <span>{mistakes.size}</span>
+                    </div>
+                    <Button
+                      variant={reviewMode ? "default" : "outline"}
+                      size="sm"
+                      className="w-full"
+                      onClick={reviewMode ? exitReview : startReview}
+                      data-testid="button-review-mistakes"
+                    >
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      {reviewMode ? "Exit review" : "Review mistakes"}
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -636,6 +736,8 @@ export default function StudyPage() {
                 )}
               </CardContent>
             </Card>
+
+            <StudyMusicCard titleClassName="text-lg" />
           </div>
         </div>
       </div>
